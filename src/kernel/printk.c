@@ -26,7 +26,7 @@ static int vsprintf(char *buff, const char *format, va_list args);
 void printk(const char *format, ...)
 {
         // 避免频繁创建临时变量，内核的栈很宝贵
-        static char buff[1024];
+        static char buff[10240];
         va_list args;
         int i;
 
@@ -42,7 +42,7 @@ void printk(const char *format, ...)
 void printk_color(real_color_t back, real_color_t fore, const char *format, ...)
 {
         // 避免频繁创建临时变量，内核的栈很宝贵
-        static char buff[1024];
+        static char buff[10240];
         va_list args;
         int i;
 
@@ -171,9 +171,7 @@ static int vsprintf(char *buff, const char *format, va_list args)
         char *str;
         char *s;
         int *ip;
-
         int flags;              // flags to number()
-
         int field_width;        // width of output field
         int precision;          // min. # of digits for integers; max number of chars for from string
 
@@ -181,8 +179,7 @@ static int vsprintf(char *buff, const char *format, va_list args)
                 if (*format != '%') {
                         *str++ = *format;
                         continue;
-                }
-                        
+                } 
                 flags = 0;
                 repeat:
                         ++format;               // this also skips first '%'

@@ -30,12 +30,11 @@
                 }                                               \
         } while (0)
 
-// 编译期间静态检测
-#define static_assert(x)                                        \
-        switch (x) { case 0: case (x): ; }
-
 // 初始化 Debug 信息
 void init_debug(void);
+
+// 从 multiboot_t 结构获取ELF信息
+elf_t elf_from_multiboot(multiboot_t *mb);
 
 // 打印当前的函数调用栈信息
 void panic(const char *msg);
