@@ -41,6 +41,9 @@ enum real_color {
         rc_white = 15
 } real_color_t;
 
+// 屏幕显示初始化
+void init_console(void);
+
 // 清屏操作
 void console_clear(void);
 

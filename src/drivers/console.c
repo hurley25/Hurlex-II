@@ -76,6 +76,12 @@ static void scroll(void)
         }
 }
 
+// 屏幕显示初始化
+void init_console(void)
+{
+        console_clear();
+}
+
 // 清屏操作
 void console_clear(void)
 {
