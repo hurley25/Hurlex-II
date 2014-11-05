@@ -16,9 +16,9 @@
  * =====================================================================================
  */
 
-#include "common.h"
-#include "debug.h"
-#include "vmm.h"
+#include <common.h>
+#include <debug.h>
+#include <mm/mm.h>
 
 // 开启分页机制之后的 Multiboot 数据指针
 multiboot_t *glb_mboot_ptr;

@@ -19,9 +19,9 @@
 #ifndef INCLUDE_SCHEDULING_H_
 #define INCLUDE_SCHEDULING_H_
 
-#include "idt.h"
+#include <idt.h>
 
 // 时钟中断函数
-void timer_callback(pt_regs *regs);
+void clock_callback(pt_regs *regs);
 
 #endif  // INCLUDE_SCHEDULING_H_

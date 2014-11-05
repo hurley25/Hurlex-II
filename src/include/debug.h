@@ -19,9 +19,9 @@
 #ifndef INCLUDE_DEBUG_H_
 #define INCLUDE_DEBUG_H_
 
-#include "console.h"
-#include "vargs.h"
-#include "elf.h"
+#include <console.h>
+#include <vargs.h>
+#include <elf.h>
 
 #define assert(x, info)                                         \
         do {                                                    \

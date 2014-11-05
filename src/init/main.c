@@ -16,12 +16,14 @@
  * =====================================================================================
  */
 
-#include "common.h"
-#include "console.h"
-#include "string.h"
-#include "debug.h"
-#include "idt.h"
-#include "mm.h"
+#include <common.h>
+#include <console.h>
+#include <debug.h>
+#include <idt.h>
+#include <clock.h>
+#include <lib/string.h>
+#include <mm/mm.h>
+
 
 // 内核初始化函数
 void kern_init(void)
@@ -38,8 +40,8 @@ void kern_init(void)
         
         init_pmm();
 
-        init_timer(200);
-        enable_intr();
+        //init_clock();
+        //enable_intr();
 
         while (1) {
                 cpu_hlt();

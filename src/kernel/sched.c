@@ -1,12 +1,12 @@
 /*
  * =====================================================================================
  *
- *       Filename:  mm.h
+ *       Filename:  scheduling.c
  *
- *    Description:  内存管理的头文件
+ *    Description:  调度程序
  *
  *        Version:  1.0
- *        Created:  2014年11月04日 13时31分10秒
+ *        Created:  2014年11月04日 15时06分04秒
  *       Revision:  none
  *       Compiler:  gcc
  *
@@ -16,10 +16,12 @@
  * =====================================================================================
  */
 
-#ifndef INCLUDE_MM_H
-#define INCLUDE_MM_H
+#include <sched.h>
+#include <debug.h>
 
-#include "gdt.h"
-#include "pmm.h"
+void clock_callback(pt_regs *regs)
+{
+        static uint32_t tick = 0;
+        printk_color(rc_black, rc_red, "Tick Count: %d\n", tick++);
+}
 
-#endif  // INCLUDE_MM_H

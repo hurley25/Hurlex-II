@@ -1,12 +1,12 @@
 /*
  * =====================================================================================
  *
- *       Filename:  timer.h
+ *       Filename:  mm.h
  *
- *    Description:  定时中断相关
+ *    Description:  内存管理的头文件
  *
  *        Version:  1.0
- *        Created:  2014年11月04日 15时01分16秒
+ *        Created:  2014年11月04日 13时31分10秒
  *       Revision:  none
  *       Compiler:  gcc
  *
@@ -16,11 +16,11 @@
  * =====================================================================================
  */
 
-#ifndef INCLUDE_TIMER_H_
-#define INCLUDE_TIMER_H_
+#ifndef INCLUDE_MM_H
+#define INCLUDE_MM_H
 
-#include "types.h"
+#include <gdt.h>
+#include <mm/pmm.h>
+#include <mm/vmm.h>
 
-void init_timer(uint32_t frequency);
-
-#endif  // INCLUDE_TIMER_H_
+#endif  // INCLUDE_MM_H

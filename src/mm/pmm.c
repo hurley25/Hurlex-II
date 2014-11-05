@@ -16,10 +16,10 @@
  * =====================================================================================
  */
 
-#include "multiboot.h"
-#include "common.h"
-#include "debug.h"
-#include "pmm.h"
+#include <multiboot.h>
+#include <common.h>
+#include <debug.h>
+#include <mm/mm.h>
 
 // 物理内存页面管理的栈
 static uint32_t pmm_stack[PAGE_MAX_SIZE+1];
@@ -83,11 +83,10 @@ void init_pmm(void)
                                 page_addr += PMM_PAGE_SIZE;
                                 phy_page_count++;
                         }
-                        printk("memory management end address: %08X\n\n", page_addr - PMM_PAGE_SIZE);
+                        printk("memory management end address:   %08X\n\n", page_addr - PMM_PAGE_SIZE);
                 }
         }
-        printk("Memory Phy Pages Total: %d Pages = %d MB\n",
-                        phy_page_count, phy_page_count * 4 / 1024);
+        printk("Physical Memory Pages Total: %d Pages = %d MB\n", phy_page_count, phy_page_count * 4 / 1024);
 }
 
 uint32_t pmm_alloc_page(void)

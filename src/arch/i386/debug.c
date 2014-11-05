@@ -16,11 +16,11 @@
  * =====================================================================================
  */
 
-#include "common.h"
-#include "debug.h"
-#include "string.h"
-#include "elf.h"
-#include "vmm.h"
+#include <common.h>
+#include <debug.h>
+#include <elf.h>
+#include <lib/string.h>
+#include <mm/mm.h>
 
 static elf_t kernel_elf;
 
@@ -103,7 +103,7 @@ void print_cur_status(void)
         static int round = 0;
         uint16_t reg1, reg2, reg3, reg4;
 
-        asm volatile (  "mov %%cs, %0;"
+        asm volatile ( "mov %%cs, %0;"
                         "mov %%ds, %1;"
                         "mov %%es, %2;"
                         "mov %%ss, %3;"

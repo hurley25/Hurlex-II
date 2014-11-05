@@ -19,7 +19,7 @@
 #ifndef INCLUDE_VMM_H
 #define INCLUDE_VMM_H
 
-#include "types.h"
+#include <types.h>
 
 // 内核的偏移地址
 #define PAGE_OFFSET 	0xC0000000
@@ -64,10 +64,10 @@
 #define OFFSET_INDEX(x) ((x) & 0xFFF)
 
 // 页表成员数
-#define PGD_SIZE (PAGE_SIZE/sizeof(pte_t))
+#define PGD_SIZE (PAGE_SIZE / sizeof(pte_t))
 
 // 页表成员数
-#define PTE_SIZE (PAGE_SIZE/sizeof(uint32_t))
+#define PTE_SIZE (PAGE_SIZE / sizeof(uint32_t))
 
 // 映射 512MB 内存所需要的页表数
 #define PTE_COUNT 128

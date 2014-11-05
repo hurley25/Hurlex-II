@@ -16,9 +16,9 @@
  * =====================================================================================
  */
 
-#include "console.h"
-#include "common.h"
-#include "vmm.h"
+#include <console.h>
+#include <common.h>
+#include <mm/mm.h>
 
 /*
  * VGA(Video Graphics Array，视频图形阵列)是使用模拟信号的一种视频传输标准，

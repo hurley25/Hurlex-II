@@ -16,7 +16,7 @@
  * =====================================================================================
  */
 
-#include "string.h"
+#include <lib/string.h>
 
 inline void memcpy(uint8_t *dest, const uint8_t *src, uint32_t len)
 {

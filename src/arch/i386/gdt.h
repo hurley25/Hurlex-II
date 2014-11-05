@@ -19,7 +19,7 @@
 #ifndef GDT_H_
 #define GDT_H_
 
-#include "types.h"
+#include <types.h>
 
 // 各个内存段所在全局描述符表下标
 #define SEG_NULL    0

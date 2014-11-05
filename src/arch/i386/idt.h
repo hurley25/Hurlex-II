@@ -19,7 +19,7 @@
 #ifndef IDT_H_
 #define IDT_H_
 
-#include "types.h"
+#include <types.h>
 
 #define INTERRUPT_MAX 256
 

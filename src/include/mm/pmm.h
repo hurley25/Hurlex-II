@@ -19,7 +19,7 @@
 #ifndef INCLUDE_PMM_H
 #define INCLUDE_PMM_H
 
-#include "multiboot.h"
+#include <multiboot.h>
 
 // 线程栈的大小
 #define STACK_SIZE 8192

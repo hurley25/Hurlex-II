@@ -19,7 +19,7 @@
 #ifndef INCLUDE_STRING_H_
 #define INCLUDE_STRING_H_
 
-#include "types.h"
+#include <types.h>
 
 void memcpy(uint8_t *dest, const uint8_t *src, uint32_t len);
 
