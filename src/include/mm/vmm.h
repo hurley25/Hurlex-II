@@ -16,9 +16,10 @@
  * =====================================================================================
  */
  
-#ifndef INCLUDE_VMM_H
-#define INCLUDE_VMM_H
+#ifndef INCLUDE_MM_VMM_H
+#define INCLUDE_MM_VMM_H
 
+#include <arch.h>
 #include <types.h>
 
 // 内核的偏移地址
@@ -72,13 +73,13 @@
 // 映射 512MB 内存所需要的页表数
 #define PTE_COUNT 128
 
-/*
 // 内核页目录区域
 extern pgd_t pgd_kern[PGD_SIZE];
 
 // 初始化虚拟内存管理
 void init_vmm(void);
 
+/*
 // 更换当前的页目录
 void switch_pgd(uint32_t pd);
 
@@ -92,9 +93,8 @@ void unmap(pgd_t *pgd_now, uint32_t va);
 // 同时如果 pa 不是空指针则把物理地址写入 pa 参数
 uint32_t get_mapping(pgd_t *pgd_now, uint32_t va, uint32_t *pa);
 
+*/
 // 页错误中断的函数处理
 void page_fault(pt_regs *regs);
 
-*/
-
-#endif 	// INCLUDE_VMM_H
+#endif 	// INCLUDE_MM_VMM_H

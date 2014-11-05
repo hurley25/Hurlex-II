@@ -3,7 +3,7 @@
  *
  *       Filename:  console.h
  *
- *    Description:  80 * 25 显示模式驱动
+ *    Description:  屏幕输出函数
  *
  *        Version:  1.0
  *        Created:  2014年11月04日 10时49分13秒

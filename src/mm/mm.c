@@ -1,12 +1,12 @@
 /*
  * =====================================================================================
  *
- *       Filename:  mm.h
+ *       Filename:  mm.c
  *
- *    Description:  内存管理的头文件
+ *    Description:  内存管理子系统
  *
  *        Version:  1.0
- *        Created:  2014年11月04日 13时31分10秒
+ *        Created:  2014年11月05日 09时54分05秒
  *       Revision:  none
  *       Compiler:  gcc
  *
@@ -16,14 +16,13 @@
  * =====================================================================================
  */
 
-#ifndef INCLUDE_MM_MM_H
-#define INCLUDE_MM_MM_H
+#include <mm/mm.h>
 
-#include <mm/pmm.h>
-#include <mm/vmm.h>
-#include <mm/simple_mm.h>
+void init_mm(void)
+{
+      	show_kernel_memory_map();
 
-// 内存管理子系统初始化
-void init_mm(void);
+        init_pmm();
+        init_vmm();
+}
 
-#endif  // INCLUDE_MM_MM_H

@@ -1,12 +1,12 @@
 /*
  * =====================================================================================
  *
- *       Filename:  mm.h
+ *       Filename:  arch.h
  *
- *    Description:  内存管理的头文件
+ *    Description:  架构相关的头文件引用
  *
  *        Version:  1.0
- *        Created:  2014年11月04日 13时31分10秒
+ *        Created:  2014年11月05日 09时48分34秒
  *       Revision:  none
  *       Compiler:  gcc
  *
@@ -16,14 +16,14 @@
  * =====================================================================================
  */
 
-#ifndef INCLUDE_MM_MM_H
-#define INCLUDE_MM_MM_H
+#ifndef ARCH_H_
+#define ARCH_H_
 
-#include <mm/pmm.h>
-#include <mm/vmm.h>
-#include <mm/simple_mm.h>
+#include <gdt.h>
+#include <idt.h>
+#include <clock.h>
 
-// 内存管理子系统初始化
-void init_mm(void);
+// 架构相关的初始化
+void init_arch(void);
 
-#endif  // INCLUDE_MM_MM_H
+#endif  // ARCH_H_
