@@ -73,7 +73,7 @@ static void simple_page_init(uint32_t mstart, uint32_t mend)
         smm_info.phy_page_now_count = smm_info.phy_page_count;
 }
 
-static uint32_t simple_alloc_pages(uint32_t n)
+static uint32_t simple_alloc_pages(__attribute__((unused))uint32_t n)
 {
         assert(smm_info.pmm_stack_top != 0, "out of memory");
 
@@ -83,7 +83,7 @@ static uint32_t simple_alloc_pages(uint32_t n)
         return page;
 }
 
-static void simple_free_pages(uint32_t page, uint32_t n)
+static void simple_free_pages(uint32_t page, __attribute__((unused))uint32_t n)
 {
         assert(smm_info.pmm_stack_top != PAGE_MAX_SIZE, "out of pmm_stack stack");
 

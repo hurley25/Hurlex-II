@@ -20,7 +20,7 @@
 
 #include "sched.h"
 
-void clock_callback(pt_regs *regs)
+void clock_callback(__attribute__((unused))pt_regs *regs)
 {
         static uint32_t tick = 0;
         printk_color(rc_black, rc_red, "Tick Count: %d\n", tick++);

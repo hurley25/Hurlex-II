@@ -18,10 +18,9 @@ CC = gcc
 LD = ld
 ASM = nasm
 
-C_FLAGS = -c -Wall -m32 -ggdb -gstabs+ -nostdinc \
-                 -fno-builtin -fno-stack-protector \
+C_FLAGS = -c -m32 -Wall -Wextra -ggdb -gstabs+ -ffreestanding \
                  -Iinclude -Iarch/i386 -Iarch/i386/include
-LD_FLAGS = -T scripts/kernel.ld -m elf_i386 -nostdlib
+LD_FLAGS = -T scripts/kernel.ld -nostdlib
 ASM_FLAGS = -f elf -g -F stabs
 
 all: $(S_OBJECTS) $(C_OBJECTS) link update_image

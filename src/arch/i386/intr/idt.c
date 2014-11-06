@@ -21,9 +21,6 @@
 
 #define INTERRUPT_MAX 256
 
-// 初始化中断描述符表
-void init_idt(void);
-
 // 中断描述符
 typedef
 struct idt_entry_t {
@@ -81,7 +78,7 @@ void init_idt(void)
 {
         init_interrupt_chip();
 
-        idt_ptr.limit = sizeof(idt_entry_t) * 256 - 1;
+        idt_ptr.limit = sizeof(idt_entry_t) * INTERRUPT_MAX - 1;
         idt_ptr.base  = (uint32_t)&idt_entries;
 
         // 0~31:  用于 CPU 的中断处理

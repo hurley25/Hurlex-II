@@ -16,7 +16,6 @@ idt_flush:
 %macro ISR_NOERRCODE 1
 [GLOBAL isr%1]
 isr%1:
-	cli                         ; 首先关闭中断
 	push 0                      ; push 无效的中断错误代码(起到占位作用，便于所有isr函数统一清栈)
 	push %1                     ; push 中断号
 	jmp isr_common_stub
@@ -26,7 +25,6 @@ isr%1:
 %macro ISR_ERRCODE 1
 [GLOBAL isr%1]
 isr%1:
-	cli                         ; 关闭中断
 	push %1                     ; push 中断号
 	jmp isr_common_stub
 %endmacro
@@ -106,7 +104,6 @@ isr_common_stub:
 %macro IRQ 2
 [GLOBAL irq%1]
 irq%1:
-	cli
 	push 0
 	push %2
 	jmp irq_common_stub
