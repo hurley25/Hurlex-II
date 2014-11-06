@@ -6,8 +6,8 @@
 
 [GLOBAL idt_flush]
 idt_flush:
-	mov eax, [esp+4]  ; 参数存入 eax 寄存器
-	lidt [eax]        ; 加载到 IDTR
+	mov eax, [esp+4]           ; 参数存入 eax 寄存器
+	lidt [eax]                 ; 加载到 IDTR
 	ret
 .end:
 
@@ -66,14 +66,15 @@ ISR_NOERRCODE 28
 ISR_NOERRCODE 29
 ISR_NOERRCODE 30
 ISR_NOERRCODE 31
+
 ; 32～255 用户自定义
-ISR_NOERRCODE 255
+ISR_NOERRCODE 128               ; 0x80 syscall
 
 [GLOBAL isr_common_stub]
 [EXTERN isr_handler]
 ; 中断服务程序
 isr_common_stub:
-	pusha                    ; Pushes edi, esi, ebp, esp, ebx, edx, ecx, eax
+	pusha                   ; Pushes edi, esi, ebp, esp, ebx, edx, ecx, eax
 	mov ax, ds
 	push eax                ; 保存数据段描述符
 	

@@ -1,12 +1,12 @@
 /*
  * =====================================================================================
  *
- *       Filename:  scheduling.h
+ *       Filename:  pic.h
  *
- *    Description:  调度相关
+ *    Description:  PIC 相关
  *
  *        Version:  1.0
- *        Created:  2014年11月04日 15时07分07秒
+ *        Created:  2014年11月06日 09时51分59秒
  *       Revision:  none
  *       Compiler:  gcc
  *
@@ -16,12 +16,15 @@
  * =====================================================================================
  */
 
-#ifndef INCLUDE_SCHEDULING_H_
-#define INCLUDE_SCHEDULING_H_
+#ifndef PIC_H_
+#define PIC_H_
 
-#include <idt.h>
+#include <arch.h>
 
-// 时钟中断函数
-void clock_callback(pt_regs *regs);
+// 设置8259A芯片
+void init_interrupt_chip(void);
 
-#endif  // INCLUDE_SCHEDULING_H_
+// 重设 8259A 芯片
+void clear_interrupt_chip(uint32_t intr_no);
+
+#endif  // PIC_H_

@@ -1,12 +1,12 @@
 /*
  * =====================================================================================
  *
- *       Filename:  arch.c
+ *       Filename:  arch.h
  *
- *    Description:  架构相关的初始化
+ *    Description:  架构相关的头文件引用
  *
  *        Version:  1.0
- *        Created:  2014年11月05日 09时50分03秒
+ *        Created:  2014年11月05日 09时48分34秒
  *       Revision:  none
  *       Compiler:  gcc
  *
@@ -16,11 +16,15 @@
  * =====================================================================================
  */
 
-#include <arch.h>
+#ifndef ARCH_H_
+#define ARCH_H_
 
-void init_arch(void)
-{
-        init_gdt();
-        init_idt();
-        init_clock();
-}
+#include <mm/gdt.h>
+#include <intr/idt.h>
+#include <driver/clock.h>
+#include <driver/pic.h>
+
+// 架构相关的初始化
+void init_arch(void);
+
+#endif  // ARCH_H_

@@ -1,12 +1,12 @@
 /*
  * =====================================================================================
  *
- *       Filename:  arch.h
+ *       Filename:  scheduling.h
  *
- *    Description:  架构相关的头文件引用
+ *    Description:  调度相关
  *
  *        Version:  1.0
- *        Created:  2014年11月05日 09时48分34秒
+ *        Created:  2014年11月04日 15时07分07秒
  *       Revision:  none
  *       Compiler:  gcc
  *
@@ -16,14 +16,12 @@
  * =====================================================================================
  */
 
-#ifndef ARCH_H_
-#define ARCH_H_
+#ifndef INCLUDE_SCHEDULING_H_
+#define INCLUDE_SCHEDULING_H_
 
-#include <gdt.h>
-#include <idt.h>
-#include <clock.h>
+#include <arch.h>
 
-// 架构相关的初始化
-void init_arch(void);
+// clock 中断回调函数
+void clock_callback(pt_regs *regs);
 
-#endif  // ARCH_H_
+#endif  // INCLUDE_SCHEDULING_H_

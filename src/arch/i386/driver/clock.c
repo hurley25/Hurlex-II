@@ -16,11 +16,13 @@
  * =====================================================================================
  */
 
-#include <clock.h>
 #include <debug.h>
 #include <common.h>
 #include <sched.h>
-#include <idt.h>
+#include <sched.h>
+#include <arch.h>
+
+#include "clock.h"
 
 void init_clock(void)
 {

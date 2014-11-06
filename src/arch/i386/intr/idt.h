@@ -67,11 +67,11 @@ struct pt_regs_t {
 // 定义中断处理函数指针
 typedef void (*interrupt_handler_t)(pt_regs *);
 
-// 注册一个中断处理函数
-void register_interrupt_handler(uint8_t n, interrupt_handler_t h);
-
 // 调用中断处理函数
 void isr_handler(pt_regs *regs);
+
+// 注册一个中断处理函数
+void register_interrupt_handler(uint8_t n, interrupt_handler_t h);
 
 // 中断号定义
 #define INT_DIVIDE_ERROR         0
@@ -134,7 +134,7 @@ void isr30();
 void isr31();
 
 // 32～255 用户自定义异常
-void isr255();
+void isr128();
 
 // IRQ 处理函数
 void irq_handler(pt_regs *regs);

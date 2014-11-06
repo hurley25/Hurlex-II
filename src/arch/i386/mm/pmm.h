@@ -16,10 +16,10 @@
  * =====================================================================================
  */
 
-#include <types.h>
-
 #ifndef INCLUDE_MM_PMM_H
 #define INCLUDE_MM_PMM_H
+
+#include <types.h>
 
 // 默认栈的大小
 #define STACK_SIZE 8192

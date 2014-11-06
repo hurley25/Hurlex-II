@@ -98,3 +98,10 @@ __attribute__((section(".init.text"))) void enable_paging(void)
         asm volatile ("mov %0, %%cr0" : : "r" (cr0));
 }
 
+void init_arch(void)
+{
+        init_gdt();
+        init_idt();
+        init_clock();
+}
+

@@ -19,7 +19,7 @@
 #include <mm/mm.h>
 #include <common.h>
 #include <debug.h>
-#include <idt.h>
+#include <arch.h>
 
 void page_fault(pt_regs *regs)
 {
