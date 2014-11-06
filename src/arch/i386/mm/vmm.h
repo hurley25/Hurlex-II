@@ -43,11 +43,9 @@
  *     USERTOP -------------> +---------------------------------+ 0xB0000000
  *                            |           User stack            |
  *                            +---------------------------------+
- *                            |                                 |
  *                            :                                 :
  *                            |         ~~~~~~~~~~~~~~~~        |
  *                            :                                 :
- *                            |                                 |
  *                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *                            |       User Program & Heap       |
  *     UTEXT ---------------> +---------------------------------+ 0x00800000
@@ -82,7 +80,7 @@
 // | Page Directory |   Page Table   | Offset within Page  |
 // |      Index     |     Index      |                     |
 // +----------------+----------------+---------------------+
-//  \PGD_INDEX(la)/ \ PTE_INDEX(la) / \OFFSET_INDEXPGOFF(la)/
+//   \PGD_INDEX(la)/ \ PTE_INDEX(la) /  \OFFSET_INDEX(la)/
 
 // 虚拟分页大小
 #define PAGE_SIZE 	4096
@@ -128,9 +126,6 @@
  * 页目录项中的U/S位对其所映射的所有页面起作用。
  */
 #define PAGE_USER 	0x4
-
-// 映射 512MB 内存所需要的页表数
-#define PTE_COUNT 128
 
 // 内核页目录区域
 extern pgd_t pgd_kern[PGD_SIZE];

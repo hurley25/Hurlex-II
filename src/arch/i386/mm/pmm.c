@@ -28,6 +28,8 @@ static void get_ram_info(uint32_t *mstart, uint32_t *mend);
 
 void init_pmm(void)
 {
+	show_kernel_memory_map();
+	
         uint32_t mstart, mend;
         get_ram_info(&mstart, &mend);
         

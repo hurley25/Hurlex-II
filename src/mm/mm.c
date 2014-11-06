@@ -20,8 +20,6 @@
 
 void init_mm(void)
 {
-      	show_kernel_memory_map();
-
         init_pmm();
         init_vmm();
 }

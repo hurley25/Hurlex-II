@@ -21,28 +21,6 @@
 
 #include <types.h>
 
-#define INTERRUPT_MAX 256
-
-// 初始化中断描述符表
-void init_idt(void);
-
-// 中断描述符
-typedef
-struct idt_entry_t {
-	uint16_t base_lo;        // 中断处理函数地址 15～0 位
-	uint16_t sel;            // 目标代码段描述符选择子
-	uint8_t  always0;        // 置 0 段
-	uint8_t  flags;          // 一些标志，文档有解释
-	uint16_t base_hi;        // 中断处理函数地址 31～16 位
-}__attribute__((packed)) idt_entry_t;
-
-// IDTR
-typedef
-struct idt_ptr_t {
-	uint16_t limit; 	// 限长
-	uint32_t base; 		// 基址
-} __attribute__((packed)) idt_ptr_t;
-
 // 寄存器类型
 typedef
 struct pt_regs_t {
@@ -175,5 +153,8 @@ void irq12(); 		// 接 PS/2 鼠标，也可设定给其他硬件
 void irq13(); 		// 协处理器使用
 void irq14(); 		// IDE0 传输控制使用
 void irq15(); 		// IDE1 传输控制使用
+
+// 初始化中断描述符表
+void init_idt(void);
 
 #endif 	// IDT_H_

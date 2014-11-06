@@ -22,6 +22,7 @@
 #include <mm/gdt.h>
 #include <intr/idt.h>
 #include <driver/clock.h>
+#include <sched/sched.h>
 #include <driver/pic.h>
 
 // 架构相关的初始化

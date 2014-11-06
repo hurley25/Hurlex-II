@@ -1,12 +1,12 @@
 /*
  * =====================================================================================
  *
- *       Filename:  scheduling.c
+ *       Filename:  buddy_mm.h
  *
- *    Description:  调度程序
+ *    Description:  伙伴算法内存管理
  *
  *        Version:  1.0
- *        Created:  2014年11月04日 15时06分04秒
+ *        Created:  2014年11月06日 11时49分19秒
  *       Revision:  none
  *       Compiler:  gcc
  *
@@ -16,13 +16,10 @@
  * =====================================================================================
  */
 
-#include <debug.h>
+#ifndef INCLUDE_MM_BUDDY_MM_H_
+#define INCLUDE_MM_BUDDY_MM_H_
 
-#include "sched.h"
+// 伙伴算法内存管理系统
+extern struct pmm_manager buddy_mm;
 
-void clock_callback(pt_regs *regs)
-{
-        static uint32_t tick = 0;
-        printk_color(rc_black, rc_red, "Tick Count: %d\n", tick++);
-}
-
+#endif  // INCLUDE_MM_BUDDY_MM_H_
