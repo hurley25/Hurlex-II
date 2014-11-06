@@ -26,7 +26,7 @@
  * 在默认的文本模式(Text-Mode)下，VGA控制器保留了一块内存(0x8b000~0x8bfa0)
  * 作为屏幕上字符显示的缓冲区，若要改变屏幕上字符的显示，只需要修改这块内存就好了。
  */
-
+ 
 // VGA 的显示缓冲的起点是 0xB8000
 static uint16_t *video_memory = (uint16_t *)(0xB8000 + PAGE_OFFSET);
 
@@ -34,21 +34,29 @@ static uint16_t *video_memory = (uint16_t *)(0xB8000 + PAGE_OFFSET);
 static uint8_t cursor_x = 0;
 static uint8_t cursor_y = 0;
 
+// 屏幕是 80 * 25
+#define CON_WIDTH  80
+#define CON_HIGH   25
+
+// VGA 内部的寄存器多达300多个，显然无法一一映射到I/O端口的地址空间。
+// 对此 VGA 控制器的解决方案是，将一个端口作为内部寄存器的索引：0x3D4，
+// 再通过 0x3D5 端口来设置相应寄存器的值。
+#define VGA_IDX   0x3D4
+#define VGA_SET   0x305
+
+// 在这里用到的两个内部寄存器的编号为14与15，分别表示光标位置的高8位与低8位。
+#define CUR_HIGH  14
+#define CUR_LOW   15
+
 // 移动光标
 static void move_cursor(void)
 {
-        // 屏幕是 80 字节宽
-        uint16_t cursorLocation = cursor_y * 80 + cursor_x;
+        uint16_t cursorLocation = cursor_y * CON_WIDTH + cursor_x;
         
-        // VGA 内部的寄存器多达300多个，显然无法一一映射到I/O端口的地址空间。
-        // 对此 VGA 控制器的解决方案是，将一个端口作为内部寄存器的索引：0x3D4，
-        // 再通过 0x3D5 端口来设置相应寄存器的值。
-        // 在这里用到的两个内部寄存器的编号为14与15，分别表示光标位置的高8位与低8位。
-
-        outb(0x3D4, 14);                        // 告诉 VGA 我们要设置光标的高字节
-        outb(0x3D5, cursorLocation >> 8);       // 发送高 8 位
-        outb(0x3D4, 15);                        // 告诉 VGA 我们要设置光标的低字节
-        outb(0x3D5, cursorLocation);            // 发送低 8 位
+        outb(VGA_IDX, CUR_HIGH);                  // 告诉 VGA 我们要设置光标的高字节
+        outb(VGA_SET, cursorLocation >> 8);       // 发送高 8 位
+        outb(VGA_IDX, CUR_LOW);                   // 告诉 VGA 我们要设置光标的低字节
+        outb(VGA_SET, cursorLocation);            // 发送低 8 位
 }
 
 // 屏幕滚动操作
@@ -58,21 +66,21 @@ static void scroll(void)
         uint8_t attribute_byte = (0 << 4) | (15 & 0x0F);
         uint16_t blank = 0x20 | (attribute_byte << 8);  // space 是 0x20
 
-        // cursor_y 到 25 的时候，就该换行了
-        if (cursor_y >= 25) {
+        // cursor_y 到 CON_HIGH 的时候，就该换行了
+        if (cursor_y >= CON_HIGH) {
                 // 将所有行的显示数据复制到上一行，第一行永远消失了...
                 int i;
-                for (i = 0 * 80; i < 24 * 80; i++) {
-                      video_memory[i] = video_memory[i+80];
+                for (i = 0 * CON_WIDTH; i < (CON_HIGH-1) * CON_WIDTH; i++) {
+                      video_memory[i] = video_memory[i+CON_WIDTH];
                 }
 
                 // 最后的一行数据现在填充空格，不显示任何字符
-                for (i = 24 * 80; i < 25 * 80; i++) {
+                for (i = (CON_HIGH-1) * CON_WIDTH; i < CON_HIGH * CON_WIDTH; i++) {
                       video_memory[i] = blank;
                 }
 
                 // 向上移动了一行，所以 cursor_y 现在是 24
-                cursor_y = 24;
+                cursor_y = CON_HIGH - 1;
         }
 }
 
@@ -89,7 +97,7 @@ void console_clear(void)
         uint16_t blank = 0x20 | (attribute_byte << 8);
 
         int i;
-        for (i = 0; i < 80 * 25; i++) {
+        for (i = 0; i < CON_WIDTH * CON_HIGH; i++) {
               video_memory[i] = blank;
         }
 
@@ -119,12 +127,12 @@ void console_putc_color(char c, real_color_t back, real_color_t fore)
                 cursor_x = 0;
                 cursor_y++;
         } else if (c >= ' ') {
-                video_memory[cursor_y*80 + cursor_x] = c | attribute;
+                video_memory[cursor_y*CON_WIDTH + cursor_x] = c | attribute;
                 cursor_x++;
         }
 
         // 每 80 个字符一行，满80就必须换行了
-        if (cursor_x >= 80) {
+        if (cursor_x >= CON_WIDTH) {
                 cursor_x = 0;
                 cursor_y ++;
         }

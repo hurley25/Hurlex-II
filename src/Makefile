@@ -9,7 +9,6 @@
 #        qianyi.lh    2014/11/04   12:08:13
 # --------------------------------------------------------
 
-# patsubst 处理所有在 C_SOURCES 字列中的字（一列文件名），如果它的 结尾是 '.c'，就用 '.o' 把 '.c' 取代
 C_SOURCES = $(shell find . -name "*.c")
 C_OBJECTS = $(patsubst %.c, %.o, $(C_SOURCES))
 S_SOURCES = $(shell find . -name "*.s")
@@ -19,7 +18,9 @@ CC = gcc
 LD = ld
 ASM = nasm
 
-C_FLAGS = -c -Wall -m32 -ggdb -gstabs+ -nostdinc -fno-builtin -fno-stack-protector -Iinclude -Iarch/i386 -Iarch/i386/include
+C_FLAGS = -c -Wall -m32 -ggdb -gstabs+ -nostdinc \
+                 -fno-builtin -fno-stack-protector \
+                 -Iinclude -Iarch/i386 -Iarch/i386/include
 LD_FLAGS = -T scripts/kernel.ld -m elf_i386 -nostdlib
 ASM_FLAGS = -f elf -g -F stabs
 
