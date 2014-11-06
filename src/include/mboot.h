@@ -1,7 +1,7 @@
 /*
  * =====================================================================================
  *
- *       Filename:  multiboot.h
+ *       Filename:  mboot.h
  *
  *    Description:  Multiboot 结构的定义
  *

@@ -20,7 +20,7 @@
 #define INCLUDE_ELF_H_
 
 #include <types.h>
-#include <multiboot.h>
+#include <mboot.h>
 
 #define ELF32_ST_TYPE(i) ((i)&0xf)
 

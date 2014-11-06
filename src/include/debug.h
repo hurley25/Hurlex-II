@@ -23,6 +23,16 @@
 #include <vargs.h>
 #include <elf.h>
 
+// 内核代码段在内存中的起始和结束位置，在链接脚本中定义
+extern uint8_t kern_init_text_start[];
+extern uint8_t kern_init_text_end[];
+extern uint8_t kern_init_data_start[];
+extern uint8_t kern_init_data_end[];
+extern uint8_t kern_text_start[];
+extern uint8_t kern_text_end[];
+extern uint8_t kern_data_start[];
+extern uint8_t kern_data_end[];
+
 #define assert(x, info)                                         \
         do {                                                    \
                 if (!(x)) {                                     \
@@ -35,6 +45,12 @@ void init_debug(void);
 
 // 从 multiboot_t 结构获取ELF信息
 elf_t elf_from_multiboot(multiboot_t *mb);
+
+// 输出 BIOS 提供的物理内存布局
+void show_memory_map(void);
+
+// 输出内核当前占据的内存地址
+void show_kernel_memory_map(void);
 
 // 打印当前的函数调用栈信息
 void panic(const char *msg);

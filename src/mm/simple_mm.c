@@ -21,7 +21,7 @@
 #include <debug.h>
 
 // 每个独立的内存管理算法必须实现的6个接口函数
-static void simple_init(uint32_t mstart, uint32_t mend);
+static void simple_page_init(uint32_t mstart, uint32_t mend);
 static uint32_t simple_alloc_pages(uint32_t n);
 static void simple_free_pages(uint32_t page, uint32_t n);
 static void simple_show_memory_info(void);
@@ -31,7 +31,7 @@ static void simple_test_mm(void);
 // 管理结构
 struct pmm_manager simple_mm = {
                 "Simple_Memory_Managentment",
-                &simple_init,
+                &simple_page_init,
                 &simple_alloc_pages,
                 &simple_free_pages,
                 &simple_show_memory_info,
@@ -57,7 +57,7 @@ struct smm_struct {
 
 static struct smm_struct smm_info;
 
-static void simple_init(uint32_t mstart, uint32_t mend)
+static void simple_page_init(uint32_t mstart, uint32_t mend)
 {
         smm_info.smm_start_addr = mstart;
         smm_info.smm_end_addr = mend;
