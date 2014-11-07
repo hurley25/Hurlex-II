@@ -69,7 +69,7 @@ static void scroll(void)
         // cursor_y 到 CON_HIGH 的时候，就该换行了
         if (cursor_y >= CON_HIGH) {
                 // 将所有行的显示数据复制到上一行，第一行永远消失了...
-                int i;
+                uint32_t i;
                 for (i = 0 * CON_WIDTH; i < (CON_HIGH-1) * CON_WIDTH; i++) {
                       video_memory[i] = video_memory[i+CON_WIDTH];
                 }
@@ -96,8 +96,7 @@ void console_clear(void)
         uint8_t attribute_byte = (0 << 4) | (15 & 0x0F);
         uint16_t blank = 0x20 | (attribute_byte << 8);
 
-        int i;
-        for (i = 0; i < CON_WIDTH * CON_HIGH; i++) {
+        for (uint32_t i = 0; i < CON_WIDTH * CON_HIGH; i++) {
               video_memory[i] = blank;
         }
 

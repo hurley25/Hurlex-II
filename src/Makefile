@@ -18,7 +18,7 @@ CC = gcc
 LD = ld
 ASM = nasm
 
-C_FLAGS = -c -m32 -Wall -Wextra -ggdb -gstabs+ -ffreestanding \
+C_FLAGS = -std=c99 -c -m32 -Wall -Wextra -ggdb -gstabs+ -ffreestanding \
                  -Iinclude -Iarch/i386 -Iarch/i386/include
 LD_FLAGS = -T scripts/kernel.ld -nostdlib
 ASM_FLAGS = -f elf -g -F stabs

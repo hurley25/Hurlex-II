@@ -36,12 +36,11 @@ void init_debug(void)
 
 elf_t elf_from_multiboot(multiboot_t *mb)
 {
-        uint32_t i;
         elf_t elf;
         elf_section_header_t *sh = (elf_section_header_t *)mb->addr;
 
         uint32_t shstrtab = sh[mb->shndx].addr;
-        for (i = 0; i < mb->num; i++) {
+        for (uint32_t i = 0; i < mb->num; i++) {
                 const char *name = (const char *)(shstrtab + sh[i].name) + PAGE_OFFSET;
                 // 在 GRUB 提供的 multiboot 信息中寻找内核 ELF 格式所提取的字符串表和符号表
                 if (strcmp(name, ".strtab") == 0) {
@@ -73,7 +72,7 @@ void print_stack_trace(void)
 {
         uint32_t *ebp, *eip;
 
-        asm volatile ("mov %%ebp, %0" : "=r" (ebp));
+        __asm__ volatile ("mov %%ebp, %0" : "=r" (ebp));
         while (ebp) {
                 eip = ebp + 1;
                 printk("   [0x%x] %s\n", *eip, elf_lookup_symbol(*eip, &kernel_elf));
@@ -83,9 +82,7 @@ void print_stack_trace(void)
 
 static const char *elf_lookup_symbol(uint32_t addr, elf_t *elf)
 {
-        uint32_t i;
-
-        for (i = 0; i < (elf->symtabsz / sizeof(elf_symbol_t)); i++) {
+        for (uint32_t i = 0; i < (elf->symtabsz / sizeof(elf_symbol_t)); i++) {
                 if (ELF32_ST_TYPE(elf->symtab[i].info) != 0x2) {
                       continue;
                 }
@@ -103,7 +100,7 @@ void print_cur_status(void)
         static int round = 0;
         uint16_t reg1, reg2, reg3, reg4;
 
-        asm volatile ( "mov %%cs, %0;"
+        __asm__ volatile ( "mov %%cs, %0;"
                         "mov %%ds, %1;"
                         "mov %%es, %2;"
                         "mov %%ss, %3;"

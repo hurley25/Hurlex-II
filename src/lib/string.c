@@ -27,9 +27,7 @@ inline void memcpy(uint8_t *dest, const uint8_t *src, uint32_t len)
 
 inline void memset(void *dest, uint8_t val, uint32_t len)
 {
-        uint8_t *dst = (uint8_t *)dest;
-
-        for (; len != 0; len--) {
+        for (uint8_t *dst = (uint8_t *)dest; len != 0; len--) {
                 *dst++ = val;
         }
 }

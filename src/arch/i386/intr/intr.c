@@ -1,7 +1,7 @@
 /*
  * =====================================================================================
  *
- *       Filename:  idt.c
+ *       Filename:  intr.c
  *
  *    Description:  中断描述符表相关
  *
@@ -83,8 +83,7 @@ void init_idt(void)
 
         // 0~31:  用于 CPU 的中断处理
         // 32~47: Intel 保留
-        int i;
-        for (i = 0; i < 48; ++i) {
+        for (uint32_t i = 0; i < 48; ++i) {
                 idt_set_gate(i, (uint32_t)isr_irq_func[i], 0x08, 0x8E);
         }
 
@@ -108,13 +107,45 @@ static void idt_set_gate(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags
         idt_entries[num].flags = flags | 0x60;
 }
 
+static const char *intrname(uint32_t intrno)
+{
+        static const char *const intrnames[] = {
+               "Divide error",
+                "Debug",
+                "Non-Maskable Interrupt",
+                "Breakpoint",
+                "Overflow",
+                "BOUND Range Exceeded",
+               "Invalid Opcode",
+                "Device Not Available",
+                "Double Fault",
+                "Coprocessor Segment Overrun",
+                "Invalid TSS",
+                "Segment Not Present",
+                "Stack Fault",
+                "General Protection",
+                "Page Fault",
+                "(unknown trap)",
+                "x87 FPU Floating-Point Error",
+                "Alignment Check",
+                "Machine-Check",
+                "SIMD Floating-Point Exception"
+        };
+
+        if (intrno < sizeof(intrnames)/sizeof(const char *const)) {
+                return intrnames[intrno];
+        }
+
+        return "(unknown trap)";
+}
+
 // 调用中断处理函数
 void isr_handler(pt_regs *regs)
 {
         if (interrupt_handlers[regs->int_no]) {
               interrupt_handlers[regs->int_no](regs);
         } else {
-                printk_color(rc_black, rc_blue, "Unhandled interrupt: %d\n", regs->int_no);
+                printk_color(rc_black, rc_blue, "Unhandled interrupt: %d %s\n", regs->int_no, intrname(regs->int_no));
         }
 }
 

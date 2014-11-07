@@ -54,7 +54,7 @@ __attribute__((section(".init.text"))) void kern_entry(void)
         enable_paging();
 
         // 切换临时内核栈到分页后的新栈
-        asm volatile ("mov %0, %%esp\n\t"
+        __asm__ volatile ("mov %0, %%esp\n\t"
                         "xor %%ebp, %%ebp" : : "r" (kern_stack_top));
 
         // 更新全局 multiboot_t 指针指向
@@ -71,27 +71,27 @@ __attribute__((section(".init.text"))) void mmap_tmp_page(void)
         pgd_tmp[PGD_INDEX(PAGE_OFFSET)] = (uint32_t)pte_hign | PAGE_PRESENT | PAGE_WRITE;
 
         // 映射内核虚拟地址 4MB 到物理地址的前 4MB
-        int i;
-        for (i = 0; i < 1024; i++) {
+        for (int i = 0; i < 1024; i++) {
                 pte_low[i] = (i << 12) | PAGE_PRESENT | PAGE_WRITE;
         }
 
         // 映射 0x00000000-0x00400000 的物理地址到虚拟地址 0xC0000000-0xC0400000
-        for (i = 0; i < 1024; i++) {
+        for (int i = 0; i < 1024; i++) {
                 pte_hign[i] = (i << 12) | PAGE_PRESENT | PAGE_WRITE;
         }
         
         // 设置临时页表
-        asm volatile ("mov %0, %%cr3" : : "r" (pgd_tmp));
+        __asm__ volatile ("mov %0, %%cr3" : : "r" (pgd_tmp));
 }
 
 // 启用分页
 __attribute__((section(".init.text"))) void enable_paging(void)
 {
         uint32_t cr0;
-        asm volatile ("mov %%cr0, %0" : "=r" (cr0));
+        
+        __asm__ volatile ("mov %%cr0, %0" : "=r" (cr0));
         cr0 |= 0x80000000;
-        asm volatile ("mov %0, %%cr0" : : "r" (cr0));
+        __asm__ volatile ("mov %0, %%cr0" : : "r" (cr0));
 }
 
 // 体系结构相关的初始化函数

@@ -20,7 +20,7 @@
 #define ARCH_H_
 
 #include <mm/gdt.h>
-#include <intr/idt.h>
+#include <intr/intr.h>
 #include <driver/clock.h>
 #include <sched/sched.h>
 #include <driver/pic.h>

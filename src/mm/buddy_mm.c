@@ -21,9 +21,9 @@
 #include <debug.h>
 
 // 每个独立的内存管理算法必须实现的6个接口函数
-static void buddy_init(uint32_t mstart, uint32_t mend);
-static uint32_t buddy_alloc_pages(uint32_t n);
-static void buddy_free_pages(uint32_t page, uint32_t n);
+static void buddy_init(void);
+static page_t *buddy_alloc_pages(uint32_t n);
+static void buddy_free_pages(page_t *page, uint32_t n);
 static void buddy_show_memory_info(void);
 static void buddy_show_management_info(void);
 static void buddy_test_mm(void);
@@ -49,7 +49,7 @@ struct buddy_mm_struct {
 
 static struct buddy_mm_struct buddy_mm_info;
 
-static void buddy_init(uint32_t mstart, uint32_t mend)
+static void buddy_init(void)
 {
 //        smm_info.smm_start_addr = mstart;
 //        smm_info.smm_end_addr = mend;
@@ -65,14 +65,12 @@ static void buddy_init(uint32_t mstart, uint32_t mend)
 //        smm_info.phy_page_now_count = smm_info.phy_page_count;
 }
 
-static uint32_t buddy_alloc_pages(uint32_t n)
+static page_t *buddy_alloc_pages(uint32_t n)
 {
-        uint32_t page = 0;
-
-        return page;
+        return NULL;
 }
 
-static void buddy_free_pages(uint32_t page, uint32_t n)
+static void buddy_free_pages(page_t *page, uint32_t n)
 {
 }
 
