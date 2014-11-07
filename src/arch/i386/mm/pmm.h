@@ -28,7 +28,7 @@
 #define PMM_PAGE_SIZE 0x1000
 
 // 页掩码 按照 0x1000(4096) 对齐地址
-#define PHY_PAGE_MASK 0xFFFFF000
+#define PMM_PAGE_MASK 0xFFFFF000
 
 // 内核在物理内存起始位置
 #define RAM_KERNEL_START 0x100000
@@ -44,7 +44,7 @@ extern uint8_t kern_end[];
 
 typedef
 struct e820map_t {
-        int count;
+        uint32_t count;
         struct {
                 uint32_t addr_low;
                 uint32_t addr_high;
@@ -60,7 +60,10 @@ enum mem_zone_t {
         ZONE_DMA = 0,
         ZONE_NORMAL = 1,
         ZONE_HIGHMEM = 2
-} mem_zone_t; 
+} mem_zone_t;
+
+#define ZONE_NORMAL_ADDR     0x1000000   // 16 MB
+#define ZONE_HIGHMEM_ADDR    0x38000000  // 896 MB
 
 // 物理页结构
 typedef
@@ -72,36 +75,30 @@ struct page_t {
 
 static inline uint32_t page_ref(page_t *page)
 {
-    return page->ref;
+        return page->ref;
 }
 
 static inline void set_page_ref(page_t *page, uint32_t val)
 {
-    page->ref = val;
+        page->ref = val;
 }
 
 static inline uint32_t page_ref_inc(page_t *page)
 {
-    page->ref += 1;
-    return page->ref;
+        page->ref += 1;
+        return page->ref;
 }
 
 static inline uint32_t page_ref_dec(page_t *page)
 {
-    page->ref -= 1;
-    return page->ref;
+        page->ref -= 1;
+        return page->ref;
 }
-
-// 物理页帧数组指针
-extern page_t *phy_pages;
-
-// 物理页帧数组长度
-extern uint32_t phy_pages_count;
 
 // 内存管理子系统管理对象
 struct pmm_manager {
         const char *name;                                 // 管理算法的名称
-        void (*page_init)(void);                         // 初始化
+        void (*page_init)(page_t *pages, uint32_t n);   // 初始化
         page_t *(*alloc_pages)(uint32_t n);              // 申请物理内存页(n为字节数)
         void (*free_pages)(page_t *page, uint32_t n);   // 释放内存页
         void (*show_memory_info)(void);                   // 输出内存信息
@@ -113,7 +110,7 @@ struct pmm_manager {
 void init_pmm(void);
 
 // 内存管理算法初始化
-void page_init(void);
+void page_init(page_t *pages, uint32_t n);
 
 // 申请内存页
 page_t *alloc_pages(uint32_t n);

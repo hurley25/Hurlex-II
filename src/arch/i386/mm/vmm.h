@@ -30,11 +30,10 @@
  *                            |         Empty Memory (*)        |
  *                            +---------------------------------+
  *                            |           Kernel heap           |
- *                            +---------------------------------+ 0xFB000000
- *                            |   Cur. Page Table (Kern, RW)    | RW/-- PTSIZE
- *     VPT -----------------> +---------------------------------+ 0xFAC00000
- *                            |        Invalid Memory (*)       | --/--
- *     KERNTOP -------------> +---------------------------------+ 0xF8000000
+ *                            +---------------------------------+ 0xF8000000
+ *                            |                                 |
+ *                            |                                 |
+ *                            +---------------------------------+
  *                            |                                 |
  *                            |    Remapped Physical Memory     | RW/-- KMEMSIZE
  *                            |                                 |
@@ -61,18 +60,15 @@
  *
  * */
 
-#define KERNBASE            0xC0000000
-#define KMEM_SIZE           0x38000000
+#define KERNBASE            (0xC0000000)
+#define KMEM_SIZE           (0x38000000)
 #define KERN_TOP            (KERNBASE + KMEMSIZE)
 
 // 内核的偏移地址
 #define PAGE_OFFSET 	     KERNBASE
 
-// 内核页表起始地址
-#define KERN_VPT            0xFAC00000
-
 // 内核堆起始地址
-#define KERN_MALLOC_BASE   0xFB000000
+#define KERN_MALLOC_BASE   (KERN_TOP)
 
 // A linear address 'la' has a three-part structure as follows:
 //

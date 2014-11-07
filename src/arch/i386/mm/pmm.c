@@ -27,16 +27,16 @@
 static const struct pmm_manager *pmm_manager;
 
 // 物理页帧数组指针
-page_t *phy_pages;
+static page_t *phy_pages = (page_t *)kern_end;
 
 // 物理页帧数组长度
-uint32_t phy_pages_count;
+static uint32_t phy_pages_count;
 
 // 获取可用内存的起始和结束地址
 static void get_ram_info(e820map_t *e820map);
 
 // 物理内存页初始化
-static void phy_pages_init(void);
+static void phy_pages_init(e820map_t *e820map);
 
 void init_pmm(void)
 {
@@ -46,8 +46,9 @@ void init_pmm(void)
         bzero(&e820map, sizeof(e820map));
         
         get_ram_info(&e820map);
-        phy_pages_init();
-        page_init();
+        phy_pages_init(&e820map);
+        
+        page_init(phy_pages, phy_pages_count);
         
         show_memory_info();
         show_management_info();
@@ -72,14 +73,44 @@ static void get_ram_info(e820map_t *e820map)
         }
 }
 
-static void phy_pages_init(void)
+static void phy_pages_init(e820map_t *e820map)
 {
+        uint32_t phy_mem_length = 0;
+        for (uint32_t i = 0; i < e820map->count; ++i){
+                phy_mem_length += e820map->map[i].length_low;
+        }
+
+        uint32_t pages_mem_length = sizeof(page_t) * (phy_mem_length / PMM_PAGE_SIZE);
+        bzero(phy_pages, pages_mem_length);
+
+        // 物理内存页管理起始地址
+        uint32_t phy_mm_base = (uint32_t)phy_pages + pages_mem_length;
+        phy_mm_base = (phy_mm_base + PMM_PAGE_SIZE) & PMM_PAGE_MASK;
+
+        for (uint32_t i = 0; i < e820map->count; ++i){
+                uint32_t start_addr = e820map->map[i].addr_low;
+                uint32_t end_addr = e820map->map[i].addr_low + e820map->map[i].length_low;
+                if (start_addr == (uint32_t)kern_start) {
+                        start_addr = phy_mm_base;
+                }
+                for (uint32_t addr = start_addr; addr < end_addr; addr += PMM_PAGE_SIZE) {
+                        phy_pages[phy_pages_count].addr = addr;
+                        if (addr < ZONE_NORMAL_ADDR) {
+                                phy_pages[phy_pages_count].type = ZONE_DMA;
+                        } else if (addr < ZONE_HIGHMEM_ADDR) {
+                                phy_pages[phy_pages_count].type = ZONE_NORMAL;
+                        } else {
+                                phy_pages[phy_pages_count].type = ZONE_HIGHMEM;
+                        }
+                        phy_pages_count++;
+                }
+        }
 }
 
-void page_init(void)
+void page_init(page_t *pages, uint32_t n)
 {
         pmm_manager = &simple_mm;
-        pmm_manager->page_init();
+        pmm_manager->page_init(pages, n);
 }
 
 page_t *alloc_pages(uint32_t n)
