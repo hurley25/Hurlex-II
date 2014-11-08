@@ -109,6 +109,9 @@ static inline void page_ref_dec(page_t *page)
 // 由物理地址计算出该地址所处页的管理结构的指针
 page_t *addr_to_page(uint32_t addr);
 
+// 由页的管理结构的指针计算出页所在物理地址
+uint32_t page_to_addr(page_t *page);
+
 // 内存管理子系统管理对象
 struct pmm_manager {
         const char *name;                                // 管理算法的名称

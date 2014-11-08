@@ -113,7 +113,10 @@ static void phy_pages_init(e820map_t *e820map)
                 }
                 pmm_addr_end = end_addr;
         }
-        printk("physical pages management start: %08X  end: %08X\n\n", pmm_addr_start, pmm_addr_end);
+        assert(pmm_addr_start == page_to_addr(&phy_pages[0]), "phy_pages_init error");
+        assert(pmm_addr_end - PMM_PAGE_SIZE == page_to_addr(&phy_pages[phy_pages_count-1]), "phy_pages_init error");
+        assert(&phy_pages[0] == addr_to_page(page_to_addr(&phy_pages[0])), "phy_pages_init error");
+        assert(&phy_pages[1] == addr_to_page(page_to_addr(&phy_pages[1])), "phy_pages_init error");
 }
 
 page_t *addr_to_page(uint32_t addr)
@@ -121,6 +124,13 @@ page_t *addr_to_page(uint32_t addr)
         assert(pmm_addr_start != 0, "memory not init, addr_to_page cannot use");
 
         return (phy_pages + ((addr&PMM_PAGE_MASK)-pmm_addr_start)/PMM_PAGE_SIZE);
+}
+
+uint32_t page_to_addr(page_t *page)
+{
+        assert(pmm_addr_start != 0, "memory not init, addr_to_page cannot use");
+        
+        return (pmm_addr_start + (uint32_t)(page - phy_pages) * PMM_PAGE_SIZE);
 }
 
 void page_init(page_t *pages, uint32_t n)

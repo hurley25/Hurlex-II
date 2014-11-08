@@ -67,21 +67,21 @@ static inline void atomic_set(atomic_t *v, int32_t i)
         v->counter = i;
 }
 
-static inline void atomic_add(int32_t i, atomic_t *v)
+static inline void atomic_add(atomic_t *v, int32_t i)
 {
         __asm__ volatile(LOCK_PREFIX "addl %1,%0"
                      : "+m" (v->counter)
                      : "ir" (i));
 }
 
-static inline void atomic_sub(int32_t i, atomic_t *v)
+static inline void atomic_sub(atomic_t *v, int32_t i)
 {
         __asm__ volatile(LOCK_PREFIX "subl %1,%0"
                      : "+m" (v->counter)
                      : "ir" (i));
 }
 
-static inline int32_t atomic_sub_and_test(int32_t i, atomic_t *v)
+static inline int32_t atomic_sub_and_test(atomic_t *v, int32_t i)
 {
         unsigned char c;
 
