@@ -1,7 +1,7 @@
 /*
  * =====================================================================================
  *
- *       Filename:  simple_mm.h
+ *       Filename:  ff_mm.h
  *
  *    Description:  简单的物理内存管理子系统
  *
@@ -20,6 +20,6 @@
 #define INCLUDE_MM_SIMPLE_MM_H_
 
 // 简单内存管理系统
-extern struct pmm_manager simple_mm;
+extern struct pmm_manager ff_mm;
 
 #endif  // INCLUDE_MM_SIMPLE_MM_H_

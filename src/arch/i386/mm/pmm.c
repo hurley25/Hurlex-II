@@ -32,6 +32,12 @@ static page_t *phy_pages = (page_t *)kern_end;
 // 物理页帧数组长度
 static uint32_t phy_pages_count;
 
+// 可用物理内存页起始地址
+static uint32_t pmm_addr_start;
+
+// 可用物理内存页结束地址
+static uint32_t pmm_addr_end;
+
 // 获取可用内存的起始和结束地址
 static void get_ram_info(e820map_t *e820map);
 
@@ -49,10 +55,6 @@ void init_pmm(void)
         phy_pages_init(&e820map);
         
         page_init(phy_pages, phy_pages_count);
-        
-        show_memory_info();
-        show_management_info();
-        test_mm();
 }
 
 static void get_ram_info(e820map_t *e820map)
@@ -77,45 +79,59 @@ static void phy_pages_init(e820map_t *e820map)
 {
         uint32_t phy_mem_length = 0;
         for (uint32_t i = 0; i < e820map->count; ++i){
-                phy_mem_length += e820map->map[i].length_low;
+                if (e820map->map[i].addr_low > ZONE_HIGHMEM_ADDR) {
+                      break;
+                }
+                if (e820map->map[i].addr_low + e820map->map[i].length_low > ZONE_HIGHMEM_ADDR) {
+                        phy_mem_length = ZONE_HIGHMEM_ADDR;
+                        break;
+                }
+                phy_mem_length = e820map->map[i].length_low;
         }
 
         uint32_t pages_mem_length = sizeof(page_t) * (phy_mem_length / PMM_PAGE_SIZE);
         bzero(phy_pages, pages_mem_length);
 
         // 物理内存页管理起始地址
-        uint32_t phy_mm_base = (uint32_t)phy_pages + pages_mem_length;
-        phy_mm_base = (phy_mm_base + PMM_PAGE_SIZE) & PMM_PAGE_MASK;
+        pmm_addr_start = (uint32_t)phy_pages + pages_mem_length;
+        pmm_addr_start = (pmm_addr_start + PMM_PAGE_SIZE) & PMM_PAGE_MASK;
 
         for (uint32_t i = 0; i < e820map->count; ++i){
                 uint32_t start_addr = e820map->map[i].addr_low;
                 uint32_t end_addr = e820map->map[i].addr_low + e820map->map[i].length_low;
-                if (start_addr == (uint32_t)kern_start) {
-                        start_addr = phy_mm_base;
+                if (start_addr > ZONE_HIGHMEM_ADDR) {
+                        break;
+                }
+                if (start_addr < pmm_addr_start) {
+                        start_addr = pmm_addr_start;
+                }
+                if (end_addr > ZONE_HIGHMEM_ADDR) {
+                        end_addr = ZONE_HIGHMEM_ADDR;
                 }
                 for (uint32_t addr = start_addr; addr < end_addr; addr += PMM_PAGE_SIZE) {
-                        phy_pages[phy_pages_count].addr = addr;
-                        if (addr < ZONE_NORMAL_ADDR) {
-                                phy_pages[phy_pages_count].type = ZONE_DMA;
-                        } else if (addr < ZONE_HIGHMEM_ADDR) {
-                                phy_pages[phy_pages_count].type = ZONE_NORMAL;
-                        } else {
-                                phy_pages[phy_pages_count].type = ZONE_HIGHMEM;
-                        }
                         phy_pages_count++;
                 }
+                pmm_addr_end = end_addr;
         }
+        printk("physical pages management start: %08X  end: %08X\n\n", pmm_addr_start, pmm_addr_end);
+}
+
+page_t *addr_to_page(uint32_t addr)
+{
+        assert(pmm_addr_start != 0, "memory not init, addr_to_page cannot use");
+
+        return (phy_pages + ((addr&PMM_PAGE_MASK)-pmm_addr_start)/PMM_PAGE_SIZE);
 }
 
 void page_init(page_t *pages, uint32_t n)
 {
-        pmm_manager = &simple_mm;
+        pmm_manager = &ff_mm;
         pmm_manager->page_init(pages, n);
 }
 
-page_t *alloc_pages(uint32_t n)
+uint32_t alloc_pages(uint32_t n)
 {
-        page_t *page;
+        uint32_t page;
         uint32_t eflag;
         
         local_intr_store(eflag);
@@ -125,27 +141,17 @@ page_t *alloc_pages(uint32_t n)
         return page;
 }
 
-void free_pages(page_t *page, uint32_t n)
+void free_pages(uint32_t base, uint32_t n)
 {
         uint32_t eflag;
         
         local_intr_store(eflag);
-        pmm_manager->free_pages(page, n);
+        pmm_manager->free_pages(base, n);
         local_intr_restore(eflag);
 }
 
-void show_memory_info(void)
+uint32_t free_pages_count(void)
 {
-        pmm_manager->show_memory_info();
-}
-
-void show_management_info(void)
-{
-        pmm_manager->show_management_info();
-}
-
-void test_mm(void)
-{
-        pmm_manager->test_mm();
+        return pmm_manager->free_pages_count();
 }
 

@@ -16,8 +16,8 @@
  * =====================================================================================
  */
 
-#ifndef INCLUDE_STRING_H_
-#define INCLUDE_STRING_H_
+#ifndef INCLUDE_LIB_STRING_H_
+#define INCLUDE_LIB_STRING_H_
 
 #include <types.h>
 
@@ -35,4 +35,4 @@ char *strcat(char *dest, const char *src);
 
 int strlen(const char *src);
 
-#endif  // INCLUDE_STRING_H_
+#endif  // INCLUDE_LIB_STRING_H_

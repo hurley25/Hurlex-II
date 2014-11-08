@@ -21,7 +21,8 @@
 
 #include <mm/pmm.h>
 #include <mm/vmm.h>
-#include <mm/simple_mm.h>
+#include <mm/ff_mm.h>
+#include <mm/buddy_mm.h>
 
 // 内存管理子系统初始化
 void init_mm(void);

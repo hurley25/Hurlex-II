@@ -52,4 +52,15 @@ typedef uint32_t pgd_t;
 // 页表数据类型
 typedef uint32_t pte_t;
 
+// 原子类型
+typedef
+struct {
+	volatile int counter;
+} atomic_t;
+
+// 内核链表类型
+struct list_head {
+        struct list_head *next, *prev;
+};
+
 #endif  // INCLUDE_TYPES_H_

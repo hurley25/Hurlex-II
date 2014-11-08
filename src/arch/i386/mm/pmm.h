@@ -20,6 +20,7 @@
 #define INCLUDE_MM_PMM_H
 
 #include <types.h>
+#include <atomic.h>
 
 // 默认栈的大小
 #define STACK_SIZE 8192
@@ -68,42 +69,53 @@ enum mem_zone_t {
 // 物理页结构
 typedef
 struct page_t {
-        uint32_t ref;
-        mem_zone_t type;
-        uint32_t addr;
+        atomic_t ref;               // 物理页被引用的次数
+        uint32_t flag;              // 当前页状态，First-Fit 算法需要
+	uint32_t property;          // 当前页后续连续页的数量，First-Fit 算法需要
+	struct list_head next;      // 下一个连续页，First-Fit 算法需要
 } page_t;
 
-static inline uint32_t page_ref(page_t *page)
+// page_t 的 flag 参数的操作宏
+#define PG_RESERVED    0       // 表示页当前不可用
+#define PG_PROPERTY    1       // 表示 property 字段有效
+
+#define set_page_reserved(page)       set_bit(PG_RESERVED, &((page)->flags))
+#define clear_page_reserved(page)     clear_bit(PG_RESERVED, &((page)->flags))
+#define is_page_reserved(page)        test_bit(PG_RESERVED, &((page)->flags))
+#define set_page_property(page)       set_bit(PG_PROPERTY, &((page)->flags))
+#define clear_page_property(page)     clear_bit(PG_PROPERTY, &((page)->flags))
+#define is_page_property(page)        test_bit(PG_PROPERTY, &((page)->flags))
+
+static inline int32_t page_ref(page_t *page)
 {
-        return page->ref;
+        return atomic_read(&page->ref);
 }
 
-static inline void set_page_ref(page_t *page, uint32_t val)
+static inline void set_page_ref(page_t *page, int32_t val)
 {
-        page->ref = val;
+        atomic_set(&page->ref, val);
 }
 
-static inline uint32_t page_ref_inc(page_t *page)
+static inline void page_ref_inc(page_t *page)
 {
-        page->ref += 1;
-        return page->ref;
+        atomic_inc(&page->ref);
 }
 
-static inline uint32_t page_ref_dec(page_t *page)
+static inline void page_ref_dec(page_t *page)
 {
-        page->ref -= 1;
-        return page->ref;
+        atomic_dec(&page->ref);
 }
+
+// 由物理地址计算出该地址所处页的管理结构的指针
+page_t *addr_to_page(uint32_t addr);
 
 // 内存管理子系统管理对象
 struct pmm_manager {
-        const char *name;                                 // 管理算法的名称
-        void (*page_init)(page_t *pages, uint32_t n);   // 初始化
-        page_t *(*alloc_pages)(uint32_t n);              // 申请物理内存页(n为字节数)
-        void (*free_pages)(page_t *page, uint32_t n);   // 释放内存页
-        void (*show_memory_info)(void);                   // 输出内存信息
-        void (*show_management_info)(void);               // 输出当前管理信息
-        void (*test_mm)(void);                            // 测试当前管理子系统
+        const char *name;                                // 管理算法的名称
+        void (*page_init)(page_t *pages, uint32_t n);    // 初始化
+        uint32_t (*alloc_pages)(uint32_t n);             // 申请物理内存页(n为字节数)
+        void (*free_pages)(uint32_t base, uint32_t n);   // 释放内存页
+        uint32_t (*free_pages_count)(void);              // 返回当前可用内存页
 };
 
 // 初始化物理内存管理
@@ -113,21 +125,12 @@ void init_pmm(void);
 void page_init(page_t *pages, uint32_t n);
 
 // 申请内存页
-page_t *alloc_pages(uint32_t n);
+uint32_t alloc_pages(uint32_t n);
 
 // 释放内存页
-void free_pages(page_t *page, uint32_t n);
+void free_pages(uint32_t base, uint32_t n);
 
-#define alloc_page() alloc_pages(1)
-#define free_page(page) free_pages(page, 1)
-
-// 输出内存信息
-void show_memory_info(void);
-
-// 输出当前管理信息
-void show_management_info(void);
-
-// 测试当前管理子系统
-void test_mm(void);
+// 当前可用内存页
+uint32_t free_pages_count(void);
 
 #endif  // INCLUDE_MM_PMM_H
