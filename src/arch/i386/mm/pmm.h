@@ -71,20 +71,20 @@ typedef
 struct page_t {
         atomic_t ref;               // 物理页被引用的次数
         uint32_t flag;              // 当前页状态，First-Fit 算法需要
-	uint32_t property;          // 当前页后续连续页的数量，First-Fit 算法需要
-	struct list_head next;      // 下一个连续页，First-Fit 算法需要
+	uint32_t count;             // 当前页后续连续页的数量，First-Fit 算法需要
+	struct list_head list;      // 链接下一个连续页，First-Fit 算法需要
 } page_t;
 
 // page_t 的 flag 参数的操作宏
 #define PG_RESERVED    0       // 表示页当前不可用
-#define PG_PROPERTY    1       // 表示 property 字段有效
+#define PG_COUNT       1       // 表示 count 字段有效
 
-#define set_page_reserved(page)       set_bit(PG_RESERVED, &((page)->flags))
-#define clear_page_reserved(page)     clear_bit(PG_RESERVED, &((page)->flags))
-#define is_page_reserved(page)        test_bit(PG_RESERVED, &((page)->flags))
-#define set_page_property(page)       set_bit(PG_PROPERTY, &((page)->flags))
-#define clear_page_property(page)     clear_bit(PG_PROPERTY, &((page)->flags))
-#define is_page_property(page)        test_bit(PG_PROPERTY, &((page)->flags))
+#define set_page_reserved_flag(page)       set_bit(PG_RESERVED, &((page)->flag))
+#define clear_page_reserved_flag(page)     clear_bit(PG_RESERVED, &((page)->flag))
+#define is_page_reserved(page)             test_bit(PG_RESERVED, &((page)->flag))
+#define set_page_count_flag(page)          set_bit(PG_COUNT, &((page)->flag))
+#define clear_page_count_flag(page)        clear_bit(PG_COUNT, &((page)->flag))
+#define is_page_count(page)                test_bit(PG_COUNT, &((page)->flag))
 
 static inline int32_t page_ref(page_t *page)
 {
@@ -117,7 +117,7 @@ struct pmm_manager {
         const char *name;                                // 管理算法的名称
         void (*page_init)(page_t *pages, uint32_t n);    // 初始化
         uint32_t (*alloc_pages)(uint32_t n);             // 申请物理内存页(n为字节数)
-        void (*free_pages)(uint32_t base, uint32_t n);   // 释放内存页
+        void (*free_pages)(uint32_t addr, uint32_t n);   // 释放内存页
         uint32_t (*free_pages_count)(void);              // 返回当前可用内存页
 };
 
@@ -131,7 +131,7 @@ void page_init(page_t *pages, uint32_t n);
 uint32_t alloc_pages(uint32_t n);
 
 // 释放内存页
-void free_pages(uint32_t base, uint32_t n);
+void free_pages(uint32_t addr, uint32_t n);
 
 // 当前可用内存页
 uint32_t free_pages_count(void);

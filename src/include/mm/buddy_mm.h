@@ -20,6 +20,6 @@
 #define INCLUDE_MM_BUDDY_MM_H_
 
 // 伙伴算法内存管理系统
-extern struct pmm_manager buddy_mm;
+extern struct pmm_manager buddy_mm_manager;
 
 #endif  // INCLUDE_MM_BUDDY_MM_H_

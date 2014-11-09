@@ -24,10 +24,10 @@
 #include <lib/string.h>
 
 // 物理内存管理算法
-static const struct pmm_manager *pmm_manager;
+static const struct pmm_manager *pmm_manager = &ff_mm_manager;
 
 // 物理页帧数组指针
-static page_t *phy_pages = (page_t *)kern_end;
+static page_t *phy_pages = (page_t *)((uint32_t)kern_end + KERNBASE);
 
 // 物理页帧数组长度
 static uint32_t phy_pages_count;
@@ -93,8 +93,7 @@ static void phy_pages_init(e820map_t *e820map)
         bzero(phy_pages, pages_mem_length);
 
         // 物理内存页管理起始地址
-        pmm_addr_start = (uint32_t)phy_pages + pages_mem_length;
-        pmm_addr_start = (pmm_addr_start + PMM_PAGE_SIZE) & PMM_PAGE_MASK;
+        pmm_addr_start = ((uint32_t)kern_end + pages_mem_length + PMM_PAGE_SIZE) & PMM_PAGE_MASK;
 
         for (uint32_t i = 0; i < e820map->count; ++i){
                 uint32_t start_addr = e820map->map[i].addr_low;
@@ -113,6 +112,11 @@ static void phy_pages_init(e820map_t *e820map)
                 }
                 pmm_addr_end = end_addr;
         }
+
+        for (page_t *p = phy_pages; p < phy_pages + phy_pages_count; ++p) {
+                set_page_reserved_flag(p);
+        }
+
         assert(pmm_addr_start == page_to_addr(&phy_pages[0]), "phy_pages_init error");
         assert(pmm_addr_end - PMM_PAGE_SIZE == page_to_addr(&phy_pages[phy_pages_count-1]), "phy_pages_init error");
         assert(&phy_pages[0] == addr_to_page(page_to_addr(&phy_pages[0])), "phy_pages_init error");
@@ -123,7 +127,7 @@ page_t *addr_to_page(uint32_t addr)
 {
         assert(pmm_addr_start != 0, "memory not init, addr_to_page cannot use");
 
-        return (phy_pages + ((addr&PMM_PAGE_MASK)-pmm_addr_start)/PMM_PAGE_SIZE);
+        return (phy_pages + ((addr & PMM_PAGE_MASK) - pmm_addr_start) / PMM_PAGE_SIZE);
 }
 
 uint32_t page_to_addr(page_t *page)
@@ -135,7 +139,6 @@ uint32_t page_to_addr(page_t *page)
 
 void page_init(page_t *pages, uint32_t n)
 {
-        pmm_manager = &ff_mm;
         pmm_manager->page_init(pages, n);
 }
 
@@ -151,12 +154,12 @@ uint32_t alloc_pages(uint32_t n)
         return page;
 }
 
-void free_pages(uint32_t base, uint32_t n)
+void free_pages(uint32_t addr, uint32_t n)
 {
         uint32_t eflag;
         
         local_intr_store(eflag);
-        pmm_manager->free_pages(base, n);
+        pmm_manager->free_pages(addr, n);
         local_intr_restore(eflag);
 }
 

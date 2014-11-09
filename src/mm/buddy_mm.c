@@ -23,11 +23,11 @@
 // 每个独立的内存管理算法必须实现的4个接口函数
 static void buddy_init(page_t *pages, uint32_t n);
 static uint32_t buddy_alloc_pages(uint32_t n);
-static void buddy_free_pages(uint32_t base, uint32_t n);
+static void buddy_free_pages(uint32_t addr, uint32_t n);
 static uint32_t buddy_free_pages_count(void);
 
 // 管理结构
-struct pmm_manager buddy_mm = {
+struct pmm_manager buddy_mm_manager = {
                 "Simple_Memory_Managentment",
                 &buddy_init,
                 &buddy_alloc_pages,
@@ -74,7 +74,7 @@ static uint32_t buddy_alloc_pages(uint32_t n)
         return 0;
 }
 
-static void buddy_free_pages(uint32_t base, uint32_t n)
+static void buddy_free_pages(uint32_t addr, uint32_t n)
 {
 }
 
