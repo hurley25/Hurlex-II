@@ -33,7 +33,7 @@ static uint32_t ff_free_pages_count(void);
 
 // 管理结构
 struct pmm_manager ff_mm_manager = {
-                "ff_Memory_Managentment",
+                "First_Fit_Memory_Managentment",
                 &ff_page_init,
                 &ff_alloc_pages,
                 &ff_free_pages,
@@ -53,7 +53,7 @@ static struct ff_mm_struct ff_mm_info;
 
 static void ff_show_memory_info(void);
 static void ff_show_management_info(void);
-static void ff_test_mm(void);
+static void ff_test_mm(void) __attribute__((unused));
 
 static void ff_page_init(page_t *pages, uint32_t n)
 {
@@ -73,8 +73,7 @@ static void ff_page_init(page_t *pages, uint32_t n)
         pages[0].count = n;
         
         ff_show_memory_info();
-        ff_show_management_info();
-        ff_test_mm();
+        //ff_test_mm();
 }
 
 static uint32_t ff_alloc_pages(uint32_t n)
@@ -219,4 +218,3 @@ static void ff_test_mm(void)
         ff_free_pages(page3, 10);
         ff_show_management_info();
 }
-
