@@ -70,14 +70,14 @@ enum mem_zone_t {
 typedef
 struct page_t {
         atomic_t ref;               // 物理页被引用的次数
-        uint32_t flag;              // 当前页状态，First-Fit 算法需要
-	uint32_t count;             // 当前页后续连续页的数量，First-Fit 算法需要
-	struct list_head list;      // 链接下一个连续页，First-Fit 算法需要
+        uint32_t flag;              // 当前页状态
+	uint32_t count;             // 当前页后续连续页的数量
+	struct list_head list;      // 链接下一个连续页
 } page_t;
 
 // page_t 的 flag 参数的操作宏
-#define PG_RESERVED    0       // 表示页当前不可用
-#define PG_COUNT       1       // 表示 count 字段有效
+#define PG_RESERVED    0       // 1 << 0 表示页当前不可用
+#define PG_COUNT       1       // 1 << 1 表示 count 字段有效
 
 #define set_page_reserved_flag(page)       set_bit(PG_RESERVED, &((page)->flag))
 #define clear_page_reserved_flag(page)     clear_bit(PG_RESERVED, &((page)->flag))

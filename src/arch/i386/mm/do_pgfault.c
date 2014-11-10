@@ -1,7 +1,7 @@
 /*
  * =====================================================================================
  *
- *       Filename:  page_fault.c
+ *       Filename:  do_pgfault.c
  *
  *    Description:  页错误处理
  *
@@ -21,7 +21,7 @@
 #include <debug.h>
 #include <arch.h>
 
-void page_fault(pt_regs *regs)
+void do_pgfault(pt_regs *regs)
 {
         uint32_t cr2;
         __asm__ volatile ("mov %%cr2, %0" : "=r" (cr2));

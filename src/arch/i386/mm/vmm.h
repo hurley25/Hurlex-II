@@ -23,20 +23,21 @@
 #include <types.h>
 
 /* *
- * Virtual memory map:                                          Permissions
- *                                                              kernel/user
+ * Virtual memory map:
+ *
  *
  *     4G ------------------> +---------------------------------+
+ *                            |                                 |
  *                            |         Empty Memory (*)        |
- *                            +---------------------------------+
- *                            |           Kernel heap           |
+ *                            |                                 |
  *                            +---------------------------------+ 0xF8000000
  *                            |                                 |
  *                            |                                 |
- *                            +---------------------------------+
- *                            |                                 |
  *                            |    Remapped Physical Memory     | RW/-- KMEMSIZE
  *                            |                                 |
+ *                            |                                 |
+ *                            +---------------------------------+ 
+ *                            |             Kernel              |
  *     KERNBASE ------------> +---------------------------------+ 0xC0000000
  *                            |        Invalid Memory (*)       | --/--
  *     USERTOP -------------> +---------------------------------+ 0xB0000000
@@ -49,9 +50,7 @@
  *                            |       User Program & Heap       |
  *     UTEXT ---------------> +---------------------------------+ 0x00800000
  *                            |        Invalid Memory (*)       | --/--
- *                            |  - - - - - - - - - - - - - - -  |
- *                            |    User STAB Data (optional)    |
- *     USERBASE, USTAB------> +---------------------------------+ 0x00200000
+ *     USERBASE -----------> +---------------------------------+ 0x00200000
  *                            |        Invalid Memory (*)       | --/--
  *     0 -------------------> +---------------------------------+ 0x00000000
  * (*) Note: The kernel ensures that "Invalid Memory" is *never* mapped.
@@ -67,9 +66,6 @@
 // 内核的偏移地址
 #define PAGE_OFFSET 	     KERNBASE
 
-// 内核堆起始地址
-#define KERN_MALLOC_BASE   (KERN_TOP)
-
 // A linear address 'la' has a three-part structure as follows:
 //
 // +--------10------+-------10-------+---------12----------+
@@ -78,8 +74,8 @@
 // +----------------+----------------+---------------------+
 //   \PGD_INDEX(la)/ \ PTE_INDEX(la) /  \OFFSET_INDEX(la)/
 
-// 虚拟分页大小
-#define PAGE_SIZE 	4096
+// 虚拟分页大小(4KB)
+#define PAGE_SIZE 	0x1000
 
 // 页掩码，用于 4KB 对齐
 #define PAGE_MASK      0xFFFFF000
@@ -129,22 +125,7 @@ extern pgd_t pgd_kern[PGD_SIZE];
 // 初始化虚拟内存管理
 void init_vmm(void);
 
-/*
-// 更换当前的页目录
-void switch_pgd(uint32_t pd);
-
-// 使用 flags 指出的页权限，把物理地址 pa 映射到虚拟地址 va
-void map(pgd_t *pgd_now, uint32_t va, uint32_t pa, uint32_t flags);
-
-// 取消虚拟地址 va 的物理映射
-void unmap(pgd_t *pgd_now, uint32_t va);
-
-// 如果虚拟地址 va 映射到物理地址则返回 1
-// 同时如果 pa 不是空指针则把物理地址写入 pa 参数
-uint32_t get_mapping(pgd_t *pgd_now, uint32_t va, uint32_t *pa);
-
-*/
 // 页错误中断的函数处理
-void page_fault(pt_regs *regs);
+void do_pgfault(pt_regs *regs);
 
 #endif 	// INCLUDE_MM_VMM_H

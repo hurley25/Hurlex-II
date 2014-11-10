@@ -3,7 +3,7 @@
  *
  *       Filename:  ff_mm.h
  *
- *    Description:  简单的物理内存管理子系统
+ *    Description:  First-Fit 物理内存管理子系统
  *
  *        Version:  1.0
  *        Created:  2014年11月05日 11时36分16秒
@@ -16,10 +16,10 @@
  * =====================================================================================
  */
 
-#ifndef INCLUDE_MM_SIMPLE_MM_H_
-#define INCLUDE_MM_SIMPLE_MM_H_
+#ifndef INCLUDE_MM_FF_MM_H_
+#define INCLUDE_MM_FF_MM_H_
 
 // 简单内存管理系统
 extern struct pmm_manager ff_mm_manager;
 
-#endif  // INCLUDE_MM_SIMPLE_MM_H_
+#endif  // INCLUDE_MM_FF_MM_H_

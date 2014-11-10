@@ -18,6 +18,7 @@
 
 #include <debug.h>
 #include <arch.h>
+#include <common.h>
 
 #define INTERRUPT_MAX 256
 
@@ -146,6 +147,7 @@ void isr_handler(pt_regs *regs)
               interrupt_handlers[regs->int_no](regs);
         } else {
                 printk_color(rc_black, rc_blue, "Unhandled interrupt: %d %s\n", regs->int_no, intrname(regs->int_no));
+                cpu_hlt();
         }
 }
 

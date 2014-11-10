@@ -1,12 +1,12 @@
 /*
  * =====================================================================================
  *
- *       Filename:  mm.h
+ *       Filename:  buddy_mm.h
  *
- *    Description:  内存管理的头文件
+ *    Description:  伙伴算法物理内存管理子系统
  *
  *        Version:  1.0
- *        Created:  2014年11月04日 13时31分10秒
+ *        Created:  2014年11月05日 11时36分16秒
  *       Revision:  none
  *       Compiler:  gcc
  *
@@ -16,15 +16,10 @@
  * =====================================================================================
  */
 
-#ifndef INCLUDE_MM_MM_H
-#define INCLUDE_MM_MM_H
+#ifndef INCLUDE_MM_BUDDY_MM_H_
+#define INCLUDE_MM_BUDDY_MM_H_
 
-#include <mm/pmm.h>
-#include <mm/vmm.h>
-#include <mm/ff_mm.h>
-#include <mm/buddy_mm.h>
+// 简单内存管理系统
+extern struct pmm_manager buddy_mm_manager;
 
-// 内存管理子系统初始化
-void init_mm(void);
-
-#endif  // INCLUDE_MM_MM_H
+#endif  // INCLUDE_MM_BUDDY_MM_H_

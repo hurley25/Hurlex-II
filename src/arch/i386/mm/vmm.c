@@ -21,6 +21,6 @@
 
 void init_vmm(void)
 {
-        register_interrupt_handler(INT_PAGE_FAULT, &page_fault);
+        register_interrupt_handler(INT_PAGE_FAULT, &do_pgfault);
 }
 

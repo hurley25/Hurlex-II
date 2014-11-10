@@ -24,7 +24,7 @@
 #include <lib/string.h>
 
 // 物理内存管理算法
-static const struct pmm_manager *pmm_manager = &ff_mm_manager;
+static const struct pmm_manager *pmm_manager = &buddy_mm_manager;
 
 // 物理页帧数组指针
 static page_t *phy_pages = (page_t *)((uint32_t)kern_end + KERNBASE);
@@ -111,10 +111,6 @@ static void phy_pages_init(e820map_t *e820map)
                         phy_pages_count++;
                 }
                 pmm_addr_end = end_addr;
-        }
-
-        for (page_t *p = phy_pages; p < phy_pages + phy_pages_count; ++p) {
-                set_page_reserved_flag(p);
         }
 
         assert(pmm_addr_start == page_to_addr(&phy_pages[0]), "phy_pages_init error");

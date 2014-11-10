@@ -35,7 +35,7 @@ __attribute__((section(".init.data"))) pgd_t *pgd_tmp  = (pgd_t *)0x1000;
 __attribute__((section(".init.data"))) pgd_t *pte_low  = (pgd_t *)0x2000;
 __attribute__((section(".init.data"))) pgd_t *pte_hign = (pgd_t *)0x3000;
 
-// 映射临时页表（留意未来内核代码尺寸增加后此处映射范围不够，临时4MB）
+// 映射临时页表
 __attribute__((section(".init.text"))) void mmap_tmp_page(void);
 
 // 启用分页
@@ -75,8 +75,8 @@ __attribute__((section(".init.text"))) void mmap_tmp_page(void)
                 pte_low[i] = (i << 12) | PAGE_PRESENT | PAGE_WRITE;
         }
 
-        // 映射 0x00000000-0x00400000 的物理地址到虚拟地址 0xC0000000-0xC0400000
-        for (int i = 0; i < 1024; i++) {
+        // 映射 0x00000000-0x01000000 的物理地址到虚拟地址 0xC0000000-0xC1000000
+        for (int i = 0; i < 1024 * 4; i++) {
                 pte_hign[i] = (i << 12) | PAGE_PRESENT | PAGE_WRITE;
         }
         
