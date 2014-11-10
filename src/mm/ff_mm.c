@@ -73,7 +73,7 @@ static void ff_page_init(page_t *pages, uint32_t n)
         set_page_count_flag(&pages[0]);
         
         ff_show_memory_info();
-        ff_test_mm();
+        //ff_test_mm();
 }
 
 static uint32_t ff_alloc_pages(uint32_t n)

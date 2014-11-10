@@ -97,6 +97,7 @@ static void buddy_page_init(page_t *pages, uint32_t n)
         }
 
         buddy_show_memory_info();
+        buddy_show_management_info();
         buddy_test_mm();
 }
 
@@ -222,28 +223,24 @@ static void buddy_free_pages(uint32_t addr, uint32_t n)
 
         page_t *base = addr_to_page(addr);
 
-        if (n == 1) {
-                buddy_free_pages_sub(base, 0);
-        } else {
-                uint32_t order = 0, order_size = 1;
-                while (n >= order_size) {
-                        if ((page_to_idx(base) & order_size) != 0) {
-                                buddy_free_pages_sub(base, order);
-                                base += order_size;
-                                n -= order_size;
-                        }
-                        order++;
-                        order_size <<= 1;
-                }
-                while (n != 0) {
-                        while (n < order_size) {
-                                order--;
-                                order_size >>= 1;
-                        }
+        uint32_t order = 0, order_size = 1;
+        while (n >= order_size) {
+                if ((page_to_idx(base) & order_size) != 0) {
                         buddy_free_pages_sub(base, order);
                         base += order_size;
                         n -= order_size;
                 }
+                order++;
+                order_size <<= 1;
+        }
+        while (n != 0) {
+                while (n < order_size) {
+                        order--;
+                        order_size >>= 1;
+                }
+                buddy_free_pages_sub(base, order);
+                base += order_size;
+                n -= order_size;
         }
 
         atomic_add(&buddy_mm_info.phy_page_now_count, n);

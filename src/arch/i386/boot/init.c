@@ -75,8 +75,8 @@ __attribute__((section(".init.text"))) void mmap_tmp_page(void)
                 pte_low[i] = (i << 12) | PAGE_PRESENT | PAGE_WRITE;
         }
 
-        // 映射 0x00000000-0x01000000 的物理地址到虚拟地址 0xC0000000-0xC1000000
-        for (int i = 0; i < 1024 * 4; i++) {
+        // 映射 0x00000000-0x00100000 的物理地址到虚拟地址 0xC0000000-0xC0100000
+        for (int i = 0; i < 1024; i++) {
                 pte_hign[i] = (i << 12) | PAGE_PRESENT | PAGE_WRITE;
         }
         

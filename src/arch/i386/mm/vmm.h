@@ -50,7 +50,7 @@
  *                            |       User Program & Heap       |
  *     UTEXT ---------------> +---------------------------------+ 0x00800000
  *                            |        Invalid Memory (*)       | --/--
- *     USERBASE -----------> +---------------------------------+ 0x00200000
+ *      USERBASE -----------> +---------------------------------+ 0x00200000
  *                            |        Invalid Memory (*)       | --/--
  *     0 -------------------> +---------------------------------+ 0x00000000
  * (*) Note: The kernel ensures that "Invalid Memory" is *never* mapped.
@@ -58,13 +58,6 @@
  *     there if desired.
  *
  * */
-
-#define KERNBASE            (0xC0000000)
-#define KMEM_SIZE           (0x38000000)
-#define KERN_TOP            (KERNBASE + KMEMSIZE)
-
-// 内核的偏移地址
-#define PAGE_OFFSET 	     KERNBASE
 
 // A linear address 'la' has a three-part structure as follows:
 //
@@ -75,10 +68,25 @@
 //   \PGD_INDEX(la)/ \ PTE_INDEX(la) /  \OFFSET_INDEX(la)/
 
 // 虚拟分页大小(4KB)
-#define PAGE_SIZE 	0x1000
+#define PAGE_SIZE 	  (0x1000)
 
 // 页掩码，用于 4KB 对齐
-#define PAGE_MASK      0xFFFFF000
+#define PAGE_MASK         (0xFFFFF000)
+
+// 内核起始虚拟地址
+#define KERNBASE          (0xC0000000)
+
+// 内核管理内存的大小
+#define KMEMSIZE         (0x38000000)
+
+// 内核管理的物理内存的顶端地址
+#define KERNTOP          (KERNBASE + KMEMSIZE)
+
+// 内核的偏移地址
+#define PAGE_OFFSET 	  KERNBASE
+
+// 映射 KMEM_SIZE 的内存所需要的页数
+#define PTE_COUNT        (KMEM_SIZE/(PAGE_SIZE*1024))
 
 // 获取一个地址的页目录项
 #define PGD_INDEX(x) (((x) >> 22) & 0x3FF)
@@ -88,12 +96,6 @@
 
 // 获取一个地址的页內偏移
 #define OFFSET_INDEX(x) ((x) & 0xFFF)
-
-// 页表成员数
-#define PGD_SIZE (PAGE_SIZE / sizeof(pte_t))
-
-// 页表成员数
-#define PTE_SIZE (PAGE_SIZE / sizeof(uint32_t))
 
 /**
  * P--位0是存在（Present）标志，用于指明表项对地址转换是否有效。P=1表示有效；P=0表示无效。
@@ -119,11 +121,27 @@
  */
 #define PAGE_USER 	0x4
 
+// 页表成员数
+#define PGD_SIZE (PAGE_SIZE/sizeof(pte_t))
+
+// 页表成员数
+#define PTE_SIZE (PAGE_SIZE/sizeof(uint32_t))
+
 // 内核页目录区域
-extern pgd_t pgd_kern[PGD_SIZE];
+extern pgd_t pgd_kern[];
 
 // 初始化虚拟内存管理
 void init_vmm(void);
+
+// 使用 flags 指出的页权限，把物理地址 pa 映射到虚拟地址 va
+void map(pgd_t *pgd_now, uint32_t va, uint32_t pa, uint32_t flags);
+
+// 取消虚拟地址 va 的物理映射
+void unmap(pgd_t *pgd_now, uint32_t va);
+
+// 如果虚拟地址 va 映射到物理地址则返回 1
+// 同时如果 pa 不是空指针则把物理地址写入 pa 参数
+uint32_t get_mapping(pgd_t *pgd_now, uint32_t va, uint32_t *pa);
 
 // 页错误中断的函数处理
 void do_pgfault(pt_regs *regs);

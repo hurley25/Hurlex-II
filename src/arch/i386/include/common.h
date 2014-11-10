@@ -106,4 +106,16 @@ static inline void write_eflags(uint32_t eflags)
         __asm__ volatile ("pushl %0; popfl" :: "r" (eflags));
 }
 
+// 修改当前页表
+static inline void switch_pgd(uint32_t pd)
+{
+        __asm__ volatile ("mov %0, %%cr3" : : "r" (pd));
+}
+
+// 通知 CPU 更新页表缓存
+static inline void tlb_reload_page(uint32_t va)
+{
+        __asm__ volatile ("invlpg (%0)" : : "a" (va));
+}
+
 #endif  // INCLUDE_COMMON_H_

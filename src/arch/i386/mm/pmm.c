@@ -24,7 +24,7 @@
 #include <lib/string.h>
 
 // 物理内存管理算法
-static const struct pmm_manager *pmm_manager = &buddy_mm_manager;
+static const struct pmm_manager *pmm_manager = &ff_mm_manager;
 
 // 物理页帧数组指针
 static page_t *phy_pages = (page_t *)((uint32_t)kern_end + KERNBASE);
