@@ -85,8 +85,8 @@ static void buddy_page_init(page_t *pages, uint32_t n)
         page_t *p = pages;
         while (n != 0) {
                 while (n >= order_size) {
-                        set_page_count_flag(p);
-                        p->count = order;
+                        set_page_order_flag(p);
+                        p->order = order;
                         list_add(&p->list, &free_list(order));
                         n -= order_size;
                         p += order_size;
@@ -131,12 +131,12 @@ static page_t *buddy_alloc_pages_sub(uint32_t order)
                                 cur_order--;
                                 size >>= 1;
                                 page_t *buddy = page + size;
-                                buddy->count = cur_order;
-                                set_page_count_flag(buddy);
+                                buddy->order = cur_order;
+                                set_page_order_flag(buddy);
                                 atomic_inc(&nr_free(cur_order));
                                 list_add(&buddy->list, &free_list(cur_order));
                         }
-                        clear_page_count_flag(page);
+                        clear_page_order_flag(page);
 
                         return page;
                 }
@@ -182,7 +182,7 @@ static inline page_t *idx_to_page(uint32_t idx)
 static bool page_is_buddy(page_t *page, uint32_t order)
 {
         if (page_to_idx(page) < (uint32_t)atomic_read(&buddy_mm_info.phy_page_count)) {
-                return (is_page_count(page) && page->count == order);
+                return (is_page_order(page) && page->order == order);
         }
 
         return false;
@@ -204,13 +204,13 @@ static void buddy_free_pages_sub(page_t *base, uint32_t order)
                 }
                 atomic_dec(&nr_free(order));
                 list_del(&buddy->list);
-                clear_page_count_flag(buddy);
+                clear_page_order_flag(buddy);
                 page_idx &= buddy_idx;
                 order++;
         }
         page_t *page = idx_to_page(page_idx);
-        page->count = order;
-        set_page_count_flag(page);
+        page->order = order;
+        set_page_order_flag(page);
         atomic_inc(&nr_free(order));
         list_add(&page->list, &free_list(order));
 }

@@ -69,8 +69,8 @@ static void ff_page_init(page_t *pages, uint32_t n)
                 list_add_before(&p->list, &ff_mm_info.free_list);
         }
 
-        pages[0].count = n;
-        set_page_count_flag(&pages[0]);
+        pages[0].ncount = n;
+        set_page_ncount_flag(&pages[0]);
         
         ff_show_memory_info();
         //ff_test_mm();
@@ -89,7 +89,7 @@ static uint32_t ff_alloc_pages(uint32_t n)
                 page_t *p = le_to_page(le);
 
                 // 当前链之后的空闲内存页数满足需求
-                if (is_page_count(p) && p->count >= n) {
+                if (is_page_ncount(p) && p->ncount >= n) {
                         for (uint32_t i = 0; i < n; ++i) {
                                 len = le->next;
                                 page_t *pp = le_to_page(le);
@@ -100,13 +100,13 @@ static uint32_t ff_alloc_pages(uint32_t n)
                 }
 
                 // 切割当前链后重新计算剩余值
-                if (p->count > n) {
-                        set_page_count_flag(le_to_page(le));
-                        (le_to_page(le))->count = p->count - n;
+                if (p->ncount > n) {
+                        set_page_ncount_flag(le_to_page(le));
+                        (le_to_page(le))->ncount = p->ncount - n;
                 }
 
-                p->count = 0;
-                clear_page_count_flag(p);
+                p->ncount = 0;
+                clear_page_ncount_flag(p);
 
                 atomic_sub(&ff_mm_info.phy_page_now_count, n);
 
@@ -127,8 +127,8 @@ static void ff_free_pages(uint32_t addr, uint32_t n)
         assert(!is_page_reserved(base), "ff_free_pages error!");
 
         set_page_ref(base, 0);
-        set_page_count_flag(base);
-        base->count = n;
+        set_page_ncount_flag(base);
+        base->ncount = n;
 
         // 找到插入点
         page_t *p;
@@ -148,9 +148,9 @@ static void ff_free_pages(uint32_t addr, uint32_t n)
         // 如果 base 与之后的内存连续，则合并
         p = le_to_page(le);
         if (base + n == p) {
-                base->count += p->count;
-                clear_page_count_flag(p);
-                p->count = 0;
+                base->ncount += p->ncount;
+                clear_page_ncount_flag(p);
+                p->ncount = 0;
         }
 
         // 如果 base 与之前的内存连续，则合并
@@ -158,10 +158,10 @@ static void ff_free_pages(uint32_t addr, uint32_t n)
         p = le_to_page(le);
         if (le != &ff_mm_info.free_list && p == base - 1) {
                 while (le != &ff_mm_info.free_list) {
-                        if (is_page_count(p)) {
-                                p->count += base->count;
-                                clear_page_count_flag(base);
-                                base->count = 0;
+                        if (is_page_ncount(p)) {
+                                p->ncount += base->ncount;
+                                clear_page_ncount_flag(base);
+                                base->ncount = 0;
                         }
                         le = le->prev;
                         p = le_to_page(le);

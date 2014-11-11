@@ -77,25 +77,28 @@
 #define KERNBASE          (0xC0000000)
 
 // 内核管理内存的大小
-#define KMEMSIZE         (0x38000000)
+#define KMEMSIZE          (0x38000000)
 
 // 内核管理的物理内存的顶端地址
-#define KERNTOP          (KERNBASE + KMEMSIZE)
+#define KERNTOP           (KERNBASE + KMEMSIZE)
 
 // 内核的偏移地址
 #define PAGE_OFFSET 	  KERNBASE
 
+// 每个页表可以映射的内存数
+#define PAGE_MAP_SIZE 	  (0x400000)
+
 // 映射 KMEM_SIZE 的内存所需要的页数
-#define PTE_COUNT        (KMEM_SIZE/(PAGE_SIZE*1024))
+#define PTE_COUNT         (KMEMSIZE/PAGE_MAP_SIZE)
 
 // 获取一个地址的页目录项
-#define PGD_INDEX(x) (((x) >> 22) & 0x3FF)
+#define PGD_INDEX(x)      (((x) >> 22) & 0x3FF)
 
 // 获取一个地址的页表项
-#define PTE_INDEX(x) (((x) >> 12) & 0x3FF)
+#define PTE_INDEX(x)      (((x) >> 12) & 0x3FF)
 
 // 获取一个地址的页內偏移
-#define OFFSET_INDEX(x) ((x) & 0xFFF)
+#define OFFSET_INDEX(x)   ((x) & 0xFFF)
 
 /**
  * P--位0是存在（Present）标志，用于指明表项对地址转换是否有效。P=1表示有效；P=0表示无效。
@@ -130,6 +133,9 @@
 // 内核页目录区域
 extern pgd_t pgd_kern[];
 
+// 内核页表大小
+#define KVPAGE_SIZE 0x400000
+
 // 初始化虚拟内存管理
 void init_vmm(void);
 
@@ -144,6 +150,6 @@ void unmap(pgd_t *pgd_now, uint32_t va);
 uint32_t get_mapping(pgd_t *pgd_now, uint32_t va, uint32_t *pa);
 
 // 页错误中断的函数处理
-void do_pgfault(pt_regs *regs);
+void do_page_fault(pt_regs *regs);
 
 #endif 	// INCLUDE_MM_VMM_H

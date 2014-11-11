@@ -34,6 +34,8 @@ void kern_init(void)
         
         init_mm();
 
+        printk_color(rc_black, rc_green, "Init Virtual Memory Succeed!\n\n");
+
         //init_clock();
         //enable_intr();
 

@@ -26,8 +26,8 @@
 // 物理内存管理算法
 static const struct pmm_manager *pmm_manager = &ff_mm_manager;
 
-// 物理页帧数组指针
-static page_t *phy_pages = (page_t *)((uint32_t)kern_end + KERNBASE);
+// 物理页帧数组指针 (内核结束地址+内核基址+内核页表保留地址)
+static page_t *phy_pages = (page_t *)((uint32_t)kern_end + KERNBASE + KVPAGE_SIZE);
 
 // 物理页帧数组长度
 static uint32_t phy_pages_count;
@@ -93,7 +93,7 @@ static void phy_pages_init(e820map_t *e820map)
         bzero(phy_pages, pages_mem_length);
 
         // 物理内存页管理起始地址
-        pmm_addr_start = ((uint32_t)kern_end + pages_mem_length + PMM_PAGE_SIZE) & PMM_PAGE_MASK;
+        pmm_addr_start = ((uint32_t)phy_pages - KERNBASE + pages_mem_length + PMM_PAGE_SIZE) & PMM_PAGE_MASK;
 
         for (uint32_t i = 0; i < e820map->count; ++i){
                 uint32_t start_addr = e820map->map[i].addr_low;

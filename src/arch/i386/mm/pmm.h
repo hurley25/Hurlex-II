@@ -71,20 +71,29 @@ typedef
 struct page_t {
         atomic_t ref;               // 物理页被引用的次数
         uint32_t flag;              // 当前页状态
-	uint32_t count;             // 当前页后续连续页的数量
-	struct list_head list;      // 链接下一个连续页
+        union {
+                uint32_t ncount;     // 当前页后续连续页的数量  First-Fit算法需要
+                uint32_t order;      // 当前页的 order 值       buddy 算法需要
+        };
+        struct list_head list;      // 链接下一个连续页
 } page_t;
 
 // page_t 的 flag 参数的操作宏
-#define PG_RESERVED    0       // 1 << 0 表示页当前不可用
-#define PG_COUNT       1       // 1 << 1 表示 count 字段有效
+#define PG_RESERVED     0       // 1 << 0 表示页当前不可用
+#define PG_NCOUNT       1       // 1 << 1 表示 ncount 字段有效
+#define PG_ORDER        2       // 1 << 2 表示 order 字段有效
 
 #define set_page_reserved_flag(page)       set_bit(PG_RESERVED, &((page)->flag))
 #define clear_page_reserved_flag(page)     clear_bit(PG_RESERVED, &((page)->flag))
 #define is_page_reserved(page)             test_bit(PG_RESERVED, &((page)->flag))
-#define set_page_count_flag(page)          set_bit(PG_COUNT, &((page)->flag))
-#define clear_page_count_flag(page)        clear_bit(PG_COUNT, &((page)->flag))
-#define is_page_count(page)                test_bit(PG_COUNT, &((page)->flag))
+
+#define set_page_ncount_flag(page)          set_bit(PG_NCOUNT, &((page)->flag))
+#define clear_page_ncount_flag(page)        clear_bit(PG_NCOUNT, &((page)->flag))
+#define is_page_ncount(page)                test_bit(PG_NCOUNT, &((page)->flag))
+
+#define set_page_order_flag(page)          set_bit(PG_ORDER, &((page)->flag))
+#define clear_page_order_flag(page)        clear_bit(PG_ORDER, &((page)->flag))
+#define is_page_order(page)                test_bit(PG_ORDER, &((page)->flag))
 
 static inline int32_t page_ref(page_t *page)
 {
