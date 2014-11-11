@@ -22,5 +22,6 @@ void init_mm(void)
 {
         init_pmm();
         init_vmm();
+        init_slob();
 }
 

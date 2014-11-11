@@ -23,6 +23,7 @@
 #include <mm/vmm.h>
 #include <mm/ff_mm.h>
 #include <mm/buddy_mm.h>
+#include <mm/slob.h>
 
 // 内存管理子系统初始化
 void init_mm(void);

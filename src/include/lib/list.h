@@ -206,14 +206,14 @@ static inline void list_splice_tail_init(struct list_head *list,
         list_entry((ptr)->next, type, member)
 
 #define list_for_each(pos, head) \
-        for (pos = (head)->next; prefetch(pos->next), pos != (head); \
+        for (pos = (head)->next; pos != (head); \
                 pos = pos->next)
 
 #define __list_for_each(pos, head) \
         for (pos = (head)->next; pos != (head); pos = pos->next)
 
 #define list_for_each_prev(pos, head) \
-        for (pos = (head)->prev; prefetch(pos->prev), pos != (head); \
+        for (pos = (head)->prev; pos != (head); \
                 pos = pos->prev)
 
 #define list_for_each_safe(pos, n, head) \
@@ -222,17 +222,17 @@ static inline void list_splice_tail_init(struct list_head *list,
 
 #define list_for_each_prev_safe(pos, n, head) \
         for (pos = (head)->prev, n = pos->prev; \
-             prefetch(pos->prev), pos != (head); \
+             pos != (head); \
              pos = n, n = pos->prev)
 
 #define list_for_each_entry(pos, head, member)                          \
         for (pos = list_entry((head)->next, typeof(*pos), member);      \
-             prefetch(pos->member.next), &pos->member != (head);        \
+             &pos->member != (head);        \
              pos = list_entry(pos->member.next, typeof(*pos), member))
 
 #define list_for_each_entry_reverse(pos, head, member)                  \
         for (pos = list_entry((head)->prev, typeof(*pos), member);      \
-             prefetch(pos->member.prev), &pos->member != (head);        \
+             pos->member != (head);        \
              pos = list_entry(pos->member.prev, typeof(*pos), member))
 
 #define list_prepare_entry(pos, head, member) \
