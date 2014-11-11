@@ -39,7 +39,7 @@ void init_vmm(void)
         // 构造页目录(MMU需要的是物理地址，此处需要减去偏移)
         uint32_t pgd_idx = PGD_INDEX(PAGE_OFFSET);
         for (uint32_t i = pgd_idx; i < pgd_idx + PTE_COUNT; ++i) {
-                pgd_kern[i] = ((uint32_t)(pte_kern[i]) - PAGE_OFFSET) | PAGE_PRESENT | PAGE_WRITE;
+                pgd_kern[i] = ((uint32_t)ka_to_pa(pte_kern[i])) | PAGE_PRESENT | PAGE_WRITE;
         }
 
         // 构造页表映射，内核 0xC0000000～0xF8000000 映射到 物理 0x00000000～0x38000000 (物理内存前896MB)
@@ -48,7 +48,7 @@ void init_vmm(void)
                 pte_start[i] = (i << 12) | PAGE_PRESENT | PAGE_WRITE;
         }
 
-        switch_pgd((uint32_t)pgd_kern - PAGE_OFFSET);
+        switch_pgd((uint32_t)ka_to_pa(pgd_kern));
 }
 
 void map(pgd_t *pgd_now, uint32_t va, uint32_t pa, uint32_t flags)
@@ -60,9 +60,9 @@ void map(pgd_t *pgd_now, uint32_t va, uint32_t pa, uint32_t flags)
         if (!pte) {
                 pte = (pte_t *)alloc_pages(1);
                 pgd_now[pgd_idx] = (uint32_t)pte | PAGE_PRESENT | PAGE_WRITE;
-                pte = (pte_t *)((uint32_t)pte - PAGE_OFFSET);
+                pte = (pte_t *)pa_to_ka(pte);
         } else {
-                pte = (pte_t *)((uint32_t)pte - PAGE_OFFSET);
+                pte = (pte_t *)pa_to_ka(pte);
         }
 
         pte[pte_idx] = (pa & PAGE_MASK) | flags;
@@ -82,7 +82,7 @@ void unmap(pgd_t *pgd_now, uint32_t va)
         }
 
         // 转换到内核线性地址
-        pte = (pte_t *)((uint32_t)pte + PAGE_OFFSET);
+        pte = (pte_t *)(pa_to_ka(pte));
 
         pte[pte_idx] = 0;
         
@@ -100,7 +100,7 @@ uint32_t get_mapping(pgd_t *pgd_now, uint32_t va, uint32_t *pa)
         }
         
         // 转换到内核线性地址
-        pte = (pte_t *)((uint32_t)pte + PAGE_OFFSET);
+        pte = (pte_t *)(pa_to_ka(pte));
 
         // 如果地址有效而且指针不为NULL，则返回地址
         if (pte[pte_idx] != 0 && pa) {
