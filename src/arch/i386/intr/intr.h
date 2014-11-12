@@ -21,7 +21,7 @@
 
 #include <types.h>
 
-// 寄存器类型
+// 中断保存的寄存器类型
 typedef
 struct pt_regs_t {
 
@@ -55,13 +55,13 @@ struct pt_regs_t {
         uint32_t esp;
         uint16_t ss;
         uint16_t padding3;
-} pt_regs;
+} pt_regs_t;
 
 // 定义中断处理函数指针
-typedef void (*interrupt_handler_t)(pt_regs *);
+typedef void (*interrupt_handler_t)(pt_regs_t *);
 
 // 调用中断处理函数
-void isr_handler(pt_regs *regs);
+void isr_handler(pt_regs_t *regs);
 
 // 注册一个中断处理函数
 void register_interrupt_handler(uint8_t n, interrupt_handler_t h);
@@ -130,7 +130,7 @@ void isr31();
 void isr128();
 
 // IRQ 处理函数
-void irq_handler(pt_regs *regs);
+void irq_handler(pt_regs_t *regs);
 
 // 定义IRQ
 #define  IRQ0     32    // 电脑系统计时器

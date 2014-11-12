@@ -1,0 +1,125 @@
+/*
+ * =====================================================================================
+ *
+ *       Filename:  task.h
+ *
+ *    Description:  任务相关定义
+ *
+ *        Version:  1.0
+ *        Created:  2014年11月12日 10时18分52秒
+ *       Revision:  none
+ *       Compiler:  gcc
+ *
+ *         Author:  Qianyi.lh (liuhuan), qianyi.lh@alibaba-inc.com
+ *        Company:  Alibaba-Inc Aliyun
+ *
+ * =====================================================================================
+ */
+
+#ifndef INCLUDE_TASK_H_
+#define INCLUDE_TASK_H_
+
+#include <types.h>
+#include <arch.h>
+#include <common.h>
+#include <mm/mm.h>
+#include <lib/list.h>
+
+// fork flag
+#define CLONE_VM            0x00000100  // set if VM shared between processes
+#define CLONE_THREAD        0x00000200  // thread group
+
+// 任务状态字段
+typedef
+enum task_state {
+        TASK_UNINIT = 0,       // 任务未初始化
+        TASK_SLEEPING = 1,     // 任务休眠中
+        TASK_RUNNABLE = 2,     // 任务可执行(可能正在执行)
+        TASK_ZOMBIE = 3,       // 任务已结束(等待回收)
+} task_state_t;
+
+// 按照 x86 规范保存被调用者需要保存的寄存器即可
+struct context {
+        uint32_t eip;
+        uint32_t esp;
+        uint32_t ebp;
+        uint32_t ebx;
+        uint32_t ecx;
+        uint32_t edx;
+        uint32_t esi;
+        uint32_t edi;
+};
+
+#define TASK_NAME_MAX  (20)
+#define MAX_TASK       (4096)
+#define MAX_PID        (MAX_TASK*2)
+
+// 任务描述 PCB
+struct task_struct {
+
+        task_state_t state;             // 任务状态
+
+        void *stack;                    // 任务的内核栈指针
+        
+        pid_t pid;                      // 任务的PID
+        char name[TASK_NAME_MAX+1];     // 任务名称
+
+        uint32_t runs_time;             // 当前任务运行时间
+        volatile bool need_resched;     // 是否需要被重新调度
+        
+        struct task_struct *parent;     // 父进程指针
+        
+        struct mm_struct *mm;           // 任务的内存信息
+        struct pt_regs_t *pt_regs;      // 任务中断保存的寄存器信息
+        struct context context;         // 任务切换上下文信息
+        uint32_t flags;                 // 任务的一些标识
+        
+        struct list_head list;          // 任务链表
+};
+
+#define le_to_task(le) list_entry(le, struct task_struct, list)
+
+extern struct list_head task_list;
+
+// idle 任务指针
+extern struct task_struct *glb_idle_task;
+
+// init 任务指针
+extern struct task_struct *glb_init_task;
+
+#define task_to_stack(task) ((void *)((uint32_t)task + STACK_SIZE))
+#define stack_to_task(stack) ((struct task_struct *)((uint32_t)stack - STACK_SIZE))
+
+#define current get_current()
+
+// 获得当前执行的任务指针
+struct task_struct *get_current(void);
+
+// 任务调度初始化
+void init_task(void);
+
+// 运行一个任务
+void task_run(struct task_struct *task);
+
+// 创建一个内核线程
+int kernel_thread(int (*func)(void *), void *args, uint32_t clone_flags);
+
+// 通过 PID 查找任务
+struct task_struct *find_task(pid_t pid);
+
+// 设置任务名称
+void set_proc_name(struct task_struct *task, char *name);
+
+pid_t do_fork(uint32_t clone_flags, struct pt_regs_t *pt_regs);
+
+int do_exit(int errno);
+
+void cpu_idle(void);
+
+// 声明内核线程入口函数
+extern int kern_thread_entry(void *args);
+
+// 声明切换函数
+extern void switch_to(struct context *from, struct context *to);
+
+#endif  // INCLUDE_TASK_H_

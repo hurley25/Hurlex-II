@@ -21,7 +21,7 @@
 #include <debug.h>
 #include <arch.h>
 
-void do_page_fault(pt_regs *regs)
+void do_page_fault(pt_regs_t *regs)
 {
         uint32_t cr2;
         __asm__ volatile ("mov %%cr2, %0" : "=r" (cr2));

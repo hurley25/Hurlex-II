@@ -20,8 +20,15 @@
 #define INCLUDE_SCHEDULING_H_
 
 #include <arch.h>
+#include <task/task.h>
 
 // clock 中断回调函数
-void clock_callback(pt_regs *regs);
+void clock_callback(pt_regs_t *regs);
+
+// 任务调度
+void schedule(void);
+
+// 唤醒任务
+void wakeup_task(struct task_struct *task);
 
 #endif  // INCLUDE_SCHEDULING_H_

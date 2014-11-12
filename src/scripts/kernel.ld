@@ -9,26 +9,27 @@ SECTIONS
 {
         . = 0x100000;
 
-        PROVIDE( kern_start = .);
-        PROVIDE( kern_init_text_start = .);
+        PROVIDE(kern_start = .);
+        PROVIDE(kern_init_text_start = .);
         .init.text :
         {
                 *(.init.text)
                 . = ALIGN(4096);
         }
-        PROVIDE( kern_init_text_end = .);
-        PROVIDE( kern_init_data_start = .);
+        
+        PROVIDE(kern_init_text_end = .);
+        PROVIDE(kern_init_data_start = .);
         .init.data :
         {
                 *(.init.data)
                 . = ALIGN(4096);
         }
 
-        PROVIDE( kern_init_data_end = .);
+        PROVIDE(kern_init_data_end = .);
 
         . += 0xC0000000;
 
-        PROVIDE( kern_text_start = . - 0xC0000000 );
+        PROVIDE(kern_text_start = . - 0xC0000000);
 
         .text : AT(ADDR(.text) - 0xC0000000)
         {
@@ -36,8 +37,8 @@ SECTIONS
                 . = ALIGN(4096);
         }
 
-        PROVIDE( kern_text_end = . - 0xC0000000 );
-        PROVIDE( kern_data_start = . - 0xC0000000 );
+        PROVIDE(kern_text_end = . - 0xC0000000);
+        PROVIDE(kern_data_start = . - 0xC0000000);
 
         .data : AT(ADDR(.data) - 0xC0000000)
         {
@@ -51,7 +52,7 @@ SECTIONS
                 . = ALIGN(4096);
         }
 
-        PROVIDE( kern_data_end = . - 0xC0000000 );
+        PROVIDE(kern_data_end = . - 0xC0000000);
 
         .stab : AT(ADDR(.stab) - 0xC0000000)
         {
@@ -64,7 +65,7 @@ SECTIONS
                 . = ALIGN(4096);
         }
 
-        PROVIDE( kern_end = . - 0xC0000000 );
+        PROVIDE(kern_end = . - 0xC0000000);
 
         /DISCARD/ : { *(.comment) *(.eh_frame) }
 }

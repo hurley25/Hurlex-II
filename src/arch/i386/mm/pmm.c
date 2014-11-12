@@ -21,6 +21,8 @@
 #include <debug.h>
 #include <sync.h>
 #include <mm/mm.h>
+#include <mm/ff_mm.h>
+#include <mm/buddy_mm.h>
 #include <lib/string.h>
 
 // 物理内存管理算法

@@ -18,10 +18,14 @@
 
 #include <lib/string.h>
 
-inline void memcpy(uint8_t *dest, const uint8_t *src, uint32_t len)
+inline void memcpy(void *dest, void *src, uint32_t len)
 {
-        for (; len != 0; len--) {
-                *dest++ = *src++;
+        uint8_t *sr = src;
+        uint8_t *dst = dest;
+
+        while (len != 0) {
+                *dst++ = *sr++;
+                len--;
         }
 }
 
@@ -37,7 +41,7 @@ inline void bzero(void *dest, uint32_t len)
         memset(dest, 0, len);
 }
 
-inline int strcmp(const char *src, const char *dest)
+inline int strcmp(const char *dest, const char *src)
 {
         int ret = 0 ;
 
@@ -67,6 +71,22 @@ inline char *strcpy(char *dest, const char *src)
         *dest = '\0';
         
         return tmp;
+}
+
+char *strncpy(char *dest, const char *src, uint32_t len)
+{
+        char *dst = dest;
+
+        while (len > 0) {
+                while (*src) {
+                        *dest++ = *src++;
+                }
+                len--;
+        }
+
+        *dest = '\0';
+
+        return dst;
 }
 
 inline char *strcat(char *dest, const char *src)

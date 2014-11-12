@@ -21,6 +21,7 @@
 
 #include <arch.h>
 #include <types.h>
+#include <lib/list.h>
 
 /* *
  * Virtual memory map:
@@ -103,20 +104,42 @@
 // 获取一个地址的页內偏移
 #define OFFSET_INDEX(x)   ((x) & 0xFFF)
 
-// P--位0是存在（Present）
-#define PAGE_PRESENT 	0x1
+// P--位0是存在标识，为 1 则内存页在内存中
+#define PAGE_PRESENT 	(0x1)
 
-// R/W--位1是读/写（Read/Write） 如果等于1，表示页面可以被读、写或执行。
-#define PAGE_WRITE 	0x2
+// R/W--位1是读/写标识，如果等于 1，表示页面可以被读、写或执行。
+#define PAGE_WRITE 	(0x2)
 
-// U/S--位2是用户/超级用户（User/Supervisor）为 1 则任何特权级上的程序都可以访问该页面。
-#define PAGE_USER 	0x4
+// U/S--位2是用户/超级用户标识，为 1 则任何特权级上的程序都可以访问该页面。
+#define PAGE_USER 	(0x4)
 
 // 页表成员数
 #define PGD_SIZE (PAGE_SIZE/sizeof(pte_t))
 
 // 页表成员数
 #define PTE_SIZE (PAGE_SIZE/sizeof(uint32_t))
+
+// 任务内存信息
+struct mm_struct {
+        pgd_t *pgdir;
+        int vma_count;
+        struct list_head vma_list;
+};
+
+// 任务虚拟内存区间
+struct vma_struct {
+        struct mm_struct *mm; 
+        uint32_t vm_start;
+        uint32_t vm_end;
+        uint32_t vm_flags;
+        struct list_head list;
+};
+
+#define le_to_vma(le) list_entry(le, struct vma_struct, list)
+
+#define VM_READ       (1u << 0)
+#define VM_WRITE      (1u << 1)
+#define VM_EXEC       (1u << 2)
 
 // 物理地址转换内核虚拟地址
 static inline void *pa_to_ka(void *pa)
@@ -147,6 +170,6 @@ void unmap(pgd_t *pgd_now, uint32_t va);
 uint32_t get_mapping(pgd_t *pgd_now, uint32_t va, uint32_t *pa);
 
 // 页错误中断的函数处理
-void do_page_fault(pt_regs *regs);
+void do_page_fault(pt_regs_t *regs);
 
 #endif 	// INCLUDE_MM_VMM_H

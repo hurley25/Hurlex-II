@@ -45,48 +45,6 @@ static void gdt_set_gate(int32_t num, uint32_t base, uint32_t limit, uint8_t acc
         gdt_entries[num].access       = access;
 }
 
-// TSS 描述符
-typedef
-struct tss_entry_t {
-        uint32_t ts_link;         // old ts selector
-        uint32_t ts_esp0;         // stack pointers and segment selectors
-        uint16_t ts_ss0;          // after an increase in privilege level
-        uint16_t ts_padding1;
-        uint32_t ts_esp1;
-        uint16_t ts_ss1;
-        uint16_t ts_padding2;
-        uint32_t ts_esp2;
-        uint16_t ts_ss2;
-        uint16_t ts_padding3;
-        uint32_t ts_cr3;          // page directory base
-        uint32_t ts_eip;          // saved state from last task switch
-        uint32_t ts_eflags;
-        uint32_t ts_eax;          // more saved state (registers)
-        uint32_t ts_ecx;
-        uint32_t ts_edx;
-        uint32_t ts_ebx;
-        uint32_t ts_esp;
-        uint32_t ts_ebp;
-        uint32_t ts_esi;
-        uint32_t ts_edi;
-        uint16_t ts_es;           // even more saved state (segment selectors)
-        uint16_t ts_padding4;
-        uint16_t ts_cs;
-        uint16_t ts_padding5;
-        uint16_t ts_ss;
-        uint16_t ts_padding6;
-        uint16_t ts_ds;
-        uint16_t ts_padding7;
-        uint16_t ts_fs;
-        uint16_t ts_padding8;
-        uint16_t ts_gs;
-        uint16_t ts_padding9;
-        uint16_t ts_ldt;
-        uint16_t ts_padding10;
-        uint16_t ts_t;            // trap on task switch
-        uint16_t ts_iomb;         // i/o map base address
-} __attribute__((packed)) tss_entry_t;
-
 // TSS 段定义
 tss_entry_t tss_entry __attribute__ ((aligned(8)));
 

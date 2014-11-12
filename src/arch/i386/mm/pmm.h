@@ -22,26 +22,32 @@
 #include <types.h>
 #include <atomic.h>
 
-// 默认栈的大小
-#define STACK_SIZE 8192
+// 默认栈的大小(8192)
+#define STACK_SIZE     (0x2000)
 
 // 物理内存页框大小 
-#define PMM_PAGE_SIZE 0x1000
+#define PMM_PAGE_SIZE  (0x1000)
 
 // 页掩码 按照 0x1000(4096) 对齐地址
-#define PMM_PAGE_MASK 0xFFFFF000
+#define PMM_PAGE_MASK  (0xFFFFF000)
 
 // 内核在物理内存起始位置
-#define RAM_KERNEL_START 0x100000
+#define RAM_KERNEL_START (0x100000)
 
 // 内核代码在内存中的起始和结束位置，在链接脚本中定义
 extern uint8_t kern_start[];
 extern uint8_t kern_end[];
 
+// 开启分页机制之后的内核栈
+extern char kern_stack[STACK_SIZE];
+
+// 内核栈的栈顶
+extern uint32_t kern_stack_top;
+
 // BIOS int 0x15 AX = 0xE820 常量
-#define E820MAX             20      // 最大的表项数目
-#define E820_ARM            1       // 可用 RAM
-#define E820_ARR            2       // 保留区域
+#define E820MAX             (20)      // 最大的表项数目
+#define E820_ARM            (1)       // 可用 RAM
+#define E820_ARR            (2)       // 保留区域
 
 typedef
 struct e820map_t {
@@ -63,8 +69,8 @@ enum mem_zone_t {
         ZONE_HIGHMEM = 2
 } mem_zone_t;
 
-#define ZONE_NORMAL_ADDR     0x1000000   // 16 MB
-#define ZONE_HIGHMEM_ADDR    0x38000000  // 896 MB
+#define ZONE_NORMAL_ADDR     (0x1000000)   // 16 MB
+#define ZONE_HIGHMEM_ADDR    (0x38000000)  // 896 MB
 
 // 物理页结构
 typedef
@@ -79,9 +85,9 @@ struct page_t {
 } page_t;
 
 // page_t 的 flag 参数的操作宏
-#define PG_RESERVED     0       // 1 << 0 表示页当前不可用
-#define PG_NCOUNT       1       // 1 << 1 表示 ncount 字段有效
-#define PG_ORDER        2       // 1 << 2 表示 order 字段有效
+#define PG_RESERVED     (0)       // 1 << 0 表示页当前不可用
+#define PG_NCOUNT       (1)       // 1 << 1 表示 ncount 字段有效
+#define PG_ORDER        (2)       // 1 << 2 表示 order 字段有效
 
 #define set_page_reserved_flag(page)       set_bit(PG_RESERVED, &((page)->flag))
 #define clear_page_reserved_flag(page)     clear_bit(PG_RESERVED, &((page)->flag))

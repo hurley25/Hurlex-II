@@ -22,8 +22,9 @@
 #include <mm/gdt.h>
 #include <intr/intr.h>
 #include <driver/clock.h>
-#include <sched/sched.h>
 #include <driver/pic.h>
+#include <task/task.h>
+#include <sched/sched.h>
 
 // 架构相关的初始化
 void init_arch(void);

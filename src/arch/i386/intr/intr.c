@@ -141,7 +141,7 @@ static const char *intrname(uint32_t intrno)
 }
 
 // 调用中断处理函数
-void isr_handler(pt_regs *regs)
+void isr_handler(pt_regs_t *regs)
 {
         if (interrupt_handlers[regs->int_no]) {
               interrupt_handlers[regs->int_no](regs);
@@ -158,7 +158,7 @@ void register_interrupt_handler(uint8_t n, interrupt_handler_t h)
 }
 
 // IRQ 处理函数
-void irq_handler(pt_regs *regs)
+void irq_handler(pt_regs_t *regs)
 {
         // 重设PIC芯片
 	clear_interrupt_chip(regs->int_no);

@@ -118,4 +118,10 @@ static inline void tlb_reload_page(uint32_t va)
         __asm__ volatile ("invlpg (%0)" : : "a" (va));
 }
 
+// 修改栈地址
+static inline void load_esp(uint32_t esp)
+{
+        __asm__ volatile ("mov %0, %%esp" : : "r" (esp));
+}
+
 #endif  // INCLUDE_COMMON_H_
