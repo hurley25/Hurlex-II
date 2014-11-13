@@ -4,10 +4,10 @@
 ;       qianyi.lh  2014/11/12  14:45:54
 ; -------------------------------------------------
 
-[GLOBAL kern_thread_entry]
+[GLOBAL kthread_entry]
 [EXTERN do_exit]
 
-kern_thread_entry:
+kthread_entry:
         push edx         ; push args
         call ebx         ; call fn
 

@@ -18,6 +18,7 @@
 
 #include <debug.h>
 #include <sync.h>
+#include <common.h>
 #include <mm/mm.h>
 #include <lib/string.h>
 
@@ -31,23 +32,14 @@ struct task_struct *glb_init_task;
 // 任务总数
 static int nr_task = 0;
 
-struct task_struct *get_current(void)
+static int init_main(void *args)
 {
-        register uint32_t esp __asm__ ("esp");;
-
-        return (struct task_struct *)(esp & (~(STACK_SIZE-1)));
-}
-
-static int init_main(void *arg)
-{
-        printk("this initproc, pid = %d, name = \"%s\"\n", current->pid, current->name);
-        printk("To U: \"%s\".\n", (const char *)arg);
-        printk("To U: \"en.., Bye, Bye. :)\"\n");
+        printk_color(rc_black, rc_red, "It's %s thread  pid = %d  args: %s\n",
+                        current->name, current->pid, (const char *)args);
 
         return 0;
 }
 
-// 任务调度初始化
 void init_task(void)
 {
         INIT_LIST_HEAD(&task_list);
@@ -66,7 +58,7 @@ void init_task(void)
 
         glb_idle_task = idle_task;
 
-        pid_t pid = kernel_thread(init_main, "Hello New Thread!", 0);
+        pid_t pid = kernel_thread(init_main, "I'm a new thread", 0);
         assert(pid >= 0, "init_task error!");
 
         glb_init_task = find_task(pid);
@@ -76,7 +68,27 @@ void init_task(void)
         assert(glb_init_task != NULL && glb_init_task->pid == 1, "init_task error");
 }
 
-// 运行一个任务
+// 声明创建的内核线程入口函数
+extern int kthread_entry(void *args);
+
+int kernel_thread(int (*func)(void *), void *args, uint32_t clone_flags)
+{
+        pt_regs_t pt_regs;
+        bzero(&pt_regs, sizeof(pt_regs_t));
+
+        pt_regs.cs = KERNEL_CS;
+        pt_regs.ds = KERNEL_DS;
+        pt_regs.ss = KERNEL_DS;
+        pt_regs.ebx = (uint32_t)func;
+        pt_regs.edx = (uint32_t)args;
+        pt_regs.eip = (uint32_t)kthread_entry;
+
+        return do_fork(clone_flags | CLONE_VM, &pt_regs);
+}
+
+// 切换函数
+extern void switch_to(struct context *from, struct context *to);
+
 void task_run(struct task_struct *task)
 {
         if (task != current) {
@@ -85,6 +97,7 @@ void task_run(struct task_struct *task)
                 bool intr_flag = false;
                 local_intr_store(intr_flag);
                 {
+                	//tss_load_esp(uint32_t)next->stack);
                         if (!task && task->mm && task->mm->pgdir) {
                                 // load cr3
                         }
@@ -94,7 +107,13 @@ void task_run(struct task_struct *task)
         }
 }
 
-// 通过 PID 查找任务(可以考虑建立hash表存储)
+struct task_struct *get_current(void)
+{
+        register uint32_t esp __asm__ ("esp");;
+
+        return (struct task_struct *)(esp & (~(STACK_SIZE-1)));
+}
+
 struct task_struct *find_task(pid_t pid)
 {
         if (pid > 0 && pid < MAX_PID) {
@@ -140,6 +159,9 @@ static int copy_mm(uint32_t clone_flags, struct task_struct *task)
         return 0;
 }
 
+// 定义在 intr_s.s
+void forkret_s(struct pt_regs_t *pt_regs);
+
 static void copy_thread(struct task_struct *task, struct pt_regs_t *pt_regs)
 {
         task->pt_regs = (struct pt_regs_t *)((uint32_t)task->stack - sizeof(struct pt_regs_t));
@@ -148,11 +170,7 @@ static void copy_thread(struct task_struct *task, struct pt_regs_t *pt_regs)
         task->pt_regs->esp = (uint32_t)task->stack;
         task->pt_regs->eflags |= FL_IF;
 
-        // TODO
-        task->context.eip = task->pt_regs->eip;
-        task->context.ebx = task->pt_regs->ebx;
-        task->context.edx = task->pt_regs->edx;
-        
+        task->context.eip = (uint32_t)forkret_s;
         task->context.esp = (uint32_t)task->pt_regs;
 }
 
@@ -189,35 +207,24 @@ pid_t do_fork(uint32_t clone_flags, struct pt_regs_t *pt_regs)
         return task->pid;
 }
 
-int kernel_thread(int (*func)(void *), void *args, uint32_t clone_flags)
+void do_exit(int errno)
 {
-        pt_regs_t pt_regs;
-        bzero(&pt_regs, sizeof(pt_regs_t));
+        bool intr_flag;
+        local_intr_store(intr_flag);
+        {
+                current->state = TASK_ZOMBIE;
+                current->exit_code = errno;
+                current->need_resched = true;
+        }
+        local_intr_restore(intr_flag);
 
-        pt_regs.cs = KERNEL_CS;
-        pt_regs.ds = KERNEL_DS;
-        pt_regs.ss = KERNEL_DS;
-        pt_regs.ebx = (uint32_t)func;
-        pt_regs.edx = (uint32_t)args;
-        pt_regs.eip = (uint32_t)kern_thread_entry;
-
-        return do_fork(clone_flags | CLONE_VM, &pt_regs);
-}
-
-int do_exit(int errno)
-{
-        printk("do_exit errno is: \n", errno);
-        panic("de_exit");
-
-        return 0;
+        cpu_idle();
 }
 
 void cpu_idle(void)
 {
-        while (true) {
-                if (current->need_resched) {
-                        schedule();
-                }
+        if (current->need_resched) {
+                schedule();
         }
 }
  

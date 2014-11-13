@@ -24,8 +24,8 @@
 
 void clock_callback(__attribute__((unused))pt_regs_t *regs)
 {
-        static uint32_t tick = 0;
-        printk_color(rc_black, rc_red, "Tick Count: %d\n", tick++);
+        //static uint32_t tick = 0;
+        //printk_color(rc_black, rc_red, "Tick Count: %d\n", tick++);
 }
 
 void schedule(void)
@@ -36,7 +36,7 @@ void schedule(void)
         bool intr_flag = false;
         local_intr_store(intr_flag);
         {
-                current->need_resched = 0;
+                current->need_resched = false;
                 last = (current == glb_idle_task) ? &task_list : &(current->list);
                 le = last;
                 do {

@@ -127,6 +127,7 @@ IRQ  14,    46 	; IDE0 传输控制使用
 IRQ  15,    47 	; IDE1 传输控制使用
 
 [GLOBAL irq_common_stub]
+[GLOBAL forkret_s]
 [EXTERN irq_handler]
 irq_common_stub:
 	pusha                    ; pushes edi, esi, ebp, esp, ebx, edx, ecx, eax
@@ -144,7 +145,8 @@ irq_common_stub:
 	push esp
 	call irq_handler
 	add esp, 4
-	
+
+forkret_s:
 	pop ebx                   ; 恢复原来的数据段描述符
 	mov ds, bx
 	mov es, bx

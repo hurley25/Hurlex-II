@@ -33,13 +33,17 @@ void kern_init(void)
         printk_color(rc_black, rc_green, "Hello, Hurlex II kernel!\n\n");
         
         init_mm();
-        printk_color(rc_black, rc_green, "Init Virtual Memory Succeed!\n\n");
 
-	init_task();
-        //init_clock();
+        init_clock();
+        init_task();
+        
         //enable_intr();
 
+        printk_color(rc_black, rc_green, "\nIt's %s thread  pid = %d\n\n", current->name, current->pid);
+
         cpu_idle();
+
+        printk_color(rc_black, rc_green, "\nIt's %s thread  pid = %d\n\n", current->name, current->pid);
 
         while (true) {
                 cpu_hlt();

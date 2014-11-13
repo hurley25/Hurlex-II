@@ -9,16 +9,21 @@
 
 switch_to:
         mov eax, [esp+4]
-        pop eax
+        
+        push ebx
+        mov ebx, [esp+4]
+        mov [eax], ebx
+        pop ebx
+        
         mov [eax+4], esp
         mov [eax+8], ebp
         mov [eax+12], ecx
-        mov [eax+16], edi
+        mov [eax+16], edx
         mov [eax+20], esi
         mov [eax+24], edi
         mov [eax+28], ebp
 
-        mov eax, [esp+4]
+        mov eax, [esp+8]
 
         mov ebp, [eax+28]
         mov edi, [eax+24]
@@ -28,7 +33,11 @@ switch_to:
         mov ebx, [eax+8]
         mov esp, [eax+4]
         
-        push eax
+        push ebx
+        push ebx
+        mov ebx, [eax]
+        mov [esp+4], ebx
+        pop ebx
  	
         ret
 

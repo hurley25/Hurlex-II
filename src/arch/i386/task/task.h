@@ -42,12 +42,12 @@ enum task_state {
 struct context {
         uint32_t eip;
         uint32_t esp;
-        uint32_t ebp;
         uint32_t ebx;
         uint32_t ecx;
         uint32_t edx;
         uint32_t esi;
         uint32_t edi;
+        uint32_t ebp;
 };
 
 #define TASK_NAME_MAX  (20)
@@ -73,6 +73,7 @@ struct task_struct {
         struct pt_regs_t *pt_regs;      // 任务中断保存的寄存器信息
         struct context context;         // 任务切换上下文信息
         uint32_t flags;                 // 任务的一些标识
+        uint32_t exit_code;             // 任务的退出代码
         
         struct list_head list;          // 任务链表
 };
@@ -110,16 +111,10 @@ struct task_struct *find_task(pid_t pid);
 // 设置任务名称
 void set_proc_name(struct task_struct *task, char *name);
 
-pid_t do_fork(uint32_t clone_flags, struct pt_regs_t *pt_regs);
-
-int do_exit(int errno);
-
 void cpu_idle(void);
 
-// 声明内核线程入口函数
-extern int kern_thread_entry(void *args);
+pid_t do_fork(uint32_t clone_flags, struct pt_regs_t *pt_regs);
 
-// 声明切换函数
-extern void switch_to(struct context *from, struct context *to);
+void do_exit(int errno);
 
 #endif  // INCLUDE_TASK_H_
