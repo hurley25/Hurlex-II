@@ -40,6 +40,33 @@ static int init_main(void *args)
         return 0;
 }
 
+static uint32_t glb_pid_map[MAX_PID/32];
+
+static pid_t alloc_pid(void)
+{
+        for (uint32_t i = 0; i < MAX_PID/32; ++i) {
+                if (glb_pid_map[i] == 0xFFFFFFFF) {
+                        continue;
+                }
+                for (uint32_t j = 0; j < 32; ++j) {
+                        if (((1u << j) & glb_pid_map[i]) == 0) {
+                                glb_pid_map[i] |= 1u << j;
+                                return (pid_t)(i * 32 + j);
+                        }
+                }
+        }
+
+        return -1;
+}
+
+static void free_pid(pid_t pid)
+{
+        if (pid < 0 || pid > MAX_PID) {
+                return;
+        }
+        glb_pid_map[pid/32] &= ~(1u << (pid % 32));
+}
+
 void init_task(void)
 {
         INIT_LIST_HEAD(&task_list);
@@ -49,7 +76,7 @@ void init_task(void)
 
         idle_task->state = TASK_RUNNABLE;
         idle_task->stack = (void *)kern_stack_top;
-        idle_task->pid = 0;
+        idle_task->pid = alloc_pid();
         idle_task->need_resched = true;
         set_proc_name(idle_task, "idle");
 
@@ -195,8 +222,7 @@ pid_t do_fork(uint32_t clone_flags, struct pt_regs_t *pt_regs)
         bool intr_flag = false;
         local_intr_store(intr_flag);
         {
-                //task->pid = alloc_pid();
-                task->pid = 1;
+                task->pid = alloc_pid();
                 list_add(&task->list, &task_list);
                 nr_task ++;
         }
@@ -215,6 +241,8 @@ void do_exit(int errno)
                 current->state = TASK_ZOMBIE;
                 current->exit_code = errno;
                 current->need_resched = true;
+                nr_task--;
+                // pid 在清理 task_struct 的时候释放给内核
         }
         local_intr_restore(intr_flag);
 
