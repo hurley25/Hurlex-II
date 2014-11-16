@@ -49,7 +49,7 @@ iso:
 
 .PHONY:runiso
 runiso:
-	qemu -cdrom hurlex.iso
+	qemu -cdrom hurlex.iso -boot d
 
 .PHONY:update_image
 update_image:
