@@ -37,8 +37,16 @@ static int init_main(void *args)
 {
         printk_color(rc_black, rc_red, "It's %s thread  pid = %d  args: %s\n",
                         current->name, current->pid, (const char *)args);
+        return 0;
+}
 
-        printk_color(rc_black, rc_light_brown, "\nTest syscall(0) now:\n");
+static int user_mode_test_main(void *args)
+{
+        printk_color(rc_black, rc_blue, "It's %s thread  pid = %d  args: %s\n",
+                        current->name, current->pid, (const char *)args);
+
+        printk_color(rc_black, rc_light_brown, "\nTest syscall now:\n");
+
         __asm__ volatile ("mov $0, %eax");
         __asm__ volatile ("int $0x80");
 
@@ -90,16 +98,20 @@ void init_task(void)
 
         glb_idle_task = idle_task;
 
+        // 注册系统调用中断
+        register_interrupt_handler(0x80, syscall_handler);
+
         pid_t pid = kernel_thread(init_main, "I'm a new thread", 0);
-        assert(pid >= 0, "init_task error!");
+        assert(pid > 0, "init_task error!");
 
         glb_init_task = find_task(pid);
         set_proc_name(glb_init_task, "init");
+ 
+        pid = kernel_thread(user_mode_test_main, "ring0 -> ring3", 0);
+        assert(pid > 0, "user_mode_test thread error!");
 
-        register_interrupt_handler(0x80, syscall_handler);
-
-        assert(glb_idle_task != NULL && glb_idle_task->pid == 0, "init_task error");
-        assert(glb_init_task != NULL && glb_init_task->pid == 1, "init_task error");
+        glb_init_task = find_task(pid);
+        set_proc_name(glb_init_task, "user_mode_test");
 }
 
 // 声明创建的内核线程入口函数
@@ -249,7 +261,7 @@ void do_exit(int errno)
                 current->exit_code = errno;
                 current->need_resched = true;
                 nr_task--;
-                // pid 在清理 task_struct 的时候释放给内核
+                free_pid(current->pid);
         }
         local_intr_restore(intr_flag);
 

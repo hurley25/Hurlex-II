@@ -26,7 +26,7 @@ static int sys_test(uint32_t args[])
 {
         int errno = (int)args[0];
 
-        printk_color(rc_black, rc_light_brown, "\n\tsys_test run here!\n");
+        printk_color(rc_black, rc_light_brown, "\n\tsys_test run here!\n\n");
 
         return errno;
 }
