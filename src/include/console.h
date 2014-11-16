@@ -37,7 +37,7 @@ enum real_color {
         rc_light_cyan = 11,
         rc_light_red = 12,
         rc_light_magenta = 13,
-        rc_light_brown  = 14,   // yellow
+        rc_light_brown  = 14,
         rc_white = 15
 } real_color_t;
 

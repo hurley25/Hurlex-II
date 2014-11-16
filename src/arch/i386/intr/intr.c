@@ -89,7 +89,7 @@ void init_idt(void)
         }
 
         // 128 (0x80) 将来用于实现系统调用
-        idt_set_gate(128, (uint32_t)isr128, 0x08, 0x8E);
+        idt_set_gate(128, (uint32_t)isr128, 0x08, 0xEF);
 
         // 更新设置中断描述符表
         idt_flush((uint32_t)&idt_ptr);
@@ -104,8 +104,7 @@ static void idt_set_gate(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags
         idt_entries[num].sel = sel;
         idt_entries[num].always0 = 0;
 
-        // 设置中断门的特权级别为 3
-        idt_entries[num].flags = flags | 0x60;
+        idt_entries[num].flags = flags;
 }
 
 static const char *intrname(uint32_t intrno)

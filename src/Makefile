@@ -42,6 +42,15 @@ link:
 clean:
 	$(RM) $(S_OBJECTS) $(C_OBJECTS) hx_kernel
 
+.PHONY:iso
+iso:
+	cp hx_kernel isodir/boot/
+	grub2-mkrescue -o hurlex.iso isodir
+
+.PHONY:runiso
+runiso:
+	qemu -cdrom hurlex.iso
+
 .PHONY:update_image
 update_image:
 	sudo mount floppy.img /mnt/kernel

@@ -29,29 +29,29 @@ struct pt_regs_t {
         uint16_t ds;
         uint16_t padding1;
 
-        // 从 edi 到 eax 由 pusha 指令压入
+        // 从 edi 到 eax 由 pusha 指令压栈
         uint32_t edi;
         uint32_t esi;
         uint32_t ebp;
-        uint32_t oesp;   // Useless
+        uint32_t oesp;
         uint32_t ebx;
         uint32_t edx;
         uint32_t ecx;
         uint32_t eax;
 
-        // 中断号(自行压入)
+        // 中断号(内核代码自行压栈)
         uint32_t int_no;
 
-        // 错误代码(有中断错误代码的中断会由CPU压入)
+        // 错误代码(有中断错误代码的中断会由CPU压栈)
         uint32_t err_code;
 
-        // 以下由处理器自动压入
+        // 以下由处理器自动压栈
         uint32_t eip;
         uint16_t cs;
         uint16_t padding2;
         uint32_t eflags;
 
-        // 如果发生了特权级的切换则压入
+        // 如果发生了特权级的切换CPU会压栈
         uint32_t esp;
         uint16_t ss;
         uint16_t padding3;

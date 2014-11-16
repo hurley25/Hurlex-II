@@ -22,8 +22,8 @@
 #include <types.h>
 #include <atomic.h>
 
-// 默认栈的大小(8192)
-#define STACK_SIZE     (0x2000)
+// 默认栈的大小(4096)
+#define STACK_SIZE     (0x1000)
 
 // 物理内存页框大小 
 #define PMM_PAGE_SIZE  (0x1000)

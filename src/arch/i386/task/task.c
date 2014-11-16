@@ -21,6 +21,7 @@
 #include <common.h>
 #include <mm/mm.h>
 #include <lib/string.h>
+#include <syscall/syscall.h>
 
 #include "task.h"
 
@@ -36,6 +37,10 @@ static int init_main(void *args)
 {
         printk_color(rc_black, rc_red, "It's %s thread  pid = %d  args: %s\n",
                         current->name, current->pid, (const char *)args);
+
+        printk_color(rc_black, rc_light_brown, "\nTest syscall(0) now:\n");
+        __asm__ volatile ("mov $0, %eax");
+        __asm__ volatile ("int $0x80");
 
         return 0;
 }
@@ -90,6 +95,8 @@ void init_task(void)
 
         glb_init_task = find_task(pid);
         set_proc_name(glb_init_task, "init");
+
+        register_interrupt_handler(0x80, syscall_handler);
 
         assert(glb_idle_task != NULL && glb_idle_task->pid == 0, "init_task error");
         assert(glb_init_task != NULL && glb_init_task->pid == 1, "init_task error");

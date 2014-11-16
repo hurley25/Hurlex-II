@@ -66,7 +66,7 @@ static void get_ram_info(e820map_t *e820map)
 
         mmap_entry_t *map_entry;
         for (map_entry = mmap_start_addr; map_entry < mmap_end_addr; map_entry++) {
-                if (map_entry->type == MULTIBOOT_TYPE_RAM && map_entry->base_addr_low >= RAM_KERNEL_START) {
+                if (map_entry->type == MULTIBOOT_TYPE_RAM && map_entry->base_addr_low == RAM_KERNEL_START) {
                         e820map->map[e820map->count].addr_low = map_entry->base_addr_low;
                         e820map->map[e820map->count].addr_high = map_entry->base_addr_high;
                         e820map->map[e820map->count].length_low = map_entry->length_low;
@@ -100,9 +100,6 @@ static void phy_pages_init(e820map_t *e820map)
         for (uint32_t i = 0; i < e820map->count; ++i){
                 uint32_t start_addr = e820map->map[i].addr_low;
                 uint32_t end_addr = e820map->map[i].addr_low + e820map->map[i].length_low;
-                if (start_addr > ZONE_HIGHMEM_ADDR) {
-                        break;
-                }
                 if (start_addr < pmm_addr_start) {
                         start_addr = pmm_addr_start;
                 }
@@ -115,10 +112,14 @@ static void phy_pages_init(e820map_t *e820map)
                 pmm_addr_end = end_addr;
         }
 
-        assert(pmm_addr_start == page_to_addr(&phy_pages[0]), "phy_pages_init error");
-        assert(pmm_addr_end - PMM_PAGE_SIZE == page_to_addr(&phy_pages[phy_pages_count-1]), "phy_pages_init error");
-        assert(&phy_pages[0] == addr_to_page(page_to_addr(&phy_pages[0])), "phy_pages_init error");
-        assert(&phy_pages[1] == addr_to_page(page_to_addr(&phy_pages[1])), "phy_pages_init error");
+        assert(pmm_addr_start == page_to_addr(&phy_pages[0]),
+                        "phy_pages_init error pmm_start != &page[0]");
+        assert(pmm_addr_end - PMM_PAGE_SIZE == page_to_addr(&phy_pages[phy_pages_count-1]),
+                        "phy_pages_init error pmm_end != &page[n-1]");
+        assert(&phy_pages[0] == addr_to_page(page_to_addr(&phy_pages[0])),
+                        "phy_pages_init error addr_to_page error");
+        assert(&phy_pages[1] == addr_to_page(page_to_addr(&phy_pages[1])),
+                        "phy_pages_init error addr_to_page error");
 }
 
 page_t *addr_to_page(uint32_t addr)
