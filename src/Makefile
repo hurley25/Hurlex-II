@@ -23,7 +23,7 @@ C_FLAGS = -std=c99 -c -m32 -Wall -Wextra -ggdb -gstabs+ -ffreestanding \
 LD_FLAGS = -T scripts/kernel.ld -nostdlib
 ASM_FLAGS = -f elf -g -F stabs
 
-all: $(S_OBJECTS) $(C_OBJECTS) link update_image
+all: $(S_OBJECTS) $(C_OBJECTS) link update_fd
 
 # The automatic variable `$<' is just the first prerequisite
 .c.o:
@@ -51,8 +51,8 @@ iso:
 runiso:
 	qemu -cdrom hurlex.iso -boot d
 
-.PHONY:update_image
-update_image:
+.PHONY:update_fd
+update_fd:
 	sudo mount floppy.img /mnt/kernel
 	sudo cp hx_kernel /mnt/kernel/hx_kernel
 	sleep 1
@@ -68,6 +68,10 @@ umount_image:
 
 .PHONY:qemu
 qemu:
+	qemu -kernel hx_kernel
+
+.PHONY:runfd
+runfd:
 	qemu -fda floppy.img -boot a
 
 .PHONY:debug
