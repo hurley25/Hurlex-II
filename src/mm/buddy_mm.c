@@ -97,8 +97,8 @@ static void buddy_page_init(page_t *pages, uint32_t n)
         }
 
         buddy_show_memory_info();
-        //buddy_show_management_info();
-        //buddy_test_mm();
+        buddy_show_management_info();
+        buddy_test_mm();
 }
 
 static uint32_t get_order(uint32_t size)

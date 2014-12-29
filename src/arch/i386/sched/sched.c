@@ -47,7 +47,7 @@ void schedule(void)
                                         break;
                                 }
                         }
-                } 
+                }
 
                 // 未找到可运行的任务
                 if (!task_next || task_next->state != TASK_RUNNABLE) {

@@ -128,7 +128,7 @@ struct mm_struct {
 
 // 任务虚拟内存区间
 struct vma_struct {
-        struct mm_struct *mm; 
+        struct mm_struct *mm;
         uint32_t vm_start;
         uint32_t vm_end;
         uint32_t vm_flags;
