@@ -19,6 +19,7 @@
 #include <debug.h>
 #include <sync.h>
 #include <common.h>
+#include <sched.h>
 #include <mm/mm.h>
 #include <lib/string.h>
 #include <syscall/syscall.h>

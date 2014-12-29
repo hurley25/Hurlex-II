@@ -42,15 +42,6 @@ link:
 clean:
 	$(RM) $(S_OBJECTS) $(C_OBJECTS) hx_kernel
 
-.PHONY:iso
-iso:
-	cp hx_kernel isodir/boot/
-	grub2-mkrescue -o hurlex.iso isodir
-
-.PHONY:runiso
-runiso:
-	qemu -cdrom hurlex.iso -boot d
-
 .PHONY:update_fd
 update_fd:
 	sudo mount floppy.img /mnt/kernel
@@ -66,17 +57,26 @@ mount_image:
 umount_image:
 	sudo umount /mnt/kernel
 
-.PHONY:qemu
-qemu:
-	qemu -kernel hx_kernel
+.PHONY:iso
+iso:
+	cp hx_kernel isodir/boot/
+	grub2-mkrescue -o hurlex.iso isodir
+
+.PHONY:runiso
+runiso:
+	qemu -m 128 -cdrom hurlex.iso -boot d
 
 .PHONY:runfd
 runfd:
-	qemu -fda floppy.img -boot a
+	qemu -m 128 -fda floppy.img -boot a
+
+.PHONY:qemu
+qemu:
+	qemu -m 128 -kernel hx_kernel
 
 .PHONY:debug
 debug:
-	qemu -S -s -fda floppy.img -boot a &
+	qemu -S -s -m 128 -fda floppy.img -boot a &
 	sleep 1
 	cgdb -x scripts/gdbinit
 
