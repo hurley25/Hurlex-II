@@ -21,10 +21,10 @@ gdt_flush:
 .flush:
         ret
 
-[GLOBAL tss_flush]    ; TSS 刷新
+[GLOBAL tss_flush]        ; TSS 刷新
 tss_flush:
-    mov ax, 0x28      ; TSS 在全局描述符表里是第5个
-       		      ; 故而 00101000B 即就是 0x28
-    ltr ax            ; 加载到 TR 寄存器
-    ret
+        mov ax, 0x28      ; TSS 在全局描述符表里是第5个
+       		          ; 故而 00101000B 即就是 0x28
+        ltr ax            ; 加载到 TR 寄存器
+        ret
 

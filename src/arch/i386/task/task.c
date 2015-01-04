@@ -34,26 +34,6 @@ struct task_struct *glb_init_task;
 // 任务总数
 static int nr_task = 0;
 
-static int init_main(void *args)
-{
-        printk_color(rc_black, rc_red, "It's %s thread  pid = %d  args: %s\n",
-                        current->name, current->pid, (const char *)args);
-        return 0;
-}
-
-static int user_mode_test_main(void *args)
-{
-        printk_color(rc_black, rc_blue, "It's %s thread  pid = %d  args: %s\n",
-                        current->name, current->pid, (const char *)args);
-
-        printk_color(rc_black, rc_light_brown, "\nTest syscall now:\n");
-
-        __asm__ volatile ("mov $0, %eax");
-        __asm__ volatile ("int $0x80");
-
-        return 0;
-}
-
 static uint32_t glb_pid_map[MAX_PID/32];
 
 static pid_t alloc_pid(void)
@@ -101,18 +81,6 @@ void init_task(void)
 
         // 注册系统调用中断
         register_interrupt_handler(0x80, syscall_handler);
-
-        pid_t pid = kernel_thread(init_main, "I'm a new thread", 0);
-        assert(pid > 0, "init_task error!");
-
-        glb_init_task = find_task(pid);
-        set_proc_name(glb_init_task, "init");
- 
-        pid = kernel_thread(user_mode_test_main, "ring0 -> ring3", 0);
-        assert(pid > 0, "user_mode_test thread error!");
-
-        glb_init_task = find_task(pid);
-        set_proc_name(glb_init_task, "user_mode_test");
 }
 
 // 声明创建的内核线程入口函数
@@ -255,7 +223,7 @@ pid_t do_fork(uint32_t clone_flags, struct pt_regs_t *pt_regs)
 
 void do_exit(int errno)
 {
-        bool intr_flag;
+        bool intr_flag = false;
         local_intr_store(intr_flag);
         {
                 current->state = TASK_ZOMBIE;

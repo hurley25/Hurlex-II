@@ -24,8 +24,7 @@
 
 void clock_callback(__attribute__((unused))pt_regs_t *regs)
 {
-        //static uint32_t tick = 0;
-        //printk_color(rc_black, rc_red, "Tick Count: %d\n", tick++);
+        schedule();
 }
 
 void schedule(void)

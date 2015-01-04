@@ -18,6 +18,7 @@
 
 #include <console.h>
 #include <common.h>
+#include <sync.h>
 #include <mm/mm.h>
 
 /*
@@ -147,7 +148,12 @@ void console_putc_color(char c, real_color_t back, real_color_t fore)
 void console_write(char *cstr)
 {
         while (*cstr) {
-              console_putc_color(*cstr++, rc_black, rc_white);
+                bool intr_flag = false;
+                local_intr_store(intr_flag);
+                {
+                        console_putc_color(*cstr++, rc_black, rc_white);
+                }
+                local_intr_restore(intr_flag);
         }
 }
 
@@ -155,7 +161,12 @@ void console_write(char *cstr)
 void console_write_color(char *cstr, real_color_t back, real_color_t fore)
 {
         while (*cstr) {
-              console_putc_color(*cstr++, back, fore);
+                bool intr_flag = false;
+                local_intr_store(intr_flag);
+                {
+                        console_putc_color(*cstr++, back, fore);
+                }
+                local_intr_restore(intr_flag);
         }
 }
 
