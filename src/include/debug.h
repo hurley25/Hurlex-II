@@ -19,7 +19,7 @@
 #ifndef INCLUDE_DEBUG_H_
 #define INCLUDE_DEBUG_H_
 
-#include <console.h>
+#include <arch.h>
 #include <vargs.h>
 #include <elf.h>
 #include <errno.h>

@@ -1,12 +1,12 @@
 /*
  * =====================================================================================
  *
- *       Filename:  arch.h
+ *       Filename:  stdio.h
  *
- *    Description:  架构相关的头文件引用
+ *    Description:  基本输入输出的实现
  *
  *        Version:  1.0
- *        Created:  2014年11月05日 09时48分34秒
+ *        Created:  2015年01月11日 17时15分20秒
  *       Revision:  none
  *       Compiler:  gcc
  *
@@ -16,17 +16,8 @@
  * =====================================================================================
  */
 
-#ifndef ARCH_H_
-#define ARCH_H_
+#ifndef INCLUDE_STDIO_H_
+#define INCLUDE_STDIO_H_
 
-#include <mm/gdt.h>
-#include <intr/intr.h>
-#include <driver/clock.h>
-#include <driver/pic.h>
-#include <driver/console.h>
-#include <task/task.h>
 
-// 架构相关的初始化
-void init_arch(void);
-
-#endif  // ARCH_H_
+#endif  // INCLUDE_STDIO_H_

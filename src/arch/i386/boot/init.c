@@ -58,7 +58,7 @@ __attribute__((section(".init.text"))) void kern_entry(void)
                         "xor %%ebp, %%ebp" : : "r" (kern_stack_top));
 
         // 更新全局 multiboot_t 指针指向
-        glb_mboot_ptr = mboot_ptr_tmp + PAGE_OFFSET;
+        glb_mboot_ptr = (multiboot_t *)((uint32_t)mboot_ptr_tmp + PAGE_OFFSET);
 
         // 调用内核初始化函数
         kern_init();
@@ -104,5 +104,6 @@ void init_arch(void)
         init_gdt();
         init_idt();
         init_clock();
+        init_console();
 }
 

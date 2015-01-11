@@ -30,7 +30,7 @@ struct gdt_entry_t {
 } __attribute__((packed)) gdt_entry_t;
 
 // 全局描述符表定义
-gdt_entry_t gdt_entries[GDT_LENGTH] __attribute__ ((aligned(8)));
+static gdt_entry_t gdt_entries[GDT_LENGTH] __attribute__ ((aligned(8)));
 
 static void gdt_set_gate(int32_t num, uint32_t base, uint32_t limit, uint8_t access, uint8_t gran)
 {
@@ -46,7 +46,7 @@ static void gdt_set_gate(int32_t num, uint32_t base, uint32_t limit, uint8_t acc
 }
 
 // TSS 段定义
-tss_entry_t tss_entry __attribute__ ((aligned(8)));
+static tss_entry_t tss_entry __attribute__ ((aligned(8)));
 
 static void tss_set_gate(int32_t num, uint16_t ss0, uint32_t esp0)
 {
@@ -61,17 +61,12 @@ static void tss_set_gate(int32_t num, uint16_t ss0, uint32_t esp0)
 	tss_entry.ts_ss0  = ss0;
 	tss_entry.ts_esp0 = esp0;
 
-	// 之前的内核代码段选择子是 0x8 、数据段选择子是 0x10
-	// 但是现在要设置选择子的低位的 RPL 为 11(3) 了
-	// 含义是 TSS 可以从 ring3 切换过来，所以 0x8 和 0x10 变成了 0x0b和 0x13
-	/* 
-        tss_entry.ts_cs = 0x0b;
-	tss_entry.ts_ss = 0x13;
-	tss_entry.ts_ds = 0x13;
-	tss_entry.ts_es = 0x13;
-	tss_entry.ts_fs = 0x13;
-	tss_entry.ts_gs = 0x13;
-        */
+        tss_entry.ts_cs = USER_CS;
+	tss_entry.ts_ss = USER_DS;
+	tss_entry.ts_ds = USER_DS;
+	tss_entry.ts_es = USER_DS;
+	tss_entry.ts_fs = USER_DS;
+	tss_entry.ts_gs = USER_DS;
 }
 
 // GDTR
@@ -82,7 +77,7 @@ struct gdt_ptr_t {
 } __attribute__((packed)) gdt_ptr_t;
 
 // GDTR
-gdt_ptr_t gdt_ptr;
+static gdt_ptr_t gdt_ptr;
 
 // 初始化全局描述符表
 void init_gdt(void)
@@ -90,19 +85,19 @@ void init_gdt(void)
         // 全局描述符表界限 e.g. 从 0 开始，所以总长要 - 1
         gdt_ptr.limit = sizeof(gdt_entry_t) * GDT_LENGTH - 1;
         gdt_ptr.base = (uint32_t)&gdt_entries;
-
+        
         // 采用 Intel 平坦模型
         gdt_set_gate(SEG_NULL,  0x0, 0x0, 0x0, 0x0);             // Intel文档要求
         gdt_set_gate(SEG_KTEXT, 0x0, 0xFFFFFFFF, 0x9A, 0xC0);   // 内核指令段
         gdt_set_gate(SEG_KDATA, 0x0, 0xFFFFFFFF, 0x92, 0xC0);   // 内核数据段
         gdt_set_gate(SEG_UTEXT, 0x0, 0xFFFFFFFF, 0xFA, 0xC0);   // 用户模式代码段
         gdt_set_gate(SEG_UDATA, 0x0, 0xFFFFFFFF, 0xF2, 0xC0);   // 用户模式数据段
-
+        
         tss_set_gate(SEG_TSS, KERNEL_DS, 0);
         
         // 加载全局描述符表地址到 GPTR 寄存器
         gdt_flush((uint32_t)&gdt_ptr);
-
+        
         // 加载任务寄存器
 	tss_flush();
 }

@@ -137,36 +137,15 @@ void show_kernel_memory_map(void)
 {
         printk("kernel in memory start: 0x%08X\n", kern_start);
 	printk("kernel in memory end:   0x%08X\n", kern_end);
-        /*
+        
 	printk("\nkernel segment in memory:\n");
 	printk("  .init.text    0x%08X ~ 0x%08X \n", kern_init_text_start, kern_init_text_end);
 	printk("  .init.data    0x%08X ~ 0x%08X \n", kern_init_data_start, kern_init_data_end);
 	printk("  .text         0x%08X ~ 0x%08X \n", kern_text_start, kern_text_end);
 	printk("  .data         0x%08X ~ 0x%08X \n", kern_data_start, kern_data_end);
-        */
+        
 	printk("\nkernel in memory used: %d KB = %d Pages\n\n",
                         (kern_end - kern_start) / 1024, (kern_end - kern_start) / 1024 / 4);
 
-}
-
-// 内核错误的字符串定义
-static const char * const error_string[MAXERROR + 1] = {
-        [0]                     NULL,
-        [E_UNSPECIFIED]         "unspecified error",
-        [E_BAD_PROC]            "bad process",
-        [E_INVAL]               "invalid parameter",
-        [E_NO_MEM]              "out of memory",
-        [E_NO_FREE_PROC]        "out of processes",
-        [E_FAULT]               "segmentation fault",
-};
-
-// 获得错误号对应的字符串
-static inline const char *strerr(int32_t errno)
-{
-        if (errno < MAXERROR) {
-                return error_string[errno];
-        }
-
-        return (const char *)("unknown error");
 }
 

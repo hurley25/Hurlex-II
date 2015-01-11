@@ -16,10 +16,10 @@
  * =====================================================================================
  */
 
-#include <console.h>
-#include <lib/string.h>
+#include <arch.h>
 #include <vargs.h>
 #include <debug.h>
+#include <lib/string.h>
 
 static int vsprintf(char *buff, const char *format, va_list args);
 

@@ -148,6 +148,9 @@ uint32_t alloc_pages(uint32_t n);
 // 释放内存页
 void free_pages(uint32_t addr, uint32_t n);
 
+#define alloc_page alloc_pages(1)
+#define free_page(addr) free_pages(addr, 1)
+
 // 当前可用内存页
 uint32_t free_pages_count(void);
 

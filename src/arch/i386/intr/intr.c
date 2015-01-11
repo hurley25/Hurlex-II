@@ -40,13 +40,13 @@ struct idt_ptr_t {
 } __attribute__((packed)) idt_ptr_t;
 
 // 中断描述符表
-idt_entry_t idt_entries[INTERRUPT_MAX] __attribute__ ((aligned(16)));
+static idt_entry_t idt_entries[INTERRUPT_MAX] __attribute__ ((aligned(16)));
 
 // IDTR
-idt_ptr_t idt_ptr;
+static idt_ptr_t idt_ptr;
 
 // 中断处理函数的指针数组
-interrupt_handler_t interrupt_handlers[INTERRUPT_MAX] __attribute__ ((aligned(4)));
+static interrupt_handler_t interrupt_handlers[INTERRUPT_MAX] __attribute__ ((aligned(4)));
 
 // 设置中断描述符
 static void idt_set_gate(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags);

@@ -16,8 +16,8 @@
  * =====================================================================================
  */
 
-#ifndef INCLUDE_CONSOLE_H_
-#define INCLUDE_CONSOLE_H_
+#ifndef CONSOLE_H_
+#define CONSOLE_H_
 
 #include <types.h>
 
@@ -62,4 +62,4 @@ void console_write_hex(uint32_t n, real_color_t back, real_color_t fore);
 // 屏幕输出一个十进制的整型数
 void console_write_dec(uint32_t n, real_color_t back, real_color_t fore);
 
-#endif  // INCLUDE_CONSOLE_H_
+#endif  // CONSOLE_H_
