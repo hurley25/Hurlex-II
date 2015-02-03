@@ -64,19 +64,19 @@ iso:
 
 .PHONY:runiso
 runiso:
-	qemu -m 128 -cdrom hurlex.iso -boot d
+	qemu -m 128 -hda disk.img -cdrom hurlex.iso -boot d
 
 .PHONY:runfd
 runfd:
-	qemu -m 128 -fda floppy.img -boot a
+	qemu -m 128 -hda disk.img -fda floppy.img -boot a
 
 .PHONY:qemu
 qemu:
-	qemu -m 128 -kernel hx_kernel
+	qemu -m 128 -hda disk.img -kernel hx_kernel
 
 .PHONY:debug
 debug:
-	qemu -S -s -m 128 -fda floppy.img -boot a &
+	qemu -S -s -m 128 -hda disk.img -fda floppy.img -boot a &
 	sleep 1
 	cgdb -x scripts/gdbinit
 

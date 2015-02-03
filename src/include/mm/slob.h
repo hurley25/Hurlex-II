@@ -22,7 +22,7 @@
 #include <types.h>
 
 // slob 分配器初始化
-void init_slob(void);
+void slob_init(void);
 
 // 任意大小的内存分配函数
 void *kmalloc(uint32_t size);

@@ -30,7 +30,7 @@
 *.hex
 
 # The Program files
-floppy.img
+*.img
 hx_kernel
 tags
 *.iso

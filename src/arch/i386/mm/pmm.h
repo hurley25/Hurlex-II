@@ -136,8 +136,8 @@ struct pmm_manager {
         uint32_t (*free_pages_count)(void);              // 返回当前可用内存页
 };
 
-// 初始化物理内存管理
-void init_pmm(void);
+// 物理内存管理初始化
+void pmm_init(void);
 
 // 内存管理算法初始化
 void page_init(page_t *pages, uint32_t n);

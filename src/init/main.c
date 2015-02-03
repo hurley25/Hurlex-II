@@ -57,15 +57,15 @@
 // 内核初始化函数
 void kern_init(void)
 {
-        init_debug();
-        init_arch();
+        debug_init();
+        arch_init();
 
         printk_color(rc_black, rc_green, "Hello, Hurlex II kernel!\n\n");
         
-        init_mm();
+        mm_init();
+        task_init();
 
-        init_clock();
-        init_task();
+        ide_init();
         
 //        enable_intr();
 //

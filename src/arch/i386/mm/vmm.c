@@ -28,7 +28,7 @@ pgd_t pgd_kern[PGD_SIZE] __attribute__ ((aligned(PAGE_SIZE)));
 // 内核页表起始
 static pte_t *pte_addr = (pte_t *)((uint32_t)kern_end + KERNBASE);
 
-void init_vmm(void)
+void vmm_init(void)
 {
         // 注册页错误中断的处理函数 
         register_interrupt_handler(INT_PAGE_FAULT, &do_page_fault);

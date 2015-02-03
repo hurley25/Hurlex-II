@@ -1,12 +1,12 @@
 /*
  * =====================================================================================
  *
- *       Filename:  pic.h
+ *       Filename:  arch_init.c
  *
- *    Description:  PIC 相关
+ *    Description:  体系结构相关初始化
  *
  *        Version:  1.0
- *        Created:  2014年11月06日 09时51分59秒
+ *        Created:  2015年02月03日 16时26分53秒
  *       Revision:  none
  *       Compiler:  gcc
  *
@@ -16,15 +16,14 @@
  * =====================================================================================
  */
 
-#ifndef INCLUDE_PIC_H_
-#define INCLUDE_PIC_H_
-
 #include <arch.h>
 
-// 设置8259A芯片
-void init_interrupt_chip(void);
+// 体系结构相关的初始化函数
+void arch_init(void)
+{
+        gdt_init();
+        idt_init();
+        clock_init();
+        console_init();
+}
 
-// 重设 8259A 芯片
-void clear_interrupt_chip(uint32_t intr_no);
-
-#endif  // INCLUDE_PIC_H_

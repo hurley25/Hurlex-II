@@ -46,7 +46,7 @@ static void get_ram_info(e820map_t *e820map);
 // 物理内存页初始化
 static void phy_pages_init(e820map_t *e820map);
 
-void init_pmm(void)
+void pmm_init(void)
 {
 	show_kernel_memory_map();
 	

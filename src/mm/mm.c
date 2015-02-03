@@ -18,10 +18,10 @@
 
 #include <mm/mm.h>
 
-void init_mm(void)
+void mm_init(void)
 {
-        init_pmm();
-        init_vmm();
-        init_slob();
+        pmm_init();
+        vmm_init();
+        slob_init();
 }
 

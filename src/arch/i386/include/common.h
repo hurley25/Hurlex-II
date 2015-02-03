@@ -32,10 +32,10 @@
 #define FL_DF           0x00000400  // Direction Flag
 #define FL_OF           0x00000800  // Overflow Flag
 #define FL_IOPL_MASK    0x00003000  // I/O Privilege Level bitmask
-#define FL_IOPL_0       0x00000000  //   IOPL == 0
-#define FL_IOPL_1       0x00001000  //   IOPL == 1
-#define FL_IOPL_2       0x00002000  //   IOPL == 2
-#define FL_IOPL_3       0x00003000  //   IOPL == 3
+#define FL_IOPL_0       0x00000000  // IOPL == 0
+#define FL_IOPL_1       0x00001000  // IOPL == 1
+#define FL_IOPL_2       0x00002000  // IOPL == 2
+#define FL_IOPL_3       0x00003000  // IOPL == 3
 #define FL_NT           0x00004000  // Nested Task
 #define FL_RF           0x00010000  // Resume Flag
 #define FL_VM           0x00020000  // Virtual 8086 mode
@@ -70,6 +70,26 @@ static inline uint16_t inw(uint16_t port)
         __asm__ volatile ("inw %1, %0" : "=a" (ret) : "dN" (port));
 
         return ret;
+}
+
+static inline void insl(uint32_t port, void *addr, int cnt)
+{
+        __asm__ volatile (
+                        "cld;"
+                        "repne; insl;"
+                        : "=D" (addr), "=c" (cnt)
+                        : "d" (port), "0" (addr), "1" (cnt)
+                        : "memory", "cc");
+}
+
+static inline void outsl(uint32_t port, const void *addr, int cnt)
+{
+        __asm__ volatile (
+                        "cld;"
+                        "repne; outsl;"
+                        : "=S" (addr), "=c" (cnt)
+                        : "d" (port), "0" (addr), "1" (cnt)
+                        : "memory", "cc");
 }
 
 // 开启中断

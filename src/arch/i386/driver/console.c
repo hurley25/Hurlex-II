@@ -87,7 +87,7 @@ static void scroll(void)
 }
 
 // 屏幕显示初始化
-void init_console(void)
+void console_init(void)
 {
         console_clear();
 }

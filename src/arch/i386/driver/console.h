@@ -16,8 +16,8 @@
  * =====================================================================================
  */
 
-#ifndef CONSOLE_H_
-#define CONSOLE_H_
+#ifndef INCLUDE_CONSOLE_H_
+#define INCLUDE_CONSOLE_H_
 
 #include <types.h>
 
@@ -42,7 +42,7 @@ enum real_color {
 } real_color_t;
 
 // 屏幕显示初始化
-void init_console(void);
+void console_init(void);
 
 // 清屏操作
 void console_clear(void);
@@ -62,4 +62,4 @@ void console_write_hex(uint32_t n, real_color_t back, real_color_t fore);
 // 屏幕输出一个十进制的整型数
 void console_write_dec(uint32_t n, real_color_t back, real_color_t fore);
 
-#endif  // CONSOLE_H_
+#endif  // INCLUDE_CONSOLE_H_

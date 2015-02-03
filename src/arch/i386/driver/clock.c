@@ -39,7 +39,7 @@
 #define TIMER_CLK       0x06                    // mode 3
 #define TIMER_16BIT     0x30                    // r/w counter 16 bits, LSB first
 
-void init_clock(void)
+void clock_init(void)
 {
         // 注册时间相关的处理函数
         register_interrupt_handler(IRQ0, clock_callback);

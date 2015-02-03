@@ -24,6 +24,6 @@
 #include <mm/slob.h>
 
 // 内存管理子系统初始化
-void init_mm(void);
+void mm_init(void);
 
 #endif  // INCLUDE_MM_MM_H

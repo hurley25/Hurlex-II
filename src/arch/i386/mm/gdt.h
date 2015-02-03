@@ -91,7 +91,7 @@ struct tss_entry_t {
 } __attribute__((packed)) tss_entry_t;
 
 // 初始化全局描述符表
-void init_gdt(void);
+void gdt_init(void);
 
 // GDT 加载到 GDTR 的函数
 extern void gdt_flush();

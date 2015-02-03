@@ -42,7 +42,7 @@ extern uint8_t kern_data_end[];
         } while (0)
 
 // 初始化 Debug 信息
-void init_debug(void);
+void debug_init(void);
 
 // 从 multiboot_t 结构获取ELF信息
 elf_t elf_from_multiboot(multiboot_t *mb);

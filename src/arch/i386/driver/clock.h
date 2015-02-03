@@ -21,7 +21,6 @@
 
 #include <types.h>
 
-// 初始化 clock
-void init_clock(void);
+void clock_init(void);
 
 #endif  // INCLUDE_TIMER_H_

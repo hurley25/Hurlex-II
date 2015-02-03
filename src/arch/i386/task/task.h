@@ -97,7 +97,7 @@ extern struct task_struct *glb_init_task;
 struct task_struct *get_current(void);
 
 // 任务调度初始化
-void init_task(void);
+void task_init(void);
 
 // 运行一个任务
 void task_run(struct task_struct *task);

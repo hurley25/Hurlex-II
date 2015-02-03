@@ -80,7 +80,7 @@ struct gdt_ptr_t {
 static gdt_ptr_t gdt_ptr;
 
 // 初始化全局描述符表
-void init_gdt(void)
+void gdt_init(void)
 {
         // 全局描述符表界限 e.g. 从 0 开始，所以总长要 - 1
         gdt_ptr.limit = sizeof(gdt_entry_t) * GDT_LENGTH - 1;

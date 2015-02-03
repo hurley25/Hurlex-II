@@ -28,7 +28,7 @@ static void print_stack_trace();
 
 static const char *elf_lookup_symbol(uint32_t addr, elf_t *elf);
 
-void init_debug(void)
+void debug_init(void)
 {
         // 从 GRUB 提供的信息中获取到内核符号表和代码地址信息
         kernel_elf = elf_from_multiboot(glb_mboot_ptr);

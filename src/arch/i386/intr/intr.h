@@ -170,6 +170,6 @@ void irq14();           // IDE0 传输控制使用
 void irq15();           // IDE1 传输控制使用
 
 // 初始化中断描述符表
-void init_idt(void);
+void idt_init(void);
 
 #endif  // IDT_H_

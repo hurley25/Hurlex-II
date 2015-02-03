@@ -91,7 +91,7 @@ __attribute__((unused)) static void slob_test(void)
 }
 
 // slob 分配器初始化
-void init_slob(void)
+void slob_init(void)
 {
         slob_block_t *block = __slob_alloc_pages(SLOB_PAGE_COUNT);
 

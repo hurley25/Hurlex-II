@@ -156,8 +156,8 @@ static inline void *ka_to_pa(void *ka)
 // 内核页目录区域
 extern pgd_t pgd_kern[];
 
-// 初始化虚拟内存管理
-void init_vmm(void);
+// 虚拟内存管理初始化
+void vmm_init(void);
 
 // 使用 flags 指出的页权限，把物理地址 pa 映射到虚拟地址 va
 void map(pgd_t *pgd_now, uint32_t va, uint32_t pa, uint32_t flags);

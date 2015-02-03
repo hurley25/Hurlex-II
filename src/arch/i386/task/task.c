@@ -61,7 +61,7 @@ static void free_pid(pid_t pid)
         glb_pid_map[pid/32] &= ~(1u << (pid % 32));
 }
 
-void init_task(void)
+void task_init(void)
 {
         INIT_LIST_HEAD(&task_list);
         struct task_struct *idle_task = (struct task_struct *)kern_stack;
