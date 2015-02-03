@@ -28,7 +28,7 @@
 // 物理内存管理算法
 static const struct pmm_manager *pmm_manager = &ff_mm_manager;
 
-// 物理页帧数组指针 (内核结束地址+内核基址+内核页表保留地址)
+// 物理页帧数组指针 (内核结束地址[实地址]+内核基址+内核页表保留地址)
 static page_t *phy_pages = (page_t *)((uint32_t)kern_end + KERNBASE + KVPAGE_SIZE);
 
 // 物理页帧数组长度
