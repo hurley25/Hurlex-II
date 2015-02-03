@@ -79,7 +79,7 @@ static struct ide_device {
         uint8_t valid;        // 是否可用
         uint32_t sets;        // 命令支持
         uint32_t size;        // 扇区数量
-        uint8_t desc[41];    // 描述
+        uint8_t desc[41];    // IDE设备描述
 } ide_devices[MAX_IDE];
 
 // 等待IDE设备可用
