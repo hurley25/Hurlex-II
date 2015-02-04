@@ -21,6 +21,12 @@
 
 #include <types.h>
 
+// 主IDE设备编号
+#define M_IDE_NO     0
+
+// 从IDE设备编号
+#define S_IDE_NO     1
+
 // 初始化IDE设备
 void ide_init(void);
 

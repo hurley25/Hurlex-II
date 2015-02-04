@@ -24,8 +24,8 @@
 #include <driver/clock.h>
 #include <driver/pic.h>
 #include <driver/console.h>
-#include <driver/ide.h>
 #include <task/task.h>
+#include <ide.h>
 
 // 架构相关的初始化
 void arch_init(void);

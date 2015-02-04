@@ -21,7 +21,7 @@
 #include <debug.h>
 #include <sched.h>
 #include <mm/mm.h>
-#include <lib/string.h>
+#include <partition.h>
 
 //static int init_main(void *args)
 //{
@@ -53,22 +53,9 @@
 //
 //        return 0;
 //}
-
-// 内核初始化函数
-void kern_init(void)
-{
-        debug_init();
-        arch_init();
-
-        printk_color(rc_black, rc_green, "Hello, Hurlex II kernel!\n\n");
-        
-        mm_init();
-        task_init();
-
-        ide_init();
-        
-//        enable_intr();
 //
+//static void kthread_test(void)
+//{
 //        pid_t pid;
 //
 //        pid = kernel_thread(user_mode_test_main, "ring0 -> ring3", 0);
@@ -87,6 +74,25 @@ void kern_init(void)
 //                printk_color(rc_black, rc_red, "B");
 //                uint32_t i = 100000; while (i--);
 //        }
+//}
+
+// 内核初始化函数
+void kern_init(void)
+{
+        debug_init();
+        arch_init();
+
+        printk_color(rc_black, rc_green, "Hello, Hurlex II kernel!\n\n");
+        
+        mm_init();
+        task_init();
+
+        ide_init();
+
+        read_partition_info();
+        
+//        enable_intr();
+//        kthread_test();
 
         while (true) {
                 cpu_hlt();

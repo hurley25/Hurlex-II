@@ -18,20 +18,21 @@
 
 #include <common.h>
 #include <debug.h>
-#include "ide.h"
+#include <ide.h>
 
 #define SECTSIZE  512 // 默认扇区大小
 
 #define IDE_BSY                 0x80            // IDE设备忙碌
 #define IDE_DRDY                0x40            // IDE设备可用
-#define IDE_DF                  0x20
+#define IDE_DF                  0x20            // IDE设备错误
 #define IDE_DRQ                 0x08
-#define IDE_ERR                 0x01
+#define IDE_ERR                 0x01            // IDE设备错误
 
 #define IDE_CMD_READ            0x20            // IDE读扇区命令
 #define IDE_CMD_WRITE           0x30            // IDE写扇区命令
 #define IDE_CMD_IDENTIFY        0xEC            // IDE识别命令
 
+// IDE设备身份信息在读取的信息块中的偏移
 #define IDE_IDENT_SECTORS       20
 #define IDE_IDENT_MODEL         54
 #define IDE_IDENT_CAPABILITIES  98
@@ -39,29 +40,33 @@
 #define IDE_IDENT_MAX_LBA       120
 #define IDE_IDENT_MAX_LBA_EXT   200
 
+// IDE设备端口起始端口定义
 #define IO_BASE0                0x1F0           // 主IDE设备起始操作端口
 #define IO_BASE1                0x170           // 从IDE设备起始操作端口
 #define IO_CTRL0                0x3F4           // 主IDE控制起始控制端口
 #define IO_CTRL1                0x374           // 从IDE设备起始控制端口
 
 // IDE设备控制端口偏移量
-#define ISA_DATA                0x00
-#define ISA_ERROR               0x01
-#define ISA_PRECOMP             0x01
-#define ISA_CTRL                0x02
+#define ISA_DATA                0x00            // IDE数据端口偏移
+#define ISA_ERROR               0x01            // IDE错误端口偏移
+#define ISA_PRECOMP             0x01            
+#define ISA_CTRL                0x02            // IDE控制端口偏移
 #define ISA_SECCNT              0x02
 #define ISA_SECTOR              0x03
 #define ISA_CYL_LO              0x04
 #define ISA_CYL_HI              0x05
-#define ISA_SDH                 0x06
-#define ISA_COMMAND             0x07
-#define ISA_STATUS              0x07
+#define ISA_SDH                 0x06            // IDE选择端口偏移
+#define ISA_COMMAND             0x07            // IDE命令端口偏移
+#define ISA_STATUS              0x07            // IDE状态端口偏移
 
 // IO 通道定义
 static const struct {
         uint16_t base;        // I/O Base
         uint16_t ctrl;        // Control Base
-} channels[2] = { {IO_BASE0, IO_CTRL0}, {IO_BASE1, IO_CTRL1} };
+} channels[2] = {
+        {IO_BASE0, IO_CTRL0}, 
+        {IO_BASE1, IO_CTRL1} 
+};
 
 #define IO_BASE(ideno)          (channels[(ideno) >> 1].base)
 #define IO_CTRL(ideno)          (channels[(ideno) >> 1].ctrl)
@@ -72,14 +77,16 @@ static const struct {
 #define MAX_DISK_NSECS          0x10000000      // IDE设备最大扇区号
 
 // 判断IDE设备是否可用
-#define VALID_IDE(ideno)        (((ideno) < MAX_IDE) && (ide_devices[ideno].valid == 1))
+#define VALID_IDE(ideno)  (((ideno) < MAX_IDE) && (ide_devices[ideno].valid == 1))
+
+#define IDE_DESC_LEN           40               // IDE设备描述信息尺寸
 
 // IDE设备信息
 static struct ide_device {
-        uint8_t valid;        // 是否可用
-        uint32_t sets;        // 命令支持
-        uint32_t size;        // 扇区数量
-        uint8_t desc[41];    // IDE设备描述
+        uint8_t valid;                   // 是否可用
+        uint32_t sets;                   // 命令支持
+        uint32_t size;                   // 扇区数量
+        uint8_t desc[IDE_DESC_LEN+1];    // IDE设备描述
 } ide_devices[MAX_IDE];
 
 // 等待IDE设备可用
@@ -100,54 +107,58 @@ static int32_t ide_wait_ready(uint16_t iobase, bool check_error)
 // 初始化IDE设备
 void ide_init(void)
 {
-        unsigned short ideno, iobase;
+        uint16_t ideno, iobase;
+
         for (ideno = 0; ideno < MAX_IDE; ++ideno) {
                 iobase = IO_BASE(ideno);
                 // 等待设备可用
                 ide_wait_ready(iobase, 0);
 
-                // step1: select drive
+                // 1: 选择要操作的设备
                 outb(iobase + ISA_SDH, 0xE0 | ((ideno & 1) << 4));
                 ide_wait_ready(iobase, 0);
 
-                // step2: send ATA identify command
+                // 2: 发送IDE信息获取命令
                 outb(iobase + ISA_COMMAND, IDE_CMD_IDENTIFY);
                 ide_wait_ready(iobase, 0);
 
-                // step3: polling
+                // 3: 检查设备是否存在
                 if (inb(iobase + ISA_STATUS) == 0 || ide_wait_ready(iobase, 1) != 0) {
-                        continue ;
+                        continue;
                 }
-
                 // 设置设备可用
                 ide_devices[ideno].valid = 1;
 
-                // read identification space of the device 
-                unsigned int buffer[128];
-                insl(iobase + ISA_DATA, buffer, sizeof(buffer) / sizeof(unsigned int));
+                // 读取IDE设备信息
+                uint32_t buffer[128];
+                insl(iobase + ISA_DATA, buffer, sizeof(buffer) / sizeof(uint32_t));
 
-                unsigned char *ident = (unsigned char *)buffer;
-                unsigned int sectors;
-                unsigned int cmdsets = *(unsigned int *)(ident + IDE_IDENT_CMDSETS);
-                
-                // device use 48-bits or 28-bits addressing
+                uint8_t *ident = (uint8_t *)buffer;
+                uint32_t cmdsets = *(uint32_t *)(ident + IDE_IDENT_CMDSETS);
+                uint32_t sectors;
+
+                // 检查设备使用48-bits还是28-bits地址
                 if (cmdsets & (1 << 26)) {
-                        sectors = *(unsigned int *)(ident + IDE_IDENT_MAX_LBA_EXT);
+                        sectors = *(uint32_t *)(ident + IDE_IDENT_MAX_LBA_EXT);
                 }
                 else {
-                        sectors = *(unsigned int *)(ident + IDE_IDENT_MAX_LBA);
+                        sectors = *(uint32_t *)(ident + IDE_IDENT_MAX_LBA);
                 }
                 ide_devices[ideno].sets = cmdsets;
                 ide_devices[ideno].size = sectors;
 
-                uint8_t *desc = ide_devices[ideno].desc, *data = ident + IDE_IDENT_MODEL;
-                uint32_t i, length = 40;
+                uint8_t *desc = ide_devices[ideno].desc;
+                uint8_t *data = ident + IDE_IDENT_MODEL;
+                
+                // 复制设备描述信息
+                uint32_t i, length = IDE_DESC_LEN;
                 for (i = 0; i < length; i += 2) {
-                        desc[i] = data[i + 1], desc[i + 1] = data[i];
+                        desc[i] = data[i+1];
+                        desc[i+1] = data[i];
                 }
                 do {
                         desc[i] = '\0';
-                } while (i -- > 0 && desc[i] == ' ');
+                } while (i-- > 0 && desc[i] == ' ');
 
                 printk_color(rc_black, rc_red, "Found IDE Driver %d: %u (sectors)  Desc: %s\n",
                                 ideno, ide_devices[ideno].size, ide_devices[ideno].desc);
@@ -189,8 +200,8 @@ int32_t ide_read_secs(uint16_t ideno, uint32_t secno, void *dst, uint32_t nsecs)
         outb(iobase + ISA_SDH, 0xE0 | ((ideno & 1) << 4) | ((secno >> 24) & 0xF));
         outb(iobase + ISA_COMMAND, IDE_CMD_READ);
 
-        int ret;
-        for (ret = 0; nsecs > 0; nsecs --, dst += SECTSIZE) {
+        int ret = 0;
+        for ( ; nsecs > 0; nsecs --, dst += SECTSIZE) {
                 if ((ret = ide_wait_ready(iobase, 1)) != 0) {
                         return ret;
                 }
@@ -219,8 +230,8 @@ int32_t ide_write_secs(uint16_t ideno, uint32_t secno, const void *src, uint32_t
         outb(iobase + ISA_SDH, 0xE0 | ((ideno & 1) << 4) | ((secno >> 24) & 0xF));
         outb(iobase + ISA_COMMAND, IDE_CMD_WRITE);
 
-        int ret;
-        for (ret = 0; nsecs > 0; nsecs --, src += SECTSIZE) {
+        int ret = 0;
+        for ( ; nsecs > 0; nsecs --, src += SECTSIZE) {
                 if ((ret = ide_wait_ready(iobase, 1)) != 0) {
                         return ret;
                 }
