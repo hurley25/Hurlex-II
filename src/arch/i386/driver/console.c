@@ -94,8 +94,11 @@ void console_clear(void)
         for (uint32_t i = 0; i < BUFF_WIDTH * BUFF_HIGH; ++i) {
               video_buffer[i] = blank;
         }
+        
         buffer_x = 0;
         buffer_y = 0;
+        
+        current_line = 0;
 }
 
 // 移动光标
