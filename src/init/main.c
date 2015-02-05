@@ -91,6 +91,8 @@ void kern_init(void)
 
         read_partition_info();
         
+        //console_view_up(1);
+
 //        enable_intr();
 //        kthread_test();
 

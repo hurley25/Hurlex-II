@@ -47,19 +47,16 @@ void console_init(void);
 // 清屏操作
 void console_clear(void);
 
-// 屏幕输出一个字符(带颜色)
-void console_putc_color(char c, real_color_t back, real_color_t fore);
-
 // 屏幕打印一个以 \0 结尾的字符串(默认黑底白字)
 void console_write(char *cstr);
 
 // 屏幕打印一个以 \0 结尾的字符串(带颜色)
 void console_write_color(char *cstr, real_color_t back, real_color_t fore);
 
-// 屏幕输出一个十六进制的整型数
-void console_write_hex(uint32_t n, real_color_t back, real_color_t fore);
+// 屏幕显示向上移动n行
+void console_view_up(uint16_t offset);
 
-// 屏幕输出一个十进制的整型数
-void console_write_dec(uint32_t n, real_color_t back, real_color_t fore);
+// 屏幕显示向下移动n行
+void console_view_down(uint16_t offset);
 
 #endif  // INCLUDE_CONSOLE_H_

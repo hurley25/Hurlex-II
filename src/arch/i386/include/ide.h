@@ -33,7 +33,7 @@ void ide_init(void);
 // 检测指定IDE设备是否可用
 bool ide_device_valid(uint16_t ideno);
 
-// 获取指定IDE设备尺寸
+// 获取指定IDE设备容量
 uint32_t ide_device_size(uint16_t ideno);
 
 // 读取指定IDE设备若干扇区

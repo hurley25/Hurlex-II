@@ -22,11 +22,16 @@
 
 #define SECTSIZE  512 // 默认扇区大小
 
-#define IDE_BSY                 0x80            // IDE设备忙碌
-#define IDE_DRDY                0x40            // IDE设备可用
-#define IDE_DF                  0x20            // IDE设备错误
-#define IDE_DRQ                 0x08
-#define IDE_ERR                 0x01            // IDE设备错误
+/** 
+ * bit 7 = 1  控制器忙         * bit 6 = 1  驱动器就绪
+ * bit 5 = 1  设备错误         * bit 4        N/A
+ * bit 3 = 1  扇区缓冲区错误   * bit 2 = 1  磁盘已被读校验
+ * bit 1        N/A            * bit 0 = 1  上一次命令执行失败
+ */
+#define IDE_BSY                 0x80            // IDE驱动器忙 
+#define IDE_DRDY                0x40            // IDE驱动器就绪
+#define IDE_DF                  0x20            // IDE驱动器错误
+#define IDE_ERR                 0x01            // 上一次命令失败
 
 #define IDE_CMD_READ            0x20            // IDE读扇区命令
 #define IDE_CMD_WRITE           0x30            // IDE写扇区命令
