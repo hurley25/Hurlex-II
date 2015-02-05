@@ -16,9 +16,11 @@
  * =====================================================================================
  */
 
-#include <ide.h>
+
 #include <debug.h>
 #include <partition.h>
+
+#include "ide.h"
 
 // MBR信息
 mbr_info_t mbr_info;

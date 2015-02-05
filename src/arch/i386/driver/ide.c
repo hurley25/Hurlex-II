@@ -18,7 +18,8 @@
 
 #include <common.h>
 #include <debug.h>
-#include <ide.h>
+
+#include "ide.h"
 
 #define SECTSIZE  512 // 默认扇区大小
 

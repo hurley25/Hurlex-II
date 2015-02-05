@@ -44,7 +44,7 @@ static uint16_t cursor_y = 0;
 #define BUFF_WIDTH  80
 #define BUFF_HIGH   128
 
-// VGA输出缓冲区
+// VGA 输出缓冲区
 static uint16_t video_buffer[BUFF_WIDTH * BUFF_HIGH];
 
 // buffer 输出的坐标
