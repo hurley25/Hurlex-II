@@ -91,9 +91,20 @@ void kern_init(void)
 
         read_partition_info();
         
-        //console_view_up(1);
+        enable_intr();
 
-//        enable_intr();
+        uint8_t ch = 0;
+        while (true) {
+                if ((ch = keyboard_getchar()) != 0) {
+                        if (ch == 80) {
+                                
+                                console_view_down(1);
+                        } else if (ch == 72) {
+                                console_view_up(1);
+                        }
+                }
+        }
+        
 //        kthread_test();
 
         while (true) {

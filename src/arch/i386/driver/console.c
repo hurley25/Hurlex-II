@@ -51,8 +51,8 @@ static uint16_t video_buffer[BUFF_WIDTH * BUFF_HIGH];
 static uint16_t buffer_x = 0;
 static uint16_t buffer_y = 0;
 
-// 当前屏幕显示在缓冲区的结束位置
-static uint16_t current_y = 0;
+// 当前屏幕显示在缓冲区的起始位置
+static uint16_t current_line = 0;
 
 // VGA 内部的寄存器多达300多个，显然无法一一映射到I/O端口的地址空间。
 // 对此 VGA 控制器的解决方案是，将一个端口作为内部寄存器的索引：0x3D4，
@@ -203,13 +203,8 @@ void _flush_console(void)
         uint16_t blank = 0x20 | (attribute_byte << 8);
         uint16_t begin_line = 0, end_line = 0;
 
-        if (buffer_y >= CON_HIGH) {
-                begin_line = buffer_y - CON_HIGH + 1;
-                end_line = buffer_y + 1;
-        } else {
-                begin_line = 0;
-                end_line = buffer_y + 1;
-        }
+        begin_line = current_line;        
+        end_line = buffer_y + 1;
 
         uint32_t i = 0;
         for (uint32_t j = begin_line * CON_WIDTH; j < end_line * CON_WIDTH; ++j) {
@@ -231,21 +226,33 @@ void _flush_console(void)
 // 刷新屏幕显示到当前输出位置
 static void _flush_console_current(void)
 {
-        current_y = buffer_y;
+        if (buffer_y >= CON_HIGH - 1) {
+                current_line = buffer_y - CON_HIGH + 1; 
+        } else {
+                current_line = 0;
+        }
         _flush_console();
 }
 
 // 屏幕显示向上移动n行
 void console_view_up(uint16_t offset)
 {
-        current_y -= offset;
+        if (current_line >= offset) {
+                current_line -= offset;
+        } else {
+                current_line = 0;
+        }
         _flush_console();
 }
 
 // 屏幕显示向下移动n行
 void console_view_down(uint16_t offset)
 {
-        current_y += offset;
+        if (current_line + offset < buffer_y - 1) {
+                current_line += offset;
+        } else {
+                current_line = buffer_y - 1;
+        }
         _flush_console();
 }
 

@@ -25,5 +25,6 @@ void arch_init(void)
         idt_init();
         clock_init();
         console_init();
+        keyboard_init();
 }
 
