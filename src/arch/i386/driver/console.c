@@ -251,10 +251,10 @@ void console_view_up(uint16_t offset)
 // 屏幕显示向下移动n行
 void console_view_down(uint16_t offset)
 {
-        if (current_line + offset < buffer_y - 1) {
+        if (current_line + offset < buffer_y) {
                 current_line += offset;
         } else {
-                current_line = buffer_y - 1;
+                current_line = buffer_y;
         }
         _flush_console();
 }
