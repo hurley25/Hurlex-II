@@ -38,7 +38,7 @@ static uint32_t glb_pid_map[MAX_PID/32];
 
 static pid_t alloc_pid(void)
 {
-        for (uint32_t i = 0; i < MAX_PID/32; ++i) {
+        for (int i = 0; i < MAX_PID/32; ++i) {
                 if (glb_pid_map[i] == 0xFFFFFFFF) {
                         continue;
                 }

@@ -30,7 +30,7 @@ static const char * const error_string[MAXERROR + 1] = {
 };
 
 // 获得错误号对应的字符串
-const char *strerr(int32_t errno)
+const char *strerr(int errno)
 {
         if (errno < MAXERROR) {
                 return error_string[errno];

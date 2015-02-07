@@ -99,7 +99,7 @@ static struct ide_device {
 // 等待IDE设备可用
 static int32_t ide_wait_ready(uint16_t iobase, bool check_error)
 {
-        int32_t r;
+        int r;
 
         while ((r = inb(iobase + ISA_STATUS)) & IDE_BSY) {
                 // Waiting ... Do nothing ...

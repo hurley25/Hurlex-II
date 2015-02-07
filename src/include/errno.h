@@ -31,6 +31,6 @@
 #define MAXERROR            6
 
 // 获得错误号对应的字符串
-const char *strerr(int32_t errno);
+const char *strerr(int errno);
 
 #endif  // INCLUDE_ERRNO_H_

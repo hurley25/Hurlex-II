@@ -32,8 +32,8 @@ struct block_dev {
         uint32_t block_size;    // 单位块大小
         uint32_t nr_block;      // 单位块数量
         struct block_ops {      // 块设备操作
-                int32_t (*init)(void);                  // 设备初始化
-                int32_t (*request)(io_request_t *);     // 设备操作请求
+                int (*init)(void);                  // 设备初始化
+                int (*request)(io_request_t *);     // 设备操作请求
         } ops;
 } block_dev_t;
 

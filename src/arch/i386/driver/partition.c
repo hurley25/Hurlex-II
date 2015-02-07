@@ -31,7 +31,7 @@ void read_partition_info(void)
         if (ide_device_valid(M_IDE_NO)) {
                 if (ide_read_secs(M_IDE_NO, 0, &mbr_info, 1) == 0) {
                         printk_color(rc_black, rc_red, "\nPartition Info:\n");
-                        for (uint32_t i = 0; i < PARTITION_COUNT; ++i) {
+                        for (int i = 0; i < PARTITION_COUNT; ++i) {
                                 if (mbr_info.part[i].partition_type == 0) {
                                         continue;
                                 }
