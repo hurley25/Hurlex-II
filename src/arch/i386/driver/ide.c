@@ -18,6 +18,7 @@
 
 #include <common.h>
 #include <debug.h>
+#include <block_dev.h>
 
 #include "ide.h"
 
@@ -247,3 +248,4 @@ int32_t ide_write_secs(uint16_t ideno, uint32_t secno, const void *src, uint32_t
         return ret;
 }
 
+ 
