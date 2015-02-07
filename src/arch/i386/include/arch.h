@@ -24,7 +24,7 @@
 #include <driver/clock.h>
 #include <driver/pic.h>
 #include <driver/console.h>
-#include <driver/keyboard.h>
+#include <driver/kboard.h>
 #include <driver/ide.h>
 #include <task/task.h>
 

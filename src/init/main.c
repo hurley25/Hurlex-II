@@ -1,7 +1,7 @@
 /*
  * =====================================================================================
  *
- *       Filename:  kmain.c
+ *       Filename:  main.c
  *
  *    Description:  内核初始化
  *
@@ -21,7 +21,7 @@
 #include <debug.h>
 #include <sched.h>
 #include <mm/mm.h>
-#include <partition.h>
+#include <mbr.h>
 
 //static int init_main(void *args)
 //{
@@ -87,9 +87,7 @@ void kern_init(void)
         mm_init();
         task_init();
 
-        ide_init();
-
-        read_partition_info();
+        read_mbr_info();
         
         enable_intr();
 

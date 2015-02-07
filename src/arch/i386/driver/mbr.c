@@ -1,7 +1,7 @@
 /*
  * =====================================================================================
  *
- *       Filename:  partition.c
+ *       Filename:  mbr.c
  *
  *    Description:  存储设备分区信息获取
  *
@@ -18,7 +18,7 @@
 
 
 #include <debug.h>
-#include <partition.h>
+#include <mbr.h>
 
 #include "ide.h"
 
@@ -26,10 +26,28 @@
 mbr_info_t mbr_info;
 
 // 读取分区信息
-void read_partition_info(void)
+void read_mbr_info(void)
 {
-        if (ide_device_valid(M_IDE_NO)) {
-                if (ide_read_secs(M_IDE_NO, 0, &mbr_info, 1) == 0) {
+        io_request_t request;
+
+        request.io_type = IO_READ;
+        request.secno = 0;
+        request.nsecs = 1;
+        request.buffer = &mbr_info;
+        request.bsize = sizeof(mbr_info);
+
+        block_dev_t *ide_dev = &ide_main_dev;
+
+        if (ide_dev->ops.init() == -1) {
+                printk("Main IDE Device Not Found!\n");
+        }
+
+        if (ide_dev->ops.device_valid()) {
+
+                printk_color(rc_black, rc_red, "Found IDE Driver: %u (sectors)  Desc: %s\n",
+                         ide_dev->ops.get_nr_block(), ide_dev->ops.get_desc());
+
+                if (ide_dev->ops.request(&request) == 0) {
                         printk_color(rc_black, rc_red, "\nPartition Info:\n");
                         for (int i = 0; i < PARTITION_COUNT; ++i) {
                                 if (mbr_info.part[i].partition_type == 0) {
@@ -47,8 +65,6 @@ void read_partition_info(void)
                 } else {
                         printk("Read MBR Info Error!");
                 }
-        } else {
-                printk("Main IDE Device Not Found!\n");
         }
 }
 

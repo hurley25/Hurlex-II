@@ -1,9 +1,9 @@
 /*
  * =====================================================================================
  *
- *       Filename:  partition.h
+ *       Filename:  mbr.h
  *
- *    Description:  存储设备分区信息定义
+ *    Description:  MBR 信息定义
  *
  *        Version:  1.0
  *        Created:  2015年02月04日 10时40分13秒
@@ -48,6 +48,6 @@ struct mbr_info_t
 extern mbr_info_t mbr_info;
 
 // 读取分区信息
-void read_partition_info(void);
+void read_mbr_info(void);
 
 #endif  // BLOCK_PARTITION_H_

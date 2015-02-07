@@ -1,7 +1,7 @@
 /*
  * =====================================================================================
  *
- *       Filename:  keyboard.h
+ *       Filename:  kboard.h
  *
  *    Description:  键盘驱动
  *
@@ -16,8 +16,8 @@
  * =====================================================================================
  */
 
-#ifndef INCLUDE_KEYBOARD_H
-#define INCLUDE_KEYBOARD_H
+#ifndef INCLUDE_KBOARD_H
+#define INCLUDE_KBOARD_H
 
 #include <types.h>
 #include <intr/intr.h>
@@ -31,5 +31,5 @@ void keyboard_handler(pt_regs_t *regs);
 // 从键盘读取一个字符，如果没有可用字符返回0
 uint8_t keyboard_getchar(void);
 
-#endif  // INCLUDE_KEYBOARD_H_
+#endif  // INCLUDE_KBOARD_H_
 

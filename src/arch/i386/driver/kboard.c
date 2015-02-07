@@ -1,7 +1,7 @@
 /*
  * =====================================================================================
  *
- *       Filename:  keyboard.c
+ *       Filename:  kboard.c
  *
  *    Description:  键盘驱动
  *
@@ -18,7 +18,7 @@
 
 #include <common.h>
 
-#include "keyboard.h"
+#include "kboard.h"
 
 /*
  * 我们定义的键盘当前状态信息(相关位被设置即为有效)
