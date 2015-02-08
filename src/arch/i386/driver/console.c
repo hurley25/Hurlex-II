@@ -200,7 +200,7 @@ void console_write_color(char *cstr, real_color_t back, real_color_t fore)
 }
 
 // 刷新屏幕显示到指定位置
-void _flush_console(void)
+static void _flush_console(void)
 {
         uint8_t attribute_byte = (0 << 4) | (15 & 0x0F);
         uint16_t blank = 0x20 | (attribute_byte << 8);
