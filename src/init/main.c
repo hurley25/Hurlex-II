@@ -21,7 +21,8 @@
 #include <debug.h>
 #include <sched.h>
 #include <mm/mm.h>
-#include <mbr.h>
+#include <fs.h>
+#include <kio.h>
 
 //static int init_main(void *args)
 //{
@@ -87,13 +88,13 @@ void kern_init(void)
         mm_init();
         task_init();
 
-        read_mbr_info();
-        
+        fs_init();
+
         enable_intr();
 
         uint8_t ch = 0;
         while (true) {
-                if ((ch = keyboard_getchar()) != 0) {
+                if ((ch = getchar()) != 0) {
                         if (ch == 80) {
                                 
                                 console_view_down(1);

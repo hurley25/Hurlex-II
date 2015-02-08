@@ -1,12 +1,12 @@
 /*
  * =====================================================================================
  *
- *       Filename:  ide.h
+ *       Filename:  fs.h
  *
- *    Description:  IDE 设备驱动
+ *    Description:  文件系统相关
  *
  *        Version:  1.0
- *        Created:  2015年02月03日 14时40分53秒
+ *        Created:  2015年02月08日 10时07分14秒
  *       Revision:  none
  *       Compiler:  gcc
  *
@@ -16,12 +16,10 @@
  * =====================================================================================
  */
 
-#ifndef INCLUDE_IDE_H_
-#define INCLUDE_IDE_H_
+#ifndef INCLUDE_FS_H_
+#define INCLUDE_FS_H_
 
-#include <block_dev.h>
+// 文件系统初始化
+void fs_init(void);
 
-// IDE 设备结构
-extern block_dev_t ide_main_dev;
-
-#endif  // INCLUDE_IDE_H_
+#endif  // INCLUDE_FS_H_

@@ -17,11 +17,12 @@
  */
 
 #include <common.h>
+#include <intr/intr.h>
 
-#include "kboard.h"
+#include <char_dev.h>
 
 /*
- * 我们定义的键盘当前状态信息(相关位被设置即为有效)
+ * 键盘当前状态信息(相关位被设置即为有效)
  *
  * 0: control
  * 1: alt
@@ -57,7 +58,7 @@ struct keymap {
         key_status_t controls;          // 键盘的控制状态信息
 } keymap_t;
 
-static keymap_t us = {
+static keymap_t us_keymap = {
         //normal keys
         {
                 /* first row - indices 0 to 14 */
@@ -179,38 +180,120 @@ static keymap_t us = {
         0
 };
 
-// 当前使用的扫描码集
-keymap_t *current_layout = &us;
+// 设备初始化
+static int kb_init(void);
 
-// 键盘输入的缓冲区队列
-static uint8_t keyboard_buffer[256];
+// 设备是否可用
+static bool kb_device_valid(void);
 
-// 键盘输入缓冲区队列的头尾标记
-static uint32_t keyboard_buffer_start = 0;
-static uint32_t keyboard_buffer_end = 0;
+// 获取设备描述
+static const char *kb_get_desc(void);
 
-void keyboard_init(void)
+// 设备读取
+static int kb_read(void *dec, uint32_t len);
+
+// 设备写入
+static int kb_write(const void *src, uint32_t len);
+
+// 键盘中断处理函数
+static void keyboard_handler(__attribute__((unused))pt_regs_t *regs);
+
+// Keyboard 设备结构
+char_dev_t kboard_dev = {
+        .name = "Keyboard",
+        .is_readable = true,
+        .is_writeable = false,
+        .ops = {
+                .init = kb_init,
+                .device_valid = kb_device_valid,
+                .get_desc = kb_get_desc,
+                .read = kb_read,
+                .write = kb_write
+        }
+};
+
+#define KBUFFER_LEN     1024
+
+// Keyboard 管理信息
+static struct kboard_device {
+        bool is_valid;                   // 设备是否可用
+        keymap_t *curr_layout;           // 当前的字符集
+        uint8_t kbuffer[KBUFFER_LEN];    // 键盘输入的缓冲区队列
+        uint32_t kfront;                 // 缓冲队列队头
+        uint32_t krear;                  // 缓冲队列队尾
+} kb_device;
+
+// 设备初始化
+static int kb_init(void)
 {
+        // 采用US字符集
+        kb_device.curr_layout = &us_keymap;
+
+        // 设置设备可用
+        kb_device.is_valid = true;
+
         // 注册键盘中断处理函数
         register_interrupt_handler(IRQ1, &keyboard_handler);
+
+        return 0;
 }
 
-uint8_t keyboard_getchar(void)
+// 设备是否可用
+static bool kb_device_valid(void)
+{
+        return kb_device.is_valid;
+}
+
+// 获取设备描述
+static const char *kb_get_desc(void)
+{
+        return "Keyboard";
+}
+
+static uint8_t kb_getchar(void)
 {
         // 队列中有数据则取出，否则返回 0
-        if (keyboard_buffer_start != keyboard_buffer_end) {
-                char ch = keyboard_buffer[keyboard_buffer_start++];
-                keyboard_buffer_start %= 256;
+        if (kb_device.kfront != kb_device.krear) {
+                char ch = kb_device.kbuffer[kb_device.kfront];
+                kb_device.kfront = (kb_device.kfront + 1) % KBUFFER_LEN;
                 return ch;
         } else {
                 return 0;
         }
 }
 
-void keyboard_handler(__attribute__((unused))pt_regs_t *regs)
+// 设备读取
+static int kb_read(void *dec, uint32_t len)
+{
+        uint8_t *buffer = (uint8_t *)dec;
+        uint8_t ch = 0;
+        uint32_t i = 0;
+        while (i < len) {
+                if ((ch = kb_getchar()) != 0) {
+                        buffer[i] = ch;
+                        i++;
+                } else {
+                        break;
+                }
+        }
+
+        return i;
+}
+
+// 设备写入
+static int kb_write(__attribute__((unused))const void *src,
+                __attribute__((unused)) uint32_t len)
+{
+        return -1;
+}
+
+// 键盘中断处理函数
+static void keyboard_handler(__attribute__((unused))pt_regs_t *regs)
 {
         // 从键盘端口读入按下的键
         uint8_t scancode = inb(0x60);
+
+        keymap_t *layout = kb_device.curr_layout;
 
         // 首先判断是按下还是抬起
         if (scancode & RELEASED_MASK) {
@@ -218,8 +301,8 @@ void keyboard_handler(__attribute__((unused))pt_regs_t *regs)
                 // 我们只检查前 5 个控制键，因为前五位 Ctrl Alt Shift 松开后不保留状态
                 // 所以这些按键松开后必须清除按下标记
                 for (i = 0; i < 5; i++) {
-                        if(current_layout->control_map[i] == (scancode & ~RELEASED_MASK)) {
-                                current_layout->controls &= ~(1 << i);
+                        if(layout->control_map[i] == (scancode & ~RELEASED_MASK)) {
+                                layout->controls &= ~(1 << i);
                                 return;
                         }
                 }
@@ -230,29 +313,29 @@ void keyboard_handler(__attribute__((unused))pt_regs_t *regs)
                 for (i = 0; i < 8; i++) {
                         // 如果当前键是控制键，则给相关控制位置 1
                         // 如果已有该标志位，则给相关控制位清 0
-                        if (current_layout->control_map[i] == scancode) {
-                                if (current_layout->controls & 1 << i) {
-                                      current_layout->controls &= ~(1 << i);
+                        if (layout->control_map[i] == scancode) {
+                                if (layout->controls & 1 << i) {
+                                      layout->controls &= ~(1 << i);
                                 } else {
-                                      current_layout->controls |= (1 << i);
+                                      layout->controls |= (1 << i);
                                 }
                                 return;
                         }
                 }
-                uint8_t *scancodes = current_layout->scancodes;
+                uint8_t *scancodes = layout->scancodes;
         
                 // 如果此时按下了 shift 键，切换到 shift 扫描码
-                if ((current_layout->controls & (LSHIFT | RSHIFT)) && !(current_layout->controls & CONTROL)) {
-                      scancodes = current_layout->shift_scancodes;
+                if ((layout->controls & (LSHIFT | RSHIFT)) && !(layout->controls & CONTROL)) {
+                      scancodes = layout->shift_scancodes;
                 }
                 // 如果此时处于大写锁定状态，切换到大写锁定的扫描码
-                if ((current_layout->controls & (CAPSLOCK)) && !(current_layout->controls & CONTROL)) {
-                      scancodes = current_layout->capslock_scancodes;
+                if ((layout->controls & (CAPSLOCK)) && !(layout->controls & CONTROL)) {
+                      scancodes = layout->capslock_scancodes;
                 }
                 // 如果队列不满则字符入队，否则丢弃
-                if (keyboard_buffer_end != keyboard_buffer_start - 1) {
-                        keyboard_buffer[keyboard_buffer_end++] = scancodes[scancode];
-                        keyboard_buffer_end %= 256;
+                if (kb_device.kfront != (kb_device.krear + 1) % KBUFFER_LEN) {
+                        kb_device.kbuffer[kb_device.krear] = scancodes[scancode];
+                        kb_device.krear = (kb_device.krear + 1) % KBUFFER_LEN;
                 }
         }
 }

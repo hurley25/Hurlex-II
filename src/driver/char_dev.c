@@ -1,12 +1,12 @@
 /*
  * =====================================================================================
  *
- *       Filename:  arch_init.c
+ *       Filename:  char_dev.c
  *
- *    Description:  体系结构相关初始化
+ *    Description:  字符设备相关
  *
  *        Version:  1.0
- *        Created:  2015年02月03日 16时26分53秒
+ *        Created:  2015年02月08日 10时13分36秒
  *       Revision:  none
  *       Compiler:  gcc
  *
@@ -16,14 +16,15 @@
  * =====================================================================================
  */
 
-#include <arch.h>
+#include <debug.h>
+#include <char_dev.h>
 
-// 体系结构相关的初始化函数
-void arch_init(void)
+// 字符设备初始化
+void char_dev_init(void)
 {
-        gdt_init();
-        idt_init();
-        clock_init();
-        console_init();
+        char_dev_t *kb_dev = &kboard_dev;
+        kb_dev->ops.init();
+        
+        printk_color(rc_black, rc_red, "Init %s device ...\n\n", kb_dev->ops.get_desc());
 }
 

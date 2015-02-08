@@ -1,12 +1,12 @@
 /*
  * =====================================================================================
  *
- *       Filename:  stdio.h
+ *       Filename:  fs.c
  *
- *    Description:  基本输入输出的实现
+ *    Description:  文件系统相关
  *
  *        Version:  1.0
- *        Created:  2015年01月11日 17时15分20秒
+ *        Created:  2015年02月08日 10时07分54秒
  *       Revision:  none
  *       Compiler:  gcc
  *
@@ -16,8 +16,15 @@
  * =====================================================================================
  */
 
-#ifndef INCLUDE_STDIO_H_
-#define INCLUDE_STDIO_H_
+#include <fs.h>
+#include <device.h>
 
+#include "vfs.h"
 
-#endif  // INCLUDE_STDIO_H_
+// 文件系统初始化
+void fs_init(void)
+{
+        vfs_init();
+        device_init();
+}
+

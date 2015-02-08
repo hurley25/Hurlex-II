@@ -1,12 +1,12 @@
 /*
  * =====================================================================================
  *
- *       Filename:  arch.h
+ *       Filename:  kio.h
  *
- *    Description:  架构相关的头文件引用
+ *    Description:  输入输出的实现
  *
  *        Version:  1.0
- *        Created:  2014年11月05日 09时48分34秒
+ *        Created:  2015年01月11日 17时15分20秒
  *       Revision:  none
  *       Compiler:  gcc
  *
@@ -16,17 +16,10 @@
  * =====================================================================================
  */
 
-#ifndef ARCH_H_
-#define ARCH_H_
+#ifndef INCLUDE_KIO_H_
+#define INCLUDE_KIO_H_
 
-#include <mm/gdt.h>
-#include <intr/intr.h>
-#include <driver/pic.h>
-#include <driver/clock.h>
-#include <driver/console.h>
-#include <task/task.h>
+// 读取一个字符
+char getchar(void);
 
-// 架构相关的初始化
-void arch_init(void);
-
-#endif  // ARCH_H_
+#endif  // INCLUDE_KIO_H_

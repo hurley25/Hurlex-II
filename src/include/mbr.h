@@ -16,8 +16,8 @@
  * =====================================================================================
  */
 
-#ifndef BLOCK_PARTITION_H_
-#define BLOCK_PARTITION_H_
+#ifndef INCLUDE_MBR_H_
+#define INCLUDE_MBR_H_
 
 #include <types.h>
 
@@ -50,4 +50,4 @@ extern mbr_info_t mbr_info;
 // 读取分区信息
 void read_mbr_info(void);
 
-#endif  // BLOCK_PARTITION_H_
+#endif  // INCLUDE_MBR_H_

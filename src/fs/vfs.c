@@ -16,8 +16,10 @@
  * =====================================================================================
  */
 
+#include <debug.h>
 #include <mm/mm.h>
 #include <lib/string.h>
+
 #include "vfs.h"
 
 // 全局的文件系统指针
@@ -26,7 +28,7 @@ fs_t *file_systems = NULL;
 // vfs 初始化
 void vfs_init(void)
 {
-
+        printk_color(rc_black, rc_red, "Init VFS ...\n\n");
 }
 
 // 添加文件系统

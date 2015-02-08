@@ -20,13 +20,13 @@
 #include <common.h>
 #include <debug.h>
 
-#include "ide.h"
+#include <block_dev.h>
 
 #define SECTSIZE  512 // 默认扇区大小
 
 /** 
  * bit 7 = 1  控制器忙         * bit 6 = 1  驱动器就绪
- * bit 5 = 1  设备错误         * bit 4        N/A
+ * bit 5 = 1  设备错误         * bit 4      N/A
  * bit 3 = 1  扇区缓冲区错误   * bit 2 = 1  磁盘已被读校验
  * bit 1        N/A            * bit 0 = 1  上一次命令执行失败
  */
@@ -76,7 +76,7 @@ static struct ide_device {
         uint32_t sets;                   // 命令支持
         uint32_t size;                   // 扇区数量
         char desc[IDE_DESC_LEN+1];       // IDE设备描述
-} ide_devices;
+} ide_device;
 
 // 初始化IDE设备
 static int ide_init(void);
@@ -129,7 +129,7 @@ static int32_t ide_wait_ready(uint16_t iobase, bool check_error)
 // 获取IDE设备描述
 static const char *ide_get_desc(void)
 {
-        return (const char *)(ide_devices.desc);
+        return (const char *)(ide_device.desc);
 }
 
 // 初始化IDE设备
@@ -150,7 +150,7 @@ static int ide_init(void)
                 return -1;
         }
 
-        ide_devices.valid = 1;
+        ide_device.valid = 1;
 
         // 读取IDE设备信息
         uint32_t buffer[128];
@@ -167,10 +167,10 @@ static int ide_init(void)
         else {
                 sectors = *(uint32_t *)(ident + IDE_IDENT_MAX_LBA);
         }
-        ide_devices.sets = cmdsets;
-        ide_devices.size = sectors;
+        ide_device.sets = cmdsets;
+        ide_device.size = sectors;
 
-        char *desc = ide_devices.desc;
+        char *desc = ide_device.desc;
         char *data = (char *)((uint32_t)ident + IDE_IDENT_MODEL);
 
         // 复制设备描述信息
@@ -189,14 +189,14 @@ static int ide_init(void)
 // 检测指定IDE设备是否可用
 static bool ide_device_valid(void)
 {
-        return ide_devices.valid == 1;
+        return ide_device.valid == 1;
 }
 
 // 获得设备默认块数量
 static int ide_get_nr_block(void)
 {
         if (ide_device_valid()) {
-                return ide_devices.size;
+                return ide_device.size;
         }
 
         return 0;
@@ -223,7 +223,7 @@ static int ide_request(io_request_t *req)
 // 读取指定IDE设备若干扇区
 static int ide_read_secs(uint32_t secno, void *dst, uint32_t nsecs)
 {
-        assert(nsecs <= MAX_NSECS && ide_devices.valid == 1, "nsecs or ide error!");
+        assert(nsecs <= MAX_NSECS && ide_device.valid == 1, "nsecs or ide error!");
         assert(secno < MAX_DISK_NSECS && secno + nsecs <= MAX_DISK_NSECS, "secno error!");
 
         ide_wait_ready(IOBASE, 0);
@@ -250,7 +250,7 @@ static int ide_read_secs(uint32_t secno, void *dst, uint32_t nsecs)
 // 写入指定IDE设备若干扇区
 static int ide_write_secs(uint32_t secno, const void *src, uint32_t nsecs)
 {
-        assert(nsecs <= MAX_NSECS && ide_devices.valid == 1, "nsecs or ide error");
+        assert(nsecs <= MAX_NSECS && ide_device.valid == 1, "nsecs or ide error");
         assert(secno < MAX_DISK_NSECS && secno + nsecs <= MAX_DISK_NSECS, "secno error!");
 
         ide_wait_ready(IOBASE, 0);

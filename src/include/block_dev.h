@@ -21,20 +21,39 @@
 
 #include <types.h>
 
-#include "io_request.h"
+typedef
+enum io_type {
+        IO_READ = 0,
+        IO_WRITE = 1
+} io_type_t;
+
+typedef 
+struct io_request {
+        io_type_t io_type;       // IO操作类型
+        uint32_t secno;          // 起始位置
+        uint32_t nsecs;          // 读写数量
+        void *buffer;            // 读写缓冲区
+        uint32_t bsize;          // 缓冲区尺寸
+} io_request_t;
 
 // 块设备接口
 typedef
 struct block_dev {
-        const char *name;       		 // 块设备名称
-        uint32_t block_size;                     // 单位块大小
-        struct block_ops {                       // 块设备操作
-                int (*init)(void);               // 设备初始化
-                bool (*device_valid)(void); 	 // 设备是否可用
-                const char *(*get_desc)(void);   // 获取设备描述
-                int (*get_nr_block)(void);       // 获得设备默认块数量
-                int (*request)(io_request_t *);  // 设备操作请求
+        const char *name;               // 设备名称
+        uint32_t block_size;            // 单位块大小
+        struct block_ops {                              // 设备操作
+                int (*init)(void);                      // 设备初始化
+                bool (*device_valid)(void); 	        // 设备是否可用
+                const char *(*get_desc)(void);          // 获取设备描述
+                int (*get_nr_block)(void);              // 获得设备默认块数量
+                int (*request)(io_request_t *);         // 设备操作请求
         } ops;
 } block_dev_t;
+
+// 块设备初始化
+void block_dev_init(void);
+
+// IDE 设备结构
+extern block_dev_t ide_main_dev;
 
 #endif  // INCLUDE_BLOCK_DEV_H_
