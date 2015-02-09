@@ -23,7 +23,7 @@
 #include "vfs.h"
 
 // 全局的文件系统指针
-fs_t *file_systems = NULL; 
+struct filesystem *file_systems = NULL; 
 
 // vfs 初始化
 void vfs_init(void)
@@ -32,9 +32,9 @@ void vfs_init(void)
 }
 
 // 添加文件系统
-int register_filesystem(fs_t *fs)
+int register_filesystem(struct filesystem *fs)
 {
-        fs_t *p = file_systems;
+        struct filesystem *p = file_systems;
         while (p) {
                 if (strcmp(p->fs_name, fs->fs_name) == 0) {
                         return -1;

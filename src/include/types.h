@@ -43,6 +43,9 @@ typedef          short     int16_t;
 typedef unsigned char      uint8_t;
 typedef          char      int8_t;
 
+// 时间类型
+typedef uint32_t time_t;
+
 // 进程 PID
 typedef int32_t pid_t;
 
