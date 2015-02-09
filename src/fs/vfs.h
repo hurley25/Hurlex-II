@@ -45,6 +45,7 @@ struct super_block {
         uint32_t s_block_count;         // block数量
         uint32_t s_block_size;          // block大小
         uint32_t s_max_file;            // 文件最大尺寸
+        struct dentry *s_root;          // 根dentry
         struct super_ops *s_ops;        // super_block操作
 };
 
@@ -57,15 +58,16 @@ struct super_ops {
 };
 
 struct inode {
-        spinlock_t i_lock;      // inode自旋锁
-        atomic_t i_count;       // 索引节点引用计数
-        uint32_t i_ino;         // 索引节点号
-        time_t i_atime;         // 文件最后一次访问时间
-        time_t i_mtime;         // 文件最后一次修改时间
-        time_t i_ctime;         // 文件首次创建时间
-        uint32_t i_size;        // 文件字节数
-        uint32_t i_blocks;      // 文件使用block数
-        uint32_t i_bytes;       // 文件最后一个block的字节数
+        spinlock_t i_lock;              // inode自旋锁
+        atomic_t i_count;               // 索引节点引用计数
+        struct super_block *i_sb;       // super_blcok指针
+        uint32_t i_ino;                 // 索引节点号
+        time_t i_atime;                 // 文件最后一次访问时间
+        time_t i_mtime;                 // 文件最后一次修改时间
+        time_t i_ctime;                 // 文件首次创建时间
+        uint32_t i_size;                // 文件字节数
+        uint32_t i_blocks;              // 文件使用block数
+        uint32_t i_bytes;               // 文件最后一个block的字节数
 };
 
 // inode相关操作
@@ -90,6 +92,8 @@ struct dentry {
         struct dentry *d_parent;        // 父目录指针
         struct list_head d_brother;     // 相同层级的目录链
         struct list_head d_subdirs;     // 子目录链表头
+        struct super_block *d_sb;       // 目录项对应的super_blcok
+        bool is_mounted;                // 是否被挂载设备
         struct inode *d_inode;          // 目录项对应的inode
         struct dentry_ops *d_ops;       // dentry相关操作
 };

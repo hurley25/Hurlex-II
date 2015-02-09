@@ -25,10 +25,21 @@
 // 全局的文件系统指针
 struct filesystem *file_systems = NULL; 
 
+// 初始化VFS目录树
+static void init_mount_tree(void);
+
 // vfs 初始化
 void vfs_init(void)
 {
         printk_color(rc_black, rc_red, "Init VFS ...\n\n");
+        
+        init_mount_tree();
+}
+
+// 初始化VFS目录树
+static void init_mount_tree(void)
+{
+
 }
 
 // 添加文件系统
