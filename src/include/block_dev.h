@@ -47,6 +47,7 @@ struct block_dev {
                 const char *(*get_desc)(void);          // 获取设备描述
                 int (*get_nr_block)(void);              // 获得设备默认块数量
                 int (*request)(io_request_t *);         // 设备操作请求
+                int (*ioctl)(int, int);                 // 设备选项设置
         } ops;
 } block_dev_t;
 

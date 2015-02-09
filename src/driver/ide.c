@@ -99,6 +99,9 @@ static int ide_read_secs(uint32_t secno, void *dst, uint32_t nsecs);
 // 写入IDE设备若干扇区
 static int ide_write_secs(uint32_t secno, const void *src, uint32_t nsecs);
 
+// IDE设备选项设置
+static int ide_ioctl(int op, int flag);
+
 // IDE 设备结构
 block_dev_t ide_main_dev = {
         .name = "IDE_MAIN",
@@ -108,7 +111,8 @@ block_dev_t ide_main_dev = {
                 .device_valid = &ide_device_valid,
                 .get_desc = &ide_get_desc,
                 .get_nr_block = &ide_get_nr_block,
-                .request = &ide_request
+                .request = &ide_request,
+                .ioctl = ide_ioctl
         }
 };
 
@@ -272,5 +276,15 @@ static int ide_write_secs(uint32_t secno, const void *src, uint32_t nsecs)
         }
 
         return ret;
+}
+
+// IDE设备选项设置
+static int ide_ioctl(int op, int flag)
+{
+        if (op != 0 && flag != 0) {
+                return -1;
+        }
+
+        return 0;
 }
 

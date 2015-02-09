@@ -33,6 +33,7 @@ struct char_dev {
                 const char *(*get_desc)(void);          // 获取设备描述
                 int (*read)(void *, uint32_t);          // 设备读取
                 int (*write)(const void *, uint32_t);   // 设备写入
+                int (*ioctl)(int, int);                 // 设备选项设置
         } ops;
 } char_dev_t;
 

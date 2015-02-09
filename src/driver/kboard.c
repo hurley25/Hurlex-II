@@ -195,6 +195,9 @@ static int kb_read(void *dec, uint32_t len);
 // 设备写入
 static int kb_write(const void *src, uint32_t len);
 
+// 设备控制
+static int kb_ioctl(int op, int flag);
+
 // 键盘中断处理函数
 static void keyboard_handler(__attribute__((unused))pt_regs_t *regs);
 
@@ -208,7 +211,8 @@ char_dev_t kboard_dev = {
                 .device_valid = kb_device_valid,
                 .get_desc = kb_get_desc,
                 .read = kb_read,
-                .write = kb_write
+                .write = kb_write,
+                .ioctl = kb_ioctl
         }
 };
 
@@ -340,4 +344,14 @@ static void keyboard_handler(__attribute__((unused))pt_regs_t *regs)
         }
 }
 
+
+// 设备控制
+static int kb_ioctl(int op, int flag)
+{
+        if (op != 0 && flag != 0) {
+                return -1;
+        }
+
+        return 0;
+}
 
