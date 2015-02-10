@@ -17,9 +17,8 @@
  */
 
 #include <fs.h>
+#include <vfs.h>
 #include <device.h>
-
-#include "vfs.h"
 
 // 文件系统初始化
 void fs_init(void)
