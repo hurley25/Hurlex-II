@@ -24,6 +24,7 @@
 #include <common.h>
 #include <mm/mm.h>
 #include <lib/list.h>
+#include <fs.h>
 
 // fork flag
 #define CLONE_VM            0x00000100  // set if VM shared between processes
@@ -74,6 +75,8 @@ struct task_struct {
         struct context context;         // 任务切换上下文信息
         uint32_t flags;                 // 任务的一些标识
         uint32_t exit_code;             // 任务的退出代码
+
+        struct file_struct files;       // 文件系统相关信息
         
         struct list_head list;          // 任务链表
 };

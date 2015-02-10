@@ -87,7 +87,6 @@ void kern_init(void)
         
         mm_init();
         task_init();
-
         fs_init();
 
         enable_intr();
