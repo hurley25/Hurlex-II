@@ -22,6 +22,9 @@
 #include <types.h>
 #include <spinlock.h>
 
+#define ROOTFS_T        0xA0
+#define SFS_T           0xAA
+
 // 前置声明
 struct super_block;
 struct super_ops;
@@ -33,9 +36,10 @@ struct file;
 struct file_ops;
 
 struct filesystem {
-        const char *fs_name;                                      // 文件系统名称
-        uint8_t  fs_type;                                         // 文件系统类型
+        const char *name;                                         // 文件系统名称
+        uint8_t type;                                             // 文件系统类型
         struct super_block *(*read_super)(struct super_block *);  // 读取super_block
+        struct list_head fs_supers;                               // super_block指针
         struct filesystem *next;                                  // 下一个文件系统
 };
 
@@ -46,10 +50,10 @@ struct super_block {
         uint32_t s_block_size;          // block大小
         uint32_t s_max_file;            // 文件最大尺寸
         struct dentry *s_root;          // 根dentry
-        struct super_ops *s_ops;        // super_block操作
+        struct super_block_ops *s_ops;  // super_block操作
 };
 
-struct super_ops {
+struct super_block_ops {
         struct inode *(*alloc_inode)(struct super_block *sb);   // 获取inode
         void (*destroy_inode)(struct inode *);                  // 释放inode
         void (*write_super) (struct super_block *);             // 写回super_block
@@ -61,6 +65,7 @@ struct inode {
         spinlock_t i_lock;              // inode自旋锁
         atomic_t i_count;               // 索引节点引用计数
         struct super_block *i_sb;       // super_blcok指针
+        struct list_head i_list;        // inode 链
         uint32_t i_ino;                 // 索引节点号
         time_t i_atime;                 // 文件最后一次访问时间
         time_t i_mtime;                 // 文件最后一次修改时间
@@ -78,7 +83,6 @@ struct inode_ops {
         int (*rmdir)(struct inode *, struct dentry *);          // 删除目录
         int (*rename)(struct inode *, struct dentry *,          // 重命名
                         struct inode *, struct dentry *);
-
 };
 
 // 最长文件名
@@ -92,9 +96,9 @@ struct dentry {
         struct dentry *d_parent;        // 父目录指针
         struct list_head d_brother;     // 相同层级的目录链
         struct list_head d_subdirs;     // 子目录链表头
-        struct super_block *d_sb;       // 目录项对应的super_blcok
         bool is_mounted;                // 是否被挂载设备
-        struct inode *d_inode;          // 目录项对应的inode
+        struct super_block *d_sb;       // 目录项对应的super_blcok
+        struct inode *d_inode;          // 链接到目录项对应的inode
         struct dentry_ops *d_ops;       // dentry相关操作
 };
 
@@ -120,16 +124,67 @@ struct file_ops {
         int (*write)(struct file *, const char *, uint32_t);
         int (*open)(struct inode *, struct file *);
         int (*flush)(struct file *);
-        int (*release)(struct inode *, struct file *);
+        int (*close)(struct inode *, struct file *);
 };
 
 // 全局的文件系统指针
 extern struct filesystem *file_systems; 
+
+// 根文件系统
+extern struct filesystem fs_rootfs;
 
 // vfs 初始化
 void vfs_init(void);
 
 // 添加文件系统
 int register_filesystem(struct filesystem *fs);
+
+// 获取 super_block 结构
+struct super_block *alloc_super_block(void);
+
+// 获取 super_pos 结构
+struct super_block_ops *alloc_super_block_ops(void);
+
+// 获取 inode 结构
+struct inode *alloc_inode(void);
+
+// 获取 inode_ops 结构
+struct inode_ops *alloc_inode_ops(void);
+
+// 获取 dentry 结构
+struct dentry *alloc_dentry(void);
+
+// 获取 dentry_ops 结构
+struct dentry_ops *alloc_dentry_ops(void);
+
+// 获取 file 结构
+struct file *alloc_file(void);
+
+// 获取 file_ops 结构
+struct file_ops *alloc_file_ops(void);
+
+// 释放 super_block 结构
+void free_super_block(struct super_block *sb);
+
+// 释放 super_block_ops 结构
+void free_super_block_ops(struct super_ops *sb_ops);
+
+// 释放 inode 结构
+void free_inode(struct inode *inode);
+
+// 释放 inode_ops 结构
+void free_inode_ops(struct inode_ops *inode_ops);
+
+// 释放 dentry 结构
+void free_dentry(struct dentry *dentry);
+
+// 释放 dentry_ops 结构
+void free_dentry_ops(struct dentry_ops *dentry_ops);
+
+// 释放 file 结构
+void free_file(struct file *file);
+
+// 释放 file_ops 结构
+void free_file_ops(struct file_ops *file_ops);
 
 #endif  // INCLUDE_VFS_H_
