@@ -23,7 +23,7 @@
 #include <spinlock.h>
 #include <block_dev.h>
 
-#define ROOTFS_T        0xA0
+#define RAMFS_T        0xA0
 #define SFS_T           0xAA
 
 // 前置声明
@@ -146,7 +146,7 @@ struct vfsmount {
 extern struct filesystem *file_systems; 
 
 // 根文件系统
-extern struct filesystem fs_rootfs;
+extern struct filesystem fs_ramfs;
 
 // vfs 初始化
 void vfs_init(void);

@@ -50,19 +50,19 @@ void vfs_init(void)
 static void init_mount_tree(struct vfsmount *mount)
 {
         // 添加根文件系统
-        add_filesystem(&fs_rootfs);
+        add_filesystem(&fs_ramfs);
 
-        INIT_LIST_HEAD(&(fs_rootfs.fs_supers));
+        INIT_LIST_HEAD(&(fs_ramfs.fs_supers));
 
         // 获取根文件系统的超级块结构
         struct super_block *sb = alloc_super_block();
         bzero(sb, sizeof(struct super_block));
         
         // 将 super_block 添加到文件系统控制信息下
-        list_add(&(sb->s_list), &(fs_rootfs.fs_supers));
+        list_add(&(sb->s_list), &(fs_ramfs.fs_supers));
 
         // 为根文件系统初始化超级块
-        fs_rootfs.read_super(sb);
+        fs_ramfs.read_super(sb);
 
         // 初始化根结点 inode
         struct inode *inode = alloc_inode();
