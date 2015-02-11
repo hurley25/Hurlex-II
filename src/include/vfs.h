@@ -134,6 +134,16 @@ struct file_ops {
         int (*close)(struct inode *, struct file *);
 };
 
+// 进程最大打开的文件个数
+#define MAX_OPEN_FILE   64
+
+// 进程PCB里描述文件系统的结构
+struct file_struct {
+        spinlock_t fs_lock;                     // 同步修改保护锁
+        struct vfsmount *vfsmount;              // 文件系统根结构
+        struct file file_array[MAX_OPEN_FILE];  // 进程打开的文件描述
+};
+
 struct vfsmount {
         const char *mnt_devname;         // 挂载的设备名称
         struct super_block *mnt_sb;      // 挂载的 super_block
@@ -147,9 +157,6 @@ extern struct filesystem *file_systems;
 
 // 根文件系统
 extern struct filesystem fs_ramfs;
-
-// vfs 初始化
-void vfs_init(void);
 
 // 内核注册文件系统
 int add_filesystem(struct filesystem *fs);

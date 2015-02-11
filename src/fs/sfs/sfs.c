@@ -34,6 +34,6 @@ struct filesystem fs_sfs = {
 // 读取super_block
 static struct super_block *sfs_read_super(struct super_block *sb)
 {
-        
+        return sb;
 }
 
