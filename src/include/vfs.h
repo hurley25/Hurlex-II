@@ -21,6 +21,7 @@
 
 #include <types.h>
 #include <spinlock.h>
+#include <block_dev.h>
 
 #define ROOTFS_T        0xA0
 #define SFS_T           0xAA
@@ -45,6 +46,8 @@ struct filesystem {
 
 struct super_block {
         struct list_head s_list;        // super_block指针
+        block_dev_t *bdev;              // 对应的块设备指针
+        uint16_t s_type;                // 文件系统类型
         uint32_t s_inode_count;         // inode数量
         uint32_t s_block_count;         // block数量
         uint32_t s_block_size;          // block大小
@@ -54,18 +57,22 @@ struct super_block {
 };
 
 struct super_block_ops {
-        struct inode *(*alloc_inode)(struct super_block *sb);   // 获取inode
+        struct inode *(*alloc_inode)(struct super_block *);     // 获取inode
         void (*destroy_inode)(struct inode *);                  // 释放inode
-        void (*write_super) (struct super_block *);             // 写回super_block
-        int (*sync_fs)(struct super_block *sb);                 // 同步文件系统
+        void (*write_super)(struct super_block *);              // 写回super_block
+        int (*sync_fs)(struct super_block *);                   // 同步文件系统
         void (*delete_inode)(struct inode *);                   // 删除inode及其对应的文件数据
 };
+
+#define S_DIR    0x1    // inode 目录类型
+#define S_FILE   0x2    // inode 文件类型
 
 struct inode {
         spinlock_t i_lock;              // inode自旋锁
         atomic_t i_count;               // 索引节点引用计数
         struct super_block *i_sb;       // super_blcok指针
         struct list_head i_list;        // inode 链
+        uint32_t i_type;                // inode 类型
         uint32_t i_ino;                 // 索引节点号
         time_t i_atime;                 // 文件最后一次访问时间
         time_t i_mtime;                 // 文件最后一次修改时间
@@ -136,8 +143,8 @@ extern struct filesystem fs_rootfs;
 // vfs 初始化
 void vfs_init(void);
 
-// 添加文件系统
-int register_filesystem(struct filesystem *fs);
+// 内核注册文件系统
+int add_filesystem(struct filesystem *fs);
 
 // 获取 super_block 结构
 struct super_block *alloc_super_block(void);

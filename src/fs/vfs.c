@@ -23,7 +23,7 @@
 #include <vfs.h>
 
 // 全局的文件系统指针
-struct filesystem *file_systems = NULL; 
+struct filesystem *file_systems; 
 
 // 初始化VFS目录树
 static void init_mount_tree(void);
@@ -40,8 +40,8 @@ void vfs_init(void)
 // 初始化VFS目录树
 static void init_mount_tree(void)
 {
-        // 注册根文件系统
-        register_filesystem(&fs_rootfs);
+        // 添加根文件系统
+        add_filesystem(&fs_rootfs);
 
         // 获取根文件系统的超级块结构
         struct super_block *sb = alloc_super_block();
@@ -58,7 +58,7 @@ static void init_mount_tree(void)
 }
 
 // 添加文件系统
-int register_filesystem(struct filesystem *fs)
+int add_filesystem(struct filesystem *fs)
 {
         struct filesystem *p = file_systems;
         while (p) {

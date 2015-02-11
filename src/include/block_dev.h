@@ -49,10 +49,17 @@ struct block_dev {
                 int (*request)(io_request_t *);         // 设备操作请求
                 int (*ioctl)(int, int);                 // 设备选项设置
         } ops;
+        struct block_dev *next;                         // 块设备链
 } block_dev_t;
+
+// 全局块设备链表
+extern block_dev_t *block_devs;
 
 // 块设备初始化
 void block_dev_init(void);
+
+// 内核注册块设备
+int add_block_dev(block_dev_t *bdev);
 
 // IDE 设备结构
 extern block_dev_t ide_main_dev;

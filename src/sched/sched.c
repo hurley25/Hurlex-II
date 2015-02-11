@@ -22,7 +22,7 @@
 
 #include "sched.h"
 
-void clock_callback(__attribute__((unused))pt_regs_t *regs)
+void clock_callback(__UNUSED pt_regs_t *regs)
 {
 //        schedule();
 }

@@ -51,7 +51,8 @@ static struct super_block *sfs_read_super(struct super_block *sb)
         dentry->is_mounted = 0;
         strcpy(dentry->d_name, "/");
         
-        // 设置超级块对应的根目录
+        // 设置超级块对应的文件系统类型和根目录
+        sb->s_type = SFS_T;
         sb->s_root = dentry;
 
         return sb;

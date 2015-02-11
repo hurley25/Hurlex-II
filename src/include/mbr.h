@@ -20,6 +20,7 @@
 #define INCLUDE_MBR_H_
 
 #include <types.h>
+#include <block_dev.h>
 
 #define SECTION_SIZE      512 	  // 扇区大小
 #define MBR_CODE_LENGTH   446     // MBR代码长度
@@ -29,11 +30,11 @@
 typedef
 struct partition_info_t {
         uint8_t active_flag;       // 活动分区标记(0x0表示非活动,0x80表示活动)
-        uint8_t start_chs[3];     // 起始磁头号+扇区号+柱面号。磁头号1字节;扇区号2字节低6位;柱面号2字节高2位+3字节
-        uint8_t partition_type;   // 分区类型
-        uint8_t end_chs[3];       // 结束磁头号,含义同起始磁头号
-        uint32_t start_sector;    // 逻辑起始扇区号
-        uint32_t nr_sectors;      // 所占用扇区数
+        uint8_t start_chs[3];      // 起始磁头号+扇区号+柱面号。磁头号1字节;扇区号2字节低6位;柱面号2字节高2位+3字节
+        uint8_t partition_type;    // 分区类型
+        uint8_t end_chs[3];        // 结束磁头号,含义同起始磁头号
+        uint32_t start_sector;     // 逻辑起始扇区号
+        uint32_t nr_sectors;       // 所占用扇区数
 } __attribute__((packed)) partition_info_t;
 
 typedef
@@ -48,6 +49,6 @@ struct mbr_info_t
 extern mbr_info_t mbr_info;
 
 // 读取分区信息
-void read_mbr_info(void);
+int read_mbr_info(block_dev_t *bdev);
 
 #endif  // INCLUDE_MBR_H_

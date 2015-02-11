@@ -62,8 +62,8 @@ static struct buddy_mm_struct buddy_mm_info;
 #define nr_free(x) (buddy_mm_info.nr_free[x])
 
 static void buddy_show_memory_info(void);
-static void buddy_show_management_info(void) __attribute__((unused));
-static void buddy_test_mm(void) __attribute__((unused));
+static void buddy_show_management_info(void) __UNUSED;
+static void buddy_test_mm(void) __UNUSED;
 
 static void buddy_page_init(page_t *pages, uint32_t n)
 {
