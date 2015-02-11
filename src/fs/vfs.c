@@ -17,44 +17,79 @@
  */
 
 #include <debug.h>
+#include <atomic.h>
+#include <arch.h>
 #include <mm/mm.h>
 #include <lib/string.h>
 #include <lib/list.h>
+#include <fs.h>
 #include <vfs.h>
 
 // 全局的文件系统指针
 struct filesystem *file_systems; 
 
 // 初始化VFS目录树
-static void init_mount_tree(void);
+static void init_mount_tree(struct vfsmount *mount);
 
 // vfs 初始化
 void vfs_init(void)
 {
         printk_color(rc_black, rc_red, "Init VFS ...\n\n");
 
+        struct vfsmount *mount;
+        mount = kmalloc(sizeof(struct vfsmount));
+        assert(mount != NULL, "vfs_init alloc vfsmount failed!");
+
         // 初始化VFS目录树
-        init_mount_tree();
+        init_mount_tree(mount);
+
+        current->files.vfsmount = mount;
 }
 
 // 初始化VFS目录树
-static void init_mount_tree(void)
+static void init_mount_tree(struct vfsmount *mount)
 {
         // 添加根文件系统
         add_filesystem(&fs_rootfs);
+
+        INIT_LIST_HEAD(&(fs_rootfs.fs_supers));
 
         // 获取根文件系统的超级块结构
         struct super_block *sb = alloc_super_block();
         bzero(sb, sizeof(struct super_block));
         
-        // 初始化文件系统 super_block 链表
-        INIT_LIST_HEAD(&(fs_rootfs.fs_supers));
-
         // 将 super_block 添加到文件系统控制信息下
         list_add(&(sb->s_list), &(fs_rootfs.fs_supers));
 
         // 为根文件系统初始化超级块
         fs_rootfs.read_super(sb);
+
+        // 初始化根结点 inode
+        struct inode *inode = alloc_inode();
+        bzero(inode, sizeof(struct inode));
+        inode->i_sb = sb;
+
+        // 初始化根结点 dentry
+        struct dentry *dentry = alloc_dentry();
+        atomic_set(&(dentry->d_count), 0);
+        INIT_LIST_HEAD(&(dentry->d_brother));
+        INIT_LIST_HEAD(&(dentry->d_subdirs));
+
+        dentry->d_status = 1;
+        dentry->d_parent = NULL;
+        dentry->d_sb = sb;
+        dentry->d_inode = inode;
+        dentry->is_mounted = 0;
+        strcpy(dentry->d_name, "/");
+        
+        // 链接根节点 dentry
+        sb->s_root = dentry;
+
+        mount->mnt_devname = "RAM";
+        mount->mnt_sb = sb;
+        mount->mnt_root = dentry;
+        mount->mnt_mountpoint = dentry;
+        mount->mnt_parent = NULL;
 }
 
 // 添加文件系统

@@ -134,6 +134,14 @@ struct file_ops {
         int (*close)(struct inode *, struct file *);
 };
 
+struct vfsmount {
+        const char *mnt_devname;         // 挂载的设备名称
+        struct super_block *mnt_sb;      // 挂载的 super_block
+        struct dentry *mnt_root;         // 挂载的根目录 dentry
+        struct dentry *mnt_mountpoint;   // 挂载点 dentry
+        struct vfsmount *mnt_parent;     // 父vfsmount指针
+};
+
 // 全局的文件系统指针
 extern struct filesystem *file_systems; 
 

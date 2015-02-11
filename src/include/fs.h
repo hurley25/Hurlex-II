@@ -27,8 +27,7 @@
 // 进程PCB里描述文件系统的结构
 struct file_struct {
         spinlock_t fs_lock;                     // 同步修改保护锁
-        struct inode *fs_root;                  // 根文件系统inode
-        struct inode *fs_pwd;                   // 当前操作目录inode
+        struct vfsmount *vfsmount;              // 文件系统根结构
         struct file file_array[MAX_OPEN_FILE];  // 进程打开的文件描述
 };
 
