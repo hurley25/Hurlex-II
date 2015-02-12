@@ -80,3 +80,6 @@ debug:
 	sleep 1
 	cgdb -x scripts/gdbinit
 
+.PHONY:code_line_count
+code_line_count:
+	find . -type f \( -name "*.c" -o -name "*.h" -o -name "*.s" \) -exec cat {} \; | wc -l
