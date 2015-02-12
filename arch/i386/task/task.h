@@ -24,7 +24,7 @@
 #include <common.h>
 #include <mm/mm.h>
 #include <lib/list.h>
-#include <vfs.h>
+#include <fs.h>
 
 // fork flag
 #define CLONE_VM            0x00000100  // set if VM shared between processes

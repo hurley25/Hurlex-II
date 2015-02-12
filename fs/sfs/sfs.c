@@ -19,7 +19,7 @@
 #include <lib/string.h>
 #include <lib/list.h>
 #include <atomic.h>
-#include <vfs.h>
+#include <fs.h>
 
 // 读取super_block
 static struct super_block *sfs_read_super(struct super_block *sb);

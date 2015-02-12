@@ -23,7 +23,6 @@
 #include <lib/string.h>
 #include <lib/list.h>
 #include <fs.h>
-#include <vfs.h>
 
 // 全局的文件系统指针
 struct filesystem *file_systems; 

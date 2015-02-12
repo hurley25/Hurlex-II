@@ -16,7 +16,7 @@
  * =====================================================================================
  */
 
-#include <vfs.h>
+#include <fs.h>
 
 // 读取super_block
 static struct super_block *ramfs_read_super(struct super_block *sb);

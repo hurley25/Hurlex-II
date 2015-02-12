@@ -17,9 +17,9 @@
  */
 
 #include <debug.h>
+#include <lib/string.h>
 #include <block_dev.h>
 #include <mbr.h>
-#include <lib/string.h>
 
 // 全局块设备链表
 block_dev_t *block_devs;
