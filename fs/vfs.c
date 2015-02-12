@@ -71,8 +71,8 @@ static void init_mount_tree(struct vfsmount *mount)
         // 初始化根结点 dentry
         struct dentry *dentry = alloc_dentry();
         atomic_set(&(dentry->d_count), 0);
-        INIT_LIST_HEAD(&(dentry->d_brother));
         INIT_LIST_HEAD(&(dentry->d_subdirs));
+        INIT_LIST_HEAD(&(dentry->d_child));
 
         dentry->d_status = 1;
         dentry->d_parent = NULL;

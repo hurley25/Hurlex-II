@@ -101,8 +101,8 @@ struct dentry {
         char d_name[MAX_FILE_NAME+1];   // 目录项名称
         uint32_t d_status;              // 目录项状态
         struct dentry *d_parent;        // 父目录指针
-        struct list_head d_brother;     // 相同层级的目录链
         struct list_head d_subdirs;     // 子目录链表头
+        struct list_head d_child;       // 链接到父dentry的d_subdirs
         bool is_mounted;                // 是否被挂载设备
         struct super_block *d_sb;       // 目录项对应的super_blcok
         struct inode *d_inode;          // 链接到目录项对应的inode
