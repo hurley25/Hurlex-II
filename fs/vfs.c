@@ -33,7 +33,7 @@ static void init_mount_tree(struct vfsmount *mount);
 // vfs 初始化
 void vfs_init(void)
 {
-        printk_color(rc_black, rc_red, "Init VFS ...\n\n");
+        printk_color(rc_black, rc_light_brown, "Init Virtual File System ...\n\n");
 
         struct vfsmount *mount;
         mount = kmalloc(sizeof(struct vfsmount));

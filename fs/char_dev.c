@@ -30,7 +30,7 @@ void char_dev_init(void)
         kb_dev->ops.init();
         add_char_dev(kb_dev);
 
-        printk_color(rc_black, rc_red, "Init %s device ...\n\n", kb_dev->ops.get_desc());
+        printk_color(rc_black, rc_magenta, "Init %s device ...\n\n", kb_dev->ops.get_desc());
 }
 
 // 内核注册字符设备

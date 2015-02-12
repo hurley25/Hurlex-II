@@ -51,4 +51,7 @@ extern mbr_info_t mbr_info;
 // 读取分区信息
 int read_mbr_info(block_dev_t *bdev);
 
+// 输出分区信息
+void show_partition_info(void);
+
 #endif  // INCLUDE_MBR_H_

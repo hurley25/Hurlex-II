@@ -24,7 +24,7 @@
 #include <block_dev.h>
 
 #define RAMFS_T        0xA0
-#define SFS_T           0xAA
+#define SFS_T          0xAA
 
 // 前置声明
 struct super_block;

@@ -22,10 +22,14 @@
 // vfs 初始化
 void vfs_init(void);
 
+// sfs 文件系统初始化
+void sfs_init(void);
+
 // 文件系统初始化
 void fs_init(void)
 {
         vfs_init();
         device_init();
+        sfs_init();
 }
 
