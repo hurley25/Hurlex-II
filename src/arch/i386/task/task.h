@@ -89,7 +89,6 @@ extern struct task_struct *glb_idle_task;
 extern struct task_struct *glb_init_task;
 
 #define task_to_stack(task) ((void *)((uint32_t)task + STACK_SIZE))
-#define stack_to_task(stack) ((struct task_struct *)((uint32_t)stack - STACK_SIZE))
 
 #define current get_current()
 
