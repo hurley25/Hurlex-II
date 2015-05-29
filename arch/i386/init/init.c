@@ -27,7 +27,7 @@ multiboot_t *glb_mboot_ptr;
 char kern_stack[STACK_SIZE]  __attribute__ ((aligned(STACK_SIZE)));
 
 // 内核栈的栈顶
-uint32_t kern_stack_top = (uint32_t)kern_stack + STACK_SIZE;
+uint32_t kern_stack_top = (uint32_t)kern_stack + STACK_SIZE - 8;
 
 // 内核使用的临时页表和页目录
 // 该地址必须是页对齐的地址，内存 0-640KB 肯定是空闲的

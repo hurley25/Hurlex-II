@@ -182,7 +182,7 @@ static void copy_thread(struct task_struct *task, struct pt_regs_t *pt_regs)
         task->pt_regs = (struct pt_regs_t *)((uint32_t)task->stack - sizeof(struct pt_regs_t));
         *(task->pt_regs) = *pt_regs;
         task->pt_regs->eax = 0;
-        task->pt_regs->esp = (uint32_t)task->stack;
+        task->pt_regs->esp = (uint32_t)task->stack - 8;
         task->pt_regs->eflags |= FL_IF;
 
         task->context.eip = (uint32_t)forkret_s;
