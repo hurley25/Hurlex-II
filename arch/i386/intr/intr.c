@@ -145,7 +145,7 @@ void isr_handler(pt_regs_t *regs)
         if (interrupt_handlers[regs->int_no]) {
               interrupt_handlers[regs->int_no](regs);
         } else {
-                printk_color(rc_black, rc_blue, "Unhandled interrupt: %d %s\n", regs->int_no, intrname(regs->int_no));
+                cprintk(rc_black, rc_blue, "Unhandled interrupt: %d %s\n", regs->int_no, intrname(regs->int_no));
                 cpu_hlt();
         }
 }

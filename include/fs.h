@@ -141,7 +141,7 @@ struct file_ops {
 struct file_struct {
         spinlock_t fs_lock;                     // 同步修改保护锁
         struct vfsmount *vfsmount;              // 文件系统根结构
-        struct file file_array[MAX_OPEN_FILE];  // 进程打开的文件描述
+        struct file *file_array;                // 进程打开的文件描述
 };
 
 struct vfsmount {

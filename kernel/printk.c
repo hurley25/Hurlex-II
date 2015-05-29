@@ -39,7 +39,7 @@ void printk(const char *format, ...)
         console_write(buff);
 }
 
-void printk_color(real_color_t back, real_color_t fore, const char *format, ...)
+void cprintk(real_color_t back, real_color_t fore, const char *format, ...)
 {
         // 避免频繁创建临时变量，内核的栈很宝贵
         static char buff[10240];

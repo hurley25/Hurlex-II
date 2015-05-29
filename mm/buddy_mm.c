@@ -263,14 +263,14 @@ static void buddy_show_memory_info(void)
 
 static void buddy_show_management_info(void)
 {
-        printk_color(rc_black, rc_green,"Buddy Memory Info:\n\n");
+        cprintk(rc_black, rc_green,"Buddy Memory Info:\n\n");
         uint32_t count = 0;
         for (uint32_t order = 0; order < MAX_ORDER + 1; ++order) {
                 count += atomic_read(&nr_free(order)) * (1u << order);
-                printk_color(rc_black, rc_green, "    order %2u (size: %4u * 4K) count: %3d\n",
+                cprintk(rc_black, rc_green, "    order %2u (size: %4u * 4K) count: %3d\n",
                                 order, 1u << order, atomic_read(&nr_free(order)));
         }
-        printk_color(rc_black, rc_green, "\n        Buddy All Pages Count: %u\n\n", count);
+        cprintk(rc_black, rc_green, "\n        Buddy All Pages Count: %u\n\n", count);
 
         printk("Physical Memory Pages Used: %d Pages = %d KB\n\n", 
                         atomic_read(&buddy_mm_info.phy_page_count) - atomic_read(&buddy_mm_info.phy_page_now_count),
@@ -279,11 +279,11 @@ static void buddy_show_management_info(void)
 
 static void buddy_test_mm(void)
 {
-        printk_color(rc_black, rc_green, "\n%s Test Now:\n\n", buddy_mm_manager.name);
+        cprintk(rc_black, rc_green, "\n%s Test Now:\n\n", buddy_mm_manager.name);
 
-        printk_color(rc_black, rc_red, "before test:\n\n order 0~10 counts: ");
+        cprintk(rc_black, rc_red, "before test:\n\n order 0~10 counts: ");
         for (uint32_t order = 0; order < MAX_ORDER + 1; ++order) {
-                printk_color(rc_black, rc_red, "%3u ", atomic_read(&nr_free(order)));
+                cprintk(rc_black, rc_red, "%3u ", atomic_read(&nr_free(order)));
         }
         printk("\n\n");
 
@@ -311,9 +311,9 @@ static void buddy_test_mm(void)
         buddy_free_pages(page[8], 129);
         buddy_free_pages(page[9], 547);
         
-        printk_color(rc_black, rc_red, "after test:\n\n order 0~10 counts: ");
+        cprintk(rc_black, rc_red, "after test:\n\n order 0~10 counts: ");
         for (uint32_t order = 0; order < MAX_ORDER + 1; ++order) {
-                printk_color(rc_black, rc_red, "%3u ", atomic_read(&nr_free(order)));
+                cprintk(rc_black, rc_red, "%3u ", atomic_read(&nr_free(order)));
         }
         printk("\n\n");
 }

@@ -63,6 +63,6 @@ void print_cur_status(void);
 void printk(const char *format, ...);
 
 // 内核的打印函数 带颜色
-void printk_color(real_color_t back, real_color_t fore, const char *format, ...);
+void cprintk(real_color_t back, real_color_t fore, const char *format, ...);
 
 #endif  // INCLUDE_DEBUG_H_

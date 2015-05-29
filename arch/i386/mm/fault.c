@@ -31,27 +31,27 @@ void do_page_fault(pt_regs_t *regs)
 
         // bit 0 为 0 指页面不存在内存里
         if ( !(regs->err_code & 0x1)) {
-                printk_color(rc_black, rc_red, "Because the page wasn't present.\n");
+                cprintk(rc_black, rc_red, "Because the page wasn't present.\n");
         }
         // bit 1 为 0 表示读错误，为 1 为写错误
         if (regs->err_code & 0x2) {
-                printk_color(rc_black, rc_red, "Write error.\n");
+                cprintk(rc_black, rc_red, "Write error.\n");
         } else {
-                printk_color(rc_black, rc_red, "Read error.\n");
+                cprintk(rc_black, rc_red, "Read error.\n");
         }
         // bit 2 为 1 表示在用户模式打断的，为 0 是在内核模式打断的
         if (regs->err_code & 0x4) {
-                printk_color(rc_black, rc_red, "In user mode.\n");
+                cprintk(rc_black, rc_red, "In user mode.\n");
         } else {
-                printk_color(rc_black, rc_red, "In kernel mode.\n");
+                cprintk(rc_black, rc_red, "In kernel mode.\n");
         }
         // bit 3 为 1 表示错误是由保留位覆盖造成的
         if (regs->err_code & 0x8) {
-                printk_color(rc_black, rc_red, "Reserved bits being overwritten.\n");
+                cprintk(rc_black, rc_red, "Reserved bits being overwritten.\n");
         }
         // bit 4 为 1 表示错误发生在取指令的时候
         if (regs->err_code & 0x10) {
-                printk_color(rc_black, rc_red, "The fault occurred during an instruction fetch.\n");
+                cprintk(rc_black, rc_red, "The fault occurred during an instruction fetch.\n");
         }
 
         while (1) {

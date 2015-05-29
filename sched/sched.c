@@ -24,7 +24,7 @@
 
 void clock_callback(__UNUSED pt_regs_t *regs)
 {
-//        schedule();
+        schedule();
 }
 
 void schedule(void)
