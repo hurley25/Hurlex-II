@@ -199,7 +199,7 @@ static int kb_write(const void *src, uint32_t len);
 static int kb_ioctl(int op, int flag);
 
 // 键盘中断处理函数
-static void keyboard_handler(__UNUSED pt_regs_t *regs);
+static void keyboard_handler(__UNUSED__ pt_regs_t *regs);
 
 // Keyboard 设备结构
 char_dev_t kboard_dev = {
@@ -285,13 +285,13 @@ static int kb_read(void *dec, uint32_t len)
 }
 
 // 设备写入
-static int kb_write(__UNUSED const void *src, __UNUSED uint32_t len)
+static int kb_write(__UNUSED__ const void *src, __UNUSED__ uint32_t len)
 {
         return -1;
 }
 
 // 键盘中断处理函数
-static void keyboard_handler(__UNUSED pt_regs_t *regs)
+static void keyboard_handler(__UNUSED__ pt_regs_t *regs)
 {
         // 从键盘端口读入按下的键
         uint8_t scancode = inb(0x60);

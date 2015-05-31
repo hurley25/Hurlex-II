@@ -64,7 +64,7 @@ static void slob_print(void)
         printk("\n");
 }
 
-__UNUSED static void slob_test(void)
+__UNUSED__ static void slob_test(void)
 {
         slob_print();
  

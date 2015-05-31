@@ -24,6 +24,8 @@
 
 static elf_t kernel_elf;
 
+static void elf_from_multiboot(multiboot_t *mb);
+
 static void print_stack_trace();
 
 static const char *elf_lookup_symbol(uint32_t addr, elf_t *elf);
@@ -31,29 +33,26 @@ static const char *elf_lookup_symbol(uint32_t addr, elf_t *elf);
 void debug_init(void)
 {
         // 从 GRUB 提供的信息中获取到内核符号表和代码地址信息
-        kernel_elf = elf_from_multiboot(glb_mboot_ptr);
+        elf_from_multiboot(glb_mboot_ptr);
 }
 
-elf_t elf_from_multiboot(multiboot_t *mb)
+static void elf_from_multiboot(multiboot_t *mb)
 {
-        elf_t elf;
-        elf_section_header_t *sh = (elf_section_header_t *)mb->addr;
+        elf_section_header_t *sh = (elf_section_header_t *)(mb->addr);
 
         uint32_t shstrtab = sh[mb->shndx].addr;
         for (uint32_t i = 0; i < mb->num; i++) {
                 const char *name = (const char *)(shstrtab + sh[i].name) + PAGE_OFFSET;
                 // 在 GRUB 提供的 multiboot 信息中寻找内核 ELF 格式所提取的字符串表和符号表
                 if (strcmp(name, ".strtab") == 0) {
-                        elf.strtab = (const char *)sh[i].addr + PAGE_OFFSET;
-                        elf.strtabsz = sh[i].size;
+                        kernel_elf.strtab = (const char *)sh[i].addr + PAGE_OFFSET;
+                        kernel_elf.strtabsz = sh[i].size;
                 }
                 if (strcmp(name, ".symtab") == 0) {
-                        elf.symtab = (elf_symbol_t *)(sh[i].addr + PAGE_OFFSET);
-                        elf.symtabsz = sh[i].size;
+                        kernel_elf.symtab = (elf_symbol_t *)(sh[i].addr + PAGE_OFFSET);
+                        kernel_elf.symtabsz = sh[i].size;
                 }
         }
-
-        return elf;
 }
 
 void panic(const char *msg)
@@ -101,10 +100,10 @@ void print_cur_status(void)
         uint16_t reg1, reg2, reg3, reg4;
 
         __asm__ volatile ( "mov %%cs, %0;"
-                        "mov %%ds, %1;"
-                        "mov %%es, %2;"
-                        "mov %%ss, %3;"
-                        : "=m"(reg1), "=m"(reg2), "=m"(reg3), "=m"(reg4));
+                           "mov %%ds, %1;"
+                           "mov %%es, %2;"
+                           "mov %%ss, %3;"
+                           : "=m"(reg1), "=m"(reg2), "=m"(reg3), "=m"(reg4));
 
         // 打印当前的运行级别
         printk("%d: @ring %d\n", round, reg1 & 0x3);
@@ -129,7 +128,6 @@ void show_memory_map(void)
                         (uint32_t)mmap->length_high, (uint32_t)mmap->length_low,
                         (uint32_t)mmap->type);
         }
-
         printk("\n");
 }
 
@@ -146,6 +144,5 @@ void show_kernel_memory_map(void)
         
 	printk("\nkernel in memory used: %d KB = %d Pages\n\n",
                         (kern_end - kern_start) / 1024, (kern_end - kern_start) / 1024 / 4);
-
 }
 

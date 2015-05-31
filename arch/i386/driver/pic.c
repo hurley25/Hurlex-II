@@ -26,7 +26,7 @@
 #define IO_PIC1C  (IO_PIC1+1)
 #define IO_PIC2C  (IO_PIC2+1)
 
-// 设置8259A芯片
+// 设置 8259A 芯片
 void init_interrupt_chip(void)
 {
         // 重新映射 IRQ 表

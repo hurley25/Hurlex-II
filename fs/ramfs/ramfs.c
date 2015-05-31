@@ -62,7 +62,7 @@ static struct super_block *ramfs_read_super(struct super_block *sb)
 }
 
 // 申请 inode
-static struct inode *ramfs_alloc_inode(__UNUSED struct super_block *sb)
+static struct inode *ramfs_alloc_inode(__UNUSED__ struct super_block *sb)
 {
         return alloc_inode();
 }
@@ -74,13 +74,13 @@ static void ramfs_destroy_inode(struct inode *inode)
 }
 
 // 设备写回超级块
-static void ramfs_write_super(__UNUSED struct super_block *sb)
+static void ramfs_write_super(__UNUSED__ struct super_block *sb)
 {
         // do nothing ...
 }
 
 // 同步文件系统修改
-static int ramfs_sync_fs(__UNUSED struct super_block *sb)
+static int ramfs_sync_fs(__UNUSED__ struct super_block *sb)
 {
         // do nothing ...
         return 0;

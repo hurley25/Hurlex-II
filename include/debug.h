@@ -44,9 +44,6 @@ extern uint8_t kern_data_end[];
 // 初始化 Debug 信息
 void debug_init(void);
 
-// 从 multiboot_t 结构获取ELF信息
-elf_t elf_from_multiboot(multiboot_t *mb);
-
 // 输出 BIOS 提供的物理内存布局
 void show_memory_map(void);
 
@@ -62,7 +59,7 @@ void print_cur_status(void);
 // 内核的打印函数
 void printk(const char *format, ...);
 
-// 内核的打印函数 带颜色
+// 内核的打印函数(带颜色)
 void cprintk(real_color_t back, real_color_t fore, const char *format, ...);
 
 #endif  // INCLUDE_DEBUG_H_

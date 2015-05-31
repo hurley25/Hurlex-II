@@ -32,9 +32,6 @@ void kern_init(void)
 {
         debug_init();
         arch_init();
-
-        cprintk(rc_black, rc_green, "Hello, Hurlex II kernel!\n\n");
-        
         mm_init();
         task_init();
         fs_init();
@@ -66,7 +63,7 @@ static int init_main(void *args)
 
         while (true) {
                 cprintk(rc_black, rc_blue, "C");
-                uint32_t i = 100000; while (i--);
+                uint32_t i = 1000000; while (i--);
         }
 
         return 0;
@@ -84,7 +81,7 @@ static int user_mode_test_main(void *args)
 
         while (true) {
                 cprintk(rc_black, rc_green, "A");
-                uint32_t i = 100000; while (i--);
+                uint32_t i = 1000000; while (i--);
         }
 
         return 0;
@@ -108,7 +105,7 @@ static void kthread_test(void)
  
         while (true) {
                 cprintk(rc_black, rc_red, "B");
-                uint32_t i = 100000; while (i--);
+                uint32_t i = 1000000; while (i--);
         }
 }
 

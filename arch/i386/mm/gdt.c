@@ -82,12 +82,12 @@ static gdt_ptr_t gdt_ptr;
 // 初始化全局描述符表
 void gdt_init(void)
 {
-        // 全局描述符表界限 e.g. 从 0 开始，所以总长要 - 1
+        // 全局描述符表界限  从 0 开始，所以总长要 - 1
         gdt_ptr.limit = sizeof(gdt_entry_t) * GDT_LENGTH - 1;
         gdt_ptr.base = (uint32_t)&gdt_entries;
         
         // 采用 Intel 平坦模型
-        gdt_set_gate(SEG_NULL,  0x0, 0x0, 0x0, 0x0);             // Intel文档要求
+        gdt_set_gate(SEG_NULL,  0x0, 0x0, 0x0, 0x0);            // Intel文档要求首个描述符全0
         gdt_set_gate(SEG_KTEXT, 0x0, 0xFFFFFFFF, 0x9A, 0xC0);   // 内核指令段
         gdt_set_gate(SEG_KDATA, 0x0, 0xFFFFFFFF, 0x92, 0xC0);   // 内核数据段
         gdt_set_gate(SEG_UTEXT, 0x0, 0xFFFFFFFF, 0xFA, 0xC0);   // 用户模式代码段

@@ -28,7 +28,7 @@
         #define FALSE 0
 #endif
 
-#define __UNUSED __attribute__((unused))
+#define __UNUSED__ __attribute__((unused))
 
 typedef
 enum bool {

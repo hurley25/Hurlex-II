@@ -53,7 +53,7 @@ static struct ff_mm_struct ff_mm_info;
 
 static void ff_show_memory_info(void);
 static void ff_show_management_info(void);
-static void ff_test_mm(void) __UNUSED;
+static void ff_test_mm(void) __UNUSED__;
 
 static void ff_page_init(page_t *pages, uint32_t n)
 {
@@ -219,3 +219,4 @@ static void ff_test_mm(void)
         ff_free_pages(page3, 10);
         ff_show_management_info();
 }
+

@@ -17,6 +17,7 @@
  */
 
 #include <common.h>
+#include <debug.h>
 #include <sync.h>
 #include <mm/mm.h>
 
@@ -74,6 +75,7 @@ static void _flush_console_current(void);
 void console_init(void)
 {
         console_clear();
+        cprintk(rc_black, rc_green, "Hello, Hurlex II kernel!\n\n");
 }
 
 // 清屏操作

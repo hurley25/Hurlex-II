@@ -75,7 +75,7 @@ __attribute__((section(".init.text"))) void mmap_tmp_page(void)
         }
 
         // 映射内核虚拟地址 4MB 到物理地址的前 4MB
-        // 因为 .init.text 段的代码在物理地址前 4MB 处（肯定不会超出这个范围），
+        // 因为 .init.text 段的代码在物理地址前 4MB 处(肯定不会超出这个范围)，
         // 开启分页后若此处不映射，代码执行立即会出错，离开 .init.text 段后的代码执行，
         // 不再需要映射物理前 4MB 的内存
         for (int i = 0; i < 1024; i++) {

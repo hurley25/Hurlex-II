@@ -110,13 +110,13 @@ static void idt_set_gate(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags
 static const char *intrname(uint32_t intrno)
 {
         static const char *const intrnames[] = {
-               "Divide error",
+                "Divide error",
                 "Debug",
                 "Non-Maskable Interrupt",
                 "Breakpoint",
                 "Overflow",
                 "BOUND Range Exceeded",
-               "Invalid Opcode",
+                "Invalid Opcode",
                 "Device Not Available",
                 "Double Fault",
                 "Coprocessor Segment Overrun",
