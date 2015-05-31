@@ -3,7 +3,7 @@
  *
  *       Filename:  task.c
  *
- *    Description:  人物相关的定义
+ *    Description:  任务相关的定义
  *
  *        Version:  1.0
  *        Created:  2014年11月12日 12时24分42秒

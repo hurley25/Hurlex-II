@@ -10,6 +10,5 @@
 kthread_entry:
         push edx         ; push args
         call ebx         ; call fn
-
         push eax         ; push fn(args) return code
         call do_exit
