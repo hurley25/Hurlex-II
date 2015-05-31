@@ -45,13 +45,14 @@ struct filesystem {
 };
 
 struct super_block {
-        struct list_head s_list;        // super_block指针
-        block_dev_t *bdev;              // 对应的块设备指针
         uint16_t s_type;                // 文件系统类型
         uint32_t s_inode_count;         // inode数量
         uint32_t s_block_count;         // block数量
         uint32_t s_block_size;          // block大小
         uint32_t s_max_file;            // 文件最大尺寸
+        
+        struct list_head s_list;        // super_block指针
+        block_dev_t *bdev;              // 对应的块设备指针
         struct dentry *s_root;          // 根dentry
         struct super_block_ops *s_ops;  // super_block操作
 };
@@ -68,10 +69,6 @@ struct super_block_ops {
 #define S_FILE   0x2    // inode 文件类型
 
 struct inode {
-        spinlock_t i_lock;              // inode自旋锁
-        atomic_t i_count;               // 索引节点引用计数
-        struct super_block *i_sb;       // super_blcok指针
-        struct list_head i_list;        // inode 链
         uint32_t i_type;                // inode 类型
         uint32_t i_ino;                 // 索引节点号
         time_t i_atime;                 // 文件最后一次访问时间
@@ -80,6 +77,11 @@ struct inode {
         uint32_t i_size;                // 文件字节数
         uint32_t i_blocks;              // 文件使用block数
         uint32_t i_bytes;               // 文件最后一个block的字节数
+        
+        spinlock_t i_lock;              // inode自旋锁
+        atomic_t i_count;               // 索引节点引用计数
+        struct super_block *i_sb;       // super_blcok指针
+        struct list_head i_list;        // inode 链
 };
 
 // inode相关操作

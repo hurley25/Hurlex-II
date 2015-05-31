@@ -91,7 +91,14 @@ extern struct task_struct *glb_idle_task;
 // init 任务指针
 extern struct task_struct *glb_init_task;
 
-#define task_to_stack(task) ((void *)((uint32_t)task + STACK_SIZE))
+/*  
+ * 因为pt_regs结构最后的部分实际上是CPU自动压栈，内核访问的。
+ * 即中断产生后，CPU会自动压入这些寄存器，ss和sp仅在特权级发生变化时压入
+ * （比如从用户态ring0到ring3，会压入用户态的ss和sp），
+ * 如果是内核态发生中断，CPU不会压入ss和sp，这种情况，再访问ss和sp字段就越界了，
+ * 所以预留了8字节。
+ */
+#define task_to_stack(task) ((void *)((uint32_t)task + STACK_SIZE - 8))
 
 #define current get_current()
 

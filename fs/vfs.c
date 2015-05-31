@@ -25,7 +25,7 @@
 #include <fs.h>
 
 // 全局的文件系统指针
-struct filesystem *file_systems; 
+struct filesystem *file_systems;
 
 // 初始化VFS目录树
 static void init_mount_tree(struct vfsmount *mount);
