@@ -16,6 +16,7 @@
  * =====================================================================================
  */
 
+#include <init.h>
 #include <arch.h>
 #include <common.h>
 #include <debug.h>
@@ -23,6 +24,40 @@
 #include <mm/mm.h>
 #include <fs.h>
 #include <kio.h>
+
+static void kthread_test(void);
+
+// 内核初始化函数
+void kern_init(void)
+{
+        debug_init();
+        arch_init();
+
+        cprintk(rc_black, rc_green, "Hello, Hurlex II kernel!\n\n");
+        
+        mm_init();
+        task_init();
+        fs_init();
+
+        enable_intr();
+        kthread_test();
+
+        uint8_t ch = 0;
+        while (true) {
+                if ((ch = getchar()) != 0) {
+                        if (ch == 80) {
+                                
+                                console_view_down(1);
+                        } else if (ch == 72) {
+                                console_view_up(1);
+                        }
+                }
+        }
+
+        while (true) {
+                cpu_hlt();
+        }
+}
 
 static int init_main(void *args)
 {
@@ -74,39 +109,6 @@ static void kthread_test(void)
         while (true) {
                 cprintk(rc_black, rc_red, "B");
                 uint32_t i = 100000; while (i--);
-        }
-}
-
-// 内核初始化函数
-void kern_init(void)
-{
-        debug_init();
-        arch_init();
-
-        cprintk(rc_black, rc_green, "Hello, Hurlex II kernel!\n\n");
-        
-        mm_init();
-        task_init();
-        fs_init();
-
-        enable_intr();
-        kthread_test();
-
-        uint8_t ch = 0;
-        while (true) {
-                if ((ch = getchar()) != 0) {
-                        if (ch == 80) {
-                                
-                                console_view_down(1);
-                        } else if (ch == 72) {
-                                console_view_up(1);
-                        }
-                }
-        }
-        
-
-        while (true) {
-                cpu_hlt();
         }
 }
 

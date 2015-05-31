@@ -18,16 +18,17 @@
 
 #include <common.h>
 #include <debug.h>
+#include <init.h>
 #include <mm/mm.h>
 
 // 开启分页机制之后的 Multiboot 数据指针
 multiboot_t *glb_mboot_ptr;
 
 // 开启分页机制之后的内核栈
-char kern_stack[STACK_SIZE]  __attribute__ ((aligned(STACK_SIZE)));
+uint8_t kern_stack[STACK_SIZE]  __attribute__ ((aligned(STACK_SIZE)));
 
 // 内核栈的栈顶
-uint32_t kern_stack_top = (uint32_t)kern_stack + STACK_SIZE - 8;
+uint32_t kern_stack_top = (uint32_t)kern_stack + STACK_SIZE;
 
 // 内核使用的临时页表和页目录
 // 该地址必须是页对齐的地址，内存 0-640KB 肯定是空闲的
@@ -40,9 +41,6 @@ __attribute__((section(".init.text"))) void mmap_tmp_page(void);
 
 // 启用分页
 __attribute__((section(".init.text"))) void enable_paging(void);
-
-// 体系结构无关的内核初始化函数，位于src/init/main.c
-void kern_init(void);
 
 // 内核入口函数
 __attribute__((section(".init.text"))) void kern_entry(void)
@@ -62,6 +60,8 @@ __attribute__((section(".init.text"))) void kern_entry(void)
 
         // 调用内核初始化函数
         kern_init();
+
+        // 之前的函数调用链自栈切换后断开，无法再返回之前的调用点
 }
 
 // 映射临时页表
@@ -75,6 +75,9 @@ __attribute__((section(".init.text"))) void mmap_tmp_page(void)
         }
 
         // 映射内核虚拟地址 4MB 到物理地址的前 4MB
+        // 因为 .init.text 段的代码在物理地址前 4MB 处（肯定不会超出这个范围），
+        // 开启分页后若此处不映射，代码执行立即会出错，离开 .init.text 段后的代码执行，
+        // 不再需要映射物理前 4MB 的内存
         for (int i = 0; i < 1024; i++) {
                 pte_low[i] = (i << 12) | PAGE_PRESENT | PAGE_WRITE;
         }
@@ -94,7 +97,8 @@ __attribute__((section(".init.text"))) void enable_paging(void)
         uint32_t cr0;
         
         __asm__ volatile ("mov %%cr0, %0" : "=r" (cr0));
-        cr0 |= 0x80000000;
+        // 最高位 PG 位置 1，分页开启
+        cr0 |= (1u << 31);
         __asm__ volatile ("mov %0, %%cr0" : : "r" (cr0));
 }
 

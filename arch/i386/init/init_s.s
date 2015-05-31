@@ -18,8 +18,6 @@ MBOOT_HEADER_FLAGS      equ     MBOOT_PAGE_ALIGN | MBOOT_MEM_INFO
 ; 要求其结果必须是32位的无符号值 0 (即magic + flags + checksum = 0)
 MBOOT_CHECKSUM          equ     - (MBOOT_HEADER_MAGIC + MBOOT_HEADER_FLAGS)
 
-;-----------------------------------------------------------------
-
 ; ----------------------------------------------------------------
 ;   符合Multiboot规范的 OS 映象需要这样一个 magic Multiboot 头
 ;       ----------------------------------
@@ -31,11 +29,11 @@ MBOOT_CHECKSUM          equ     - (MBOOT_HEADER_MAGIC + MBOOT_HEADER_FLAGS)
 ;       ----------------------------------
 ; ----------------------------------------------------------------
 
-[BITS 32]       ; 所有代码以 32-bit 的方式编译
+[BITS 32]               ; 所有代码以 32-bit 的方式编译
 
 section .init.text      ; 临时代码段从这里开始
 
-; 在代码段的起始位置设置符合 Multiboot 规范的标记
+; 在代码段的起始位置定义符合 Multiboot 规范的标记
 
 dd MBOOT_HEADER_MAGIC   ; GRUB 会通过这个魔数判断该映像是否支持
 dd MBOOT_HEADER_FLAGS   ; GRUB 的一些加载时选项，其详细注释在定义处
@@ -46,12 +44,16 @@ dd MBOOT_CHECKSUM       ; 检测数值，其含义在定义处
 [EXTERN kern_entry]     ; 声明内核 C 代码的入口函数
 
 start:
-        mov [mboot_ptr_tmp], ebx        ; 将 ebx 中的指针存入 glb_mboot_ptr
+        mov [mboot_ptr_tmp], ebx        ; 将 ebx 中的指针存入 mboot_ptr_tmp
         mov esp, STACK_TOP              ; 设置内核栈地址
         and esp, 0FFFFFFF0H             ; 栈地址按照 16 字节对齐
         mov ebp, 0                      ; 帧指针修改为 0
     
-        call kern_entry ; 调用内核入口函数
+        call kern_entry                 ; 调用内核入口函数
+
+noreturn:                               ; 代码永远不会返回到这里
+        hlt
+        jmp noreturn
 
 ;-----------------------------------------------------------------------------
 

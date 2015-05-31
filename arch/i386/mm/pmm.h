@@ -39,7 +39,7 @@ extern uint8_t kern_start[];
 extern uint8_t kern_end[];
 
 // 开启分页机制之后的内核栈
-extern char kern_stack[STACK_SIZE];
+extern uint8_t kern_stack[STACK_SIZE];
 
 // 内核栈的栈顶
 extern uint32_t kern_stack_top;
@@ -75,13 +75,13 @@ enum mem_zone_t {
 // 物理页结构
 typedef
 struct page_t {
-        atomic_t ref;               // 物理页被引用的次数
-        uint32_t flag;              // 当前页状态
+        atomic_t ref;                // 物理页被引用的次数
+        uint32_t flag;               // 当前页状态
         union {
                 uint32_t ncount;     // 当前页后续连续页的数量  First-Fit算法需要
                 uint32_t order;      // 当前页的 order 值       buddy 算法需要
         };
-        struct list_head list;      // 链接下一个连续页
+        struct list_head list;       // 链接下一个连续页
 } page_t;
 
 // page_t 的 flag 参数的操作宏

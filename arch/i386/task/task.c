@@ -182,6 +182,13 @@ static void copy_thread(struct task_struct *task, struct pt_regs_t *pt_regs)
         task->pt_regs = (struct pt_regs_t *)((uint32_t)task->stack - sizeof(struct pt_regs_t));
         *(task->pt_regs) = *pt_regs;
         task->pt_regs->eax = 0;
+        /*  
+         * 因为pt_regs结构最后的部分实际上是CPU自动压栈，内核访问的。
+         * 即中断产生后，CPU会自动压入这些寄存器，ss和sp仅在特权级发生变化时压入
+         * （比如从用户态ring0到ring3，会压入用户态的ss和sp），
+         * 如果是内核态发生中断，CPU不会压入ss和sp，这种情况，再访问ss和sp字段就越界了，
+         * 所以预留了8字节，此处栈顶 -8 。
+         */
         task->pt_regs->esp = (uint32_t)task->stack - 8;
         task->pt_regs->eflags |= FL_IF;
 
