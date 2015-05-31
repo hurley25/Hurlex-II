@@ -94,8 +94,15 @@ struct inode_ops {
                         struct inode *, struct dentry *);
 };
 
+
 // 最长文件名
-#define MAX_FILE_NAME   128
+#define MAX_FILE_NAME   123
+
+// 目录类型inode存储的目录数据块 sizeof = 128
+struct dirent {
+        char d_name[MAX_FILE_NAME+1];   // 目录项名称
+        uint32_t inode;                 // 对应的 inode
+};
 
 struct dentry {
         atomic_t d_count;               // 引用计数
