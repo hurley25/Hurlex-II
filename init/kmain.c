@@ -25,7 +25,7 @@
 #include <fs.h>
 #include <kio.h>
 
-static void kthread_test(void);
+static void kthread_test(void) __UNUSED__;
 
 // 内核初始化函数
 void kern_init(void)
@@ -37,7 +37,7 @@ void kern_init(void)
         fs_init();
 
         enable_intr();
-        kthread_test();
+//        kthread_test();
 
         uint8_t ch = 0;
         while (true) {
@@ -79,6 +79,7 @@ static int user_mode_test_main(void *args)
         __asm__ volatile ("mov $0, %eax");
         __asm__ volatile ("int $0x80");
 
+        printk("\n");
         while (true) {
                 cprintk(rc_black, rc_green, "A");
                 uint32_t i = 100000; while (i--);

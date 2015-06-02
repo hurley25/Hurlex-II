@@ -18,6 +18,7 @@
 
 #include <types.h>
 #include <debug.h>
+#include <fs.h>
 #include <intr/intr.h>
 
 #include "syscall.h"
@@ -47,30 +48,35 @@ static int sys_fork(uint32_t args[])
 
 static int sys_read(uint32_t args[])
 {
-        int errno = (int)args[0];
+        int fd = (int)args[0];
+        char *buff = (char *)args[1];
+        size_t size = (size_t)args[2];
 
-        return errno;
+        return do_read(fd, buff, size);;
 }
 
 static int sys_write(uint32_t args[])
 {
-        int errno = (int)args[0];
+        int fd = (int)args[0];
+        const char *buff = (const char *)args[1];
+        size_t size = (size_t)args[2];
 
-        return errno;
+        return do_write(fd, buff, size);
 }
 
 static int sys_open(uint32_t args[])
 {
-        int errno = (int)args[0];
+        const char *filename = (const char *)args[0];
+        uint32_t openflag = args[1];
 
-        return errno;
+        return do_open(filename, openflag);
 }
 
 static int sys_close(uint32_t args[])
 {
-        int errno = (int)args[0];
+        int fd = (int)args[0];
 
-        return errno;
+        return do_close(fd);
 }
 
 static int sys_getpid(uint32_t args[])

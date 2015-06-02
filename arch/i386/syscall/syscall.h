@@ -34,6 +34,4 @@
 // 系统调用函数
 void syscall_handler(pt_regs_t *regs);
 
-
-
 #endif  // INCLUDE_SYSCALL_SYSCALL_H_

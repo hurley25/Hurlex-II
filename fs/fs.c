@@ -33,3 +33,39 @@ void fs_init(void)
         sfs_init();
 }
 
+// 打开文件
+int do_open(const char *filename, uint32_t openflag)
+{
+        if (!filename || !openflag) {
+                return 0;
+        }
+
+        return 0;
+}
+
+// 关闭文件
+int do_close(int fd)
+{
+        return fd;
+}
+
+// 读取文件
+int do_read(int fd, char *buff, size_t size)
+{
+        if (!buff || !size) {
+                return 0;
+        }
+
+        return fd;
+}
+
+// 写入文件
+int do_write(int fd, const char *buff, size_t size)
+{
+        if (!buff || !size) {
+                return 0;
+        }
+
+        return fd;
+}
+

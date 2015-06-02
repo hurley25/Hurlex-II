@@ -50,7 +50,8 @@ struct super_block {
         uint32_t s_block_count;         // block数量
         uint32_t s_block_size;          // block大小
         uint32_t s_max_file;            // 文件最大尺寸
-        
+
+        void *impl_sb;                  // 指向具体文件系统的 super_block
         struct list_head s_list;        // super_block指针
         block_dev_t *bdev;              // 对应的块设备指针
         struct dentry *s_root;          // 根dentry
@@ -78,6 +79,7 @@ struct inode {
         uint32_t i_blocks;              // 文件使用block数
         uint32_t i_bytes;               // 文件最后一个block的字节数
         
+        void *impl_in;                  // 指向具体文件系统的 inode
         spinlock_t i_lock;              // inode自旋锁
         atomic_t i_count;               // 索引节点引用计数
         struct super_block *i_sb;       // super_blcok指针
@@ -93,7 +95,6 @@ struct inode_ops {
         int (*rename)(struct inode *, struct dentry *,          // 重命名
                         struct inode *, struct dentry *);
 };
-
 
 // 最长文件名
 #define MAX_FILE_NAME   123
@@ -148,7 +149,7 @@ struct file_ops {
 
 // 进程PCB里描述文件系统的结构
 struct file_struct {
-        spinlock_t fs_lock;                    // 同步修改保护锁
+        spinlock_t fs_lock;                     // 同步修改保护锁
         struct vfsmount *vfsmount;              // 文件系统根结构
         struct file *file_array[MAX_OPEN_FILE]; // 进程打开的文件描述
 };
@@ -220,5 +221,17 @@ void free_file(struct file *file);
 
 // 释放 file_ops 结构
 void free_file_ops(struct file_ops *file_ops);
+
+// 打开文件
+int do_open(const char *filename, uint32_t openflag);
+
+// 关闭文件
+int do_close(int fd);
+
+// 读取文件
+int do_read(int fd, char *buff, size_t size);
+
+// 写入文件
+int do_write(int fd, const char *buff, size_t size);
 
 #endif  // INCLUDE_FS_H_

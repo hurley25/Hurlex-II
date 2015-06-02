@@ -190,41 +190,49 @@ struct file_ops *alloc_file_ops(void)
 
 void free_super_block(struct super_block *sb)
 {
+        assert(sb != NULL, "free_super_block error, sb is NULL!");
         kfree(sb);
 }
 
 void free_super_block_ops(struct super_ops *sb_ops)
 {
+        assert(sb_ops != NULL, "free_super_block_ops error, sb_ops is NULL!");
         kfree(sb_ops);
 }
 
 void free_inode(struct inode *inode)
 {
+        assert(inode != NULL, "free_inode error, inode is NULL!");
         kfree(inode);
 }
 
 void free_inode_ops(struct inode_ops *inode_ops)
 {
+        assert(inode_ops != NULL, "free_inode_ops error, inode_ops is NULL!");
         kfree(inode_ops);
 }
 
 void free_dentry(struct dentry *dentry)
 {
+        assert(dentry != NULL, "free_dentry error, dentry is NULL!");
         kfree(dentry);
 }
 
 void free_dentry_ops(struct dentry_ops *dentry_ops)
 {
+        assert(dentry_ops != NULL, "free_dentry_ops error, detry_ops is NULL!");
         kfree(dentry_ops);
 }
 
 void free_file(struct file *file)
 {
+        assert(file != NULL, "free_file error, file is NULL!");
         kfree(file);
 }
 
 void free_file_ops(struct file_ops *file_ops)
 {
+        assert(file_ops != NULL, "free_file_ops error, file_ops is NULL!");
         kfree(file_ops);
 }
 
