@@ -50,6 +50,7 @@ struct super_block {
         uint32_t s_block_count;         // block数量
         uint32_t s_block_size;          // block大小
         uint32_t s_max_file;            // 文件最大尺寸
+        uint32_t s_root_inode;          // 根 inode
 
         void *impl_sb;                  // 指向具体文件系统的 super_block
         struct list_head s_list;        // super_block指针
@@ -63,7 +64,6 @@ struct super_block_ops {
         void (*destroy_inode)(struct inode *);                  // 释放inode
         void (*write_super)(struct super_block *);              // 写回super_block
         int (*sync_fs)(struct super_block *);                   // 同步文件系统
-        void (*delete_inode)(struct inode *);                   // 删除inode及其对应的文件数据
 };
 
 #define S_DIR    0x1    // inode 目录类型
@@ -140,7 +140,7 @@ struct file_ops {
         int (*read)(struct file *, char *, uint32_t);
         int (*write)(struct file *, const char *, uint32_t);
         int (*open)(struct inode *, struct file *);
-        int (*flush)(struct file *);
+        int (*fsync)(struct file *);
         int (*close)(struct inode *, struct file *);
 };
 
@@ -223,15 +223,15 @@ void free_file(struct file *file);
 void free_file_ops(struct file_ops *file_ops);
 
 // 打开文件
-int do_open(const char *filename, uint32_t openflag);
+int vfs_open(const char *filename, uint32_t openflag);
 
 // 关闭文件
-int do_close(int fd);
+int vfs_close(int fd);
 
 // 读取文件
-int do_read(int fd, char *buff, size_t size);
+int vfs_read(int fd, char *buff, size_t size);
 
 // 写入文件
-int do_write(int fd, const char *buff, size_t size);
+int vfs_write(int fd, const char *buff, size_t size);
 
 #endif  // INCLUDE_FS_H_

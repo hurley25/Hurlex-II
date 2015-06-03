@@ -40,16 +40,12 @@ static void ramfs_write_super(struct super_block *sb);
 // 同步文件系统修改
 static int ramfs_sync_fs(struct super_block *sb);
 
-// 删除inode及其对应文件系统数据
-static void ramfs_delete_inode(struct inode *inode);
-
 // super_block_ops 定义
 static struct super_block_ops ramfs_sb_ops = {
         .alloc_inode = ramfs_alloc_inode,
         .destroy_inode = ramfs_destroy_inode,
         .write_super = ramfs_write_super,
         .sync_fs = ramfs_sync_fs,
-        .delete_inode = ramfs_delete_inode
 };
 
 // 读取super_block
@@ -84,11 +80,5 @@ static int ramfs_sync_fs(__UNUSED__ struct super_block *sb)
 {
         // do nothing ...
         return 0;
-}
-
-// 删除inode及其对应文件系统数据
-static void ramfs_delete_inode(struct inode *inode)
-{
-        free_inode(inode);
 }
 

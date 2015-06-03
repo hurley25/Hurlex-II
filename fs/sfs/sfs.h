@@ -27,6 +27,7 @@ struct sfs_super_block {
         uint32_t s_block_count;         // block数量
         uint32_t s_block_size;          // block大小
         uint32_t s_max_file;            // 文件最大尺寸
+        uint32_t s_root_inode;          // 根目录 inode 号
 
         uint32_t in_secs;               // inode 所占扇区数
         uint32_t bl_secs;               // block 所占扇区数

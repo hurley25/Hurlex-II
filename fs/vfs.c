@@ -236,3 +236,39 @@ void free_file_ops(struct file_ops *file_ops)
         kfree(file_ops);
 }
 
+// 打开文件
+int vfs_open(const char *filename, uint32_t openflag)
+{
+        if (!filename || !openflag) {
+                return 0;
+        }
+
+        return 0;
+}
+
+// 关闭文件
+int vfs_close(int fd)
+{
+        return fd;
+}
+
+// 读取文件
+int vfs_read(int fd, char *buff, size_t size)
+{
+        if (!buff || !size) {
+                return 0;
+        }
+
+        return fd;
+}
+
+// 写入文件
+int vfs_write(int fd, const char *buff, size_t size)
+{
+        if (!buff || !size) {
+                return 0;
+        }
+
+        return fd;
+}
+
