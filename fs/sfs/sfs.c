@@ -25,9 +25,10 @@
 #include <fs.h>
 
 #define SUPER_BLOCK_OFFSET   4   // super_block 偏移
-#define INODEMAP_OFFSET     12   // super_block 偏移
+#define INODEMAP_OFFSET     12   // inode_map 偏移
 
-#define BLOCK_SIZE        2048   // block 默认大小
+// block 默认大小
+#define BLOCK_SIZE        2048
 
 // 最大文件大小
 #define MAX_FILE_SIZE     (P_BLOCK_MAP_SIZE * BLOCK_SIZE + \
@@ -42,50 +43,53 @@ static uint8_t *sfs_inode_map;
 // SFS 文件系统的 block_map
 static uint8_t *sfs_block_map;
 
-// SFS 文件系统的根 inode(加速访问)
-static struct inode* sfs_inode;
+// SFS 文件系统的 inode cache
+static uint8_t **inode_cache;
+
+// SFS 文件系统的 block cache
+static uint8_t **block_cache;
 
 // 初始化文件系统
 static void sfs_mkfs(uint32_t start_sec, uint32_t end_sec, uint32_t block_size);
 
 // 读取super_block
-static struct super_block *sfs_read_super(__UNUSED__ struct super_block *sb) __UNUSED__;
+static struct super_block *sfs_read_super(struct super_block *sb);
 
 // 回写 super_block
-static void sfs_write_super(__UNUSED__ struct sfs_super_block *sb) __UNUSED__;
+static void sfs_write_super(struct sfs_super_block *sb);
 
 // 读取 inode_map
-static int sfs_read_inode_map(void) __UNUSED__;
+static int sfs_read_inode_map(void);
 
 // 回写 inode_map
-static void sfs_write_inode_map(void) __UNUSED__;
+static void sfs_write_inode_map(void);
 
 // 读取 block_map
-static int sfs_read_block_map(void) __UNUSED__;
+static int sfs_read_block_map(void);
 
 // 回写 block_map
-static void sfs_write_block_map(void) __UNUSED__;
+static void sfs_write_block_map(void);
 
 // 申请 inode 号
-static uint32_t sfs_alloc_inode(void) __UNUSED__;
+static uint32_t sfs_alloc_inode(void);
 
 // 释放 inode 号
-static void sfs_free_inode(__UNUSED__ uint32_t inode_no) __UNUSED__;
+static void sfs_free_inode(uint32_t inode_no);
 
 // 申请 block 号
-static uint32_t sfs_alloc_block(void) __UNUSED__;
+static uint32_t sfs_alloc_block(void);
 
 // 释放 block 号
-static void sfs_free_block(__UNUSED__ uint32_t block_no) __UNUSED__;
+static void sfs_free_block(uint32_t block_no);
 
 // 读取 inode
-static struct sfs_inode *sfs_read_inode(__UNUSED__ uint32_t inode_no) __UNUSED__;
+static struct sfs_inode *sfs_read_inode(uint32_t inode_no);
 
-// 回写 inode
-static void sfs_write_inode(__UNUSED__ struct sfs_inode *inode, __UNUSED__ uint32_t inode_no) __UNUSED__;
+// 获取 inode 数据指针(从 inode_cache 获取，可能阻塞于磁盘IO)
+static uint8_t *sfs_read_inode(uint32_t inode_no);
 
-// 获取 blcok 指针(从 block_cache 获取，可能阻塞)
-static uint8_t *sfs_read_block(__UNUSED__ uint32_t block_no) __UNUSED__;
+// 获取 blcok 指针(从 block_cache 获取，可能阻塞于磁盘IO)
+static uint8_t *sfs_read_block(uint32_t block_no);
 
 // sfs 定义
 struct filesystem fs_sfs = {
@@ -172,15 +176,15 @@ static void sfs_mkfs(uint32_t start_sec, uint32_t end_sec, uint32_t block_size)
 }
 
 // 读取super_block
-static struct super_block *sfs_read_super(__UNUSED__ struct super_block *sb)
+static struct super_block *sfs_read_super(struct super_block *sb)
 {
         sfs_sb = NULL;
-        sfs_inode = NULL;
+
         return NULL;
 }
 
 // 回写 super_block
-static void sfs_write_super(__UNUSED__ struct sfs_super_block *sb)
+static void sfs_write_super(struct sfs_super_block *sb)
 {
 }
 
@@ -216,7 +220,7 @@ static uint32_t sfs_alloc_inode(void)
 }
 
 // 释放 inode 号
-static void sfs_free_inode(__UNUSED__ uint32_t inode_no)
+static void sfs_free_inode(uint32_t inode_no)
 {
 }
 
@@ -227,23 +231,19 @@ static uint32_t sfs_alloc_block(void)
 }
 
 // 释放 block 号
-static void sfs_free_block(__UNUSED__ uint32_t block_no)
+static void sfs_free_block(uint32_t block_no)
 {
 }
 
-// 读取 inode
-static struct sfs_inode *sfs_read_inode(__UNUSED__ uint32_t inode_no)
+// 获取 inode 数据指针(从 inode_cache 获取，可能阻塞于磁盘IO)
+static uint8_t *sfs_read_inode(uint32_t inode_no)
 {
         return NULL;
 }
 
-// 回写 inode
-static void sfs_write_inode(__UNUSED__ struct sfs_inode *inode, __UNUSED__ uint32_t inode_no)
-{
-}
 
 // 获取 blcok 指针(从 block_cache 获取，可能阻塞)
-static uint8_t *sfs_read_block(__UNUSED__ uint32_t block_no)
+static uint8_t *sfs_read_block(uint32_t block_no)
 {
         return NULL;
 }
