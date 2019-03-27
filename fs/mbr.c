@@ -17,6 +17,7 @@
  */
 
 #include <mbr.h>
+#include <debug.h>
 
  // MBR信息
 mbr_info_t mbr_info;
