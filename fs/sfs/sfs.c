@@ -83,7 +83,7 @@ static uint32_t sfs_alloc_block(void);
 static void sfs_free_block(uint32_t block_no);
 
 // 读取 inode
-static struct sfs_inode *sfs_read_inode(uint32_t inode_no);
+// static struct sfs_inode *sfs_read_inode(uint32_t inode_no);
 
 // 获取 inode 数据指针(从 inode_cache 获取，可能阻塞于磁盘IO)
 static uint8_t *sfs_read_inode(uint32_t inode_no);
