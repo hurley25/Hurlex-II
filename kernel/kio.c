@@ -30,10 +30,9 @@ char getchar(void)
                 return 0;
         }
 
-        while (kb_dev->ops.read(&ch, 1) == 1) {
+        while (kb_dev->ops.read(&ch, 1) == 0) {
                 cpu_hlt();
-                return ch;
         }
-
-        return 0;
+        
+        return ch;
 }
