@@ -227,7 +227,7 @@ static void buddy_free_pages(uint32_t addr, uint32_t n)
 
         uint32_t order = 0, order_size = 1;
         while (n >= order_size) {
-                if (n & order_size) != 0) {
+                if (（n & order_size) != 0) {
                         buddy_free_pages_sub(base, order);
                         base += order_size;
                         n -= order_size;
