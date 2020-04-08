@@ -88,7 +88,7 @@ static void phy_pages_init(e820map_t *e820map)
                         phy_mem_length = ZONE_HIGHMEM_ADDR;
                         break;
                 }
-                phy_mem_length = e820map->map[i].length_low;
+                phy_mem_length += e820map->map[i].length_low;
         }
 
         uint32_t pages_mem_length = sizeof(page_t) * (phy_mem_length / PMM_PAGE_SIZE);
