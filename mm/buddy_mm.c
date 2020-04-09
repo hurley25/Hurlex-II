@@ -222,12 +222,12 @@ static void buddy_free_pages(uint32_t addr, uint32_t n)
         }
 
         page_t *base = addr_to_page(addr);
-        
+  
         atomic_add(&buddy_mm_info.phy_page_now_count, n);
 
         uint32_t order = 0, order_size = 1;
         while (n >= order_size) {
-                if (（n & order_size) != 0) {
+                if ((n & order_size) != 0) {
                         buddy_free_pages_sub(base, order);
                         base += order_size;
                         n -= order_size;
